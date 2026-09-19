@@ -1,0 +1,113 @@
+{
+  "network": "Test SDF Network ; September 2015",
+  "capturedAt": "2026-09-19T10:57:57.050Z",
+  "treasury": "CC4VOZNTZP4SPHX7WOYLO4AJKHHYGZBR4D63UQZHLNYLJW37OP62LBSG",
+  "vault": "CBYR7JQC7XBG4TJIRVLZDTJZQE6UBGUZ7C5I4J64NPVNZ64YKBTLNUTG",
+  "accounts": {
+    "admin": "GDGSUKIIS2K6UWC3JBPC3RL6LRVZ76ERQRCFRBFIYRCKVH3S3RGMIQYP",
+    "resident": "GBWUWBRQ7JVEUG3HHAMBQJ667KCB2U4LTUDLQ4HF6WQFMONRSRW56YRF",
+    "payee": "GDDMOSG7G2PRRPUMCOYHI4OIFCTJYQWFR5AGKSTHEK7DBFEQ3Z7FX75G"
+  },
+  "transactions": [
+    {
+      "step": "propose",
+      "account": "GBWUWBRQ7JVEUG3HHAMBQJ667KCB2U4LTUDLQ4HF6WQFMONRSRW56YRF",
+      "hash": "addb529b3ab7288b44ec12dffbd8211ec38938493631477d2badb513fe48f028",
+      "ledger": 4758319
+    },
+    {
+      "step": "contribution",
+      "account": "GBWUWBRQ7JVEUG3HHAMBQJ667KCB2U4LTUDLQ4HF6WQFMONRSRW56YRF",
+      "hash": "2d23abac04507aef68eebabcc871c91b108aa01507204c712283ee41d0bb4d4e",
+      "ledger": 4758317
+    },
+    {
+      "step": "withdraw",
+      "account": "GDDMOSG7G2PRRPUMCOYHI4OIFCTJYQWFR5AGKSTHEK7DBFEQ3Z7FX75G",
+      "hash": "1b96687b224948c3716ca4f585920256a468f75c50fe8d1f2dfff3b3616be05f",
+      "ledger": 4758325
+    },
+    {
+      "step": "trustline",
+      "account": "GBWUWBRQ7JVEUG3HHAMBQJ667KCB2U4LTUDLQ4HF6WQFMONRSRW56YRF",
+      "hash": "5712c1ef06ccc4978d33be1701588651bce0bf7adbd15a8170196fed663490d1",
+      "ledger": 4758309
+    },
+    {
+      "step": "trustline",
+      "account": "GDDMOSG7G2PRRPUMCOYHI4OIFCTJYQWFR5AGKSTHEK7DBFEQ3Z7FX75G",
+      "hash": "7fae97516c53c2b4bfd244034dc1be13c2473f72124562f5351ca296e20c41fd",
+      "ledger": 4758311
+    },
+    {
+      "step": "join",
+      "account": "GDDMOSG7G2PRRPUMCOYHI4OIFCTJYQWFR5AGKSTHEK7DBFEQ3Z7FX75G",
+      "hash": "74a55a316a636ee2cd837166f46b99a13c7d13228706537356db53bdbc8d8eda",
+      "ledger": 4758329
+    },
+    {
+      "step": "trustline",
+      "account": "GDGSUKIIS2K6UWC3JBPC3RL6LRVZ76ERQRCFRBFIYRCKVH3S3RGMIQYP",
+      "hash": "b51daf1268fd30f98eebe6fd80e14e4c3dc6fdf9cefa14caf6bc89daf17d602f",
+      "ledger": 4758307
+    },
+    {
+      "step": "execute",
+      "account": "GDGSUKIIS2K6UWC3JBPC3RL6LRVZ76ERQRCFRBFIYRCKVH3S3RGMIQYP",
+      "hash": "4444fdd4133ae6e689c2b761d34e2de0bc7219e9b5b4ac0d619a01512322019e",
+      "ledger": 4758323
+    },
+    {
+      "step": "approve",
+      "account": "GDGSUKIIS2K6UWC3JBPC3RL6LRVZ76ERQRCFRBFIYRCKVH3S3RGMIQYP",
+      "hash": "f591075b544f392ec9df60b3beb7cc61c5d4f1b7160415358cfb51327cfe7c8b",
+      "ledger": 4758321
+    },
+    {
+      "step": "create",
+      "account": "GDGSUKIIS2K6UWC3JBPC3RL6LRVZ76ERQRCFRBFIYRCKVH3S3RGMIQYP",
+      "hash": "c3057fd72273198f3cd329626f549467697d0019ee45eaa1f15ddbf8e9baf030",
+      "ledger": 4758312
+    },
+    {
+      "step": "invite",
+      "account": "GDGSUKIIS2K6UWC3JBPC3RL6LRVZ76ERQRCFRBFIYRCKVH3S3RGMIQYP",
+      "hash": "f5ffbce66f078f4ab9e5d17668344e60212c5f50edead461180a289d1aa35246",
+      "ledger": 4758327
+    },
+    {
+      "step": "member",
+      "account": "GDGSUKIIS2K6UWC3JBPC3RL6LRVZ76ERQRCFRBFIYRCKVH3S3RGMIQYP",
+      "hash": "e4446b3d77099fdf0a04ee42ad49f235c017bfdc831ed58656dd8c2f0073585a",
+      "ledger": 4758313
+    }
+  ],
+  "flows": [
+    {
+      "kind": "deposit",
+      "account": "GBWUWBRQ7JVEUG3HHAMBQJ667KCB2U4LTUDLQ4HF6WQFMONRSRW56YRF",
+      "anchorId": "sep_j24i0e1a2o57vozozu6d",
+      "status": "completed",
+      "amountIn": "200.00",
+      "amountOut": "4.0792181",
+      "receipt": "2d23abac04507aef68eebabcc871c91b108aa01507204c712283ee41d0bb4d4e",
+      "settlementHash": "166d5f653e4b7c570f86722eadb02bc7570456fde6d8db4fb81ede6d2d635691",
+      "bankReference": "TRMA-55Z6-E2HB"
+    },
+    {
+      "kind": "withdraw",
+      "account": "GDDMOSG7G2PRRPUMCOYHI4OIFCTJYQWFR5AGKSTHEK7DBFEQ3Z7FX75G",
+      "anchorId": "sep_rrxkgi7vz3u27de2go1f",
+      "status": "completed",
+      "amountIn": "2.0000000",
+      "amountOut": "97.08",
+      "receipt": "1b96687b224948c3716ca4f585920256a468f75c50fe8d1f2dfff3b3616be05f",
+      "settlementHash": "1b96687b224948c3716ca4f585920256a468f75c50fe8d1f2dfff3b3616be05f",
+      "bankReference": "FAST-HERUY6L85Y",
+      "destination": "GCLCZEQZ2THTEDAOFI66LACNPLY4OBKN7VKLEZFMBIHYKYQOW2W7T3Z6",
+      "memo": "998937224058"
+    }
+  ],
+  "bankSettlement": "simulated",
+  "externalExtensionSigning": "not exercised"
+}

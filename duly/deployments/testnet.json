@@ -1,0 +1,132 @@
+{
+  "network": "Test SDF Network ; September 2015",
+  "accounts": {
+    "admin": {
+      "publicKey": "GBZUU76P3POO2S4MLKAJ5ZTW4HPWQDCJ5OHFOXKKFUM4ESHOC6Y53KAD",
+      "keyFile": ".duly-admin-key",
+      "fundingHash": "0a0068cf6abefdece0e2efce873025135cd4e48bd44ab1cad6aa95f5a79d63ec",
+      "trustlineHash": "23720e7960913392b04f15035290a889426f8f11caac8f9f9761c714e10b5307"
+    },
+    "member": {
+      "publicKey": "GD7CIRQNRJAKOEESAMN7G6BMUK6GIMJE6KVHPICFVTF3Y47JGLTKTEVX",
+      "keyFile": ".duly-testnet-key",
+      "fundingHash": "b645c804b0abc6c95510a27fc7ca6c1619680cbb66f69eb68f31cc05977fcb00",
+      "trustlineHash": "7c989d3af5409116784a59082b15c8bf083e1c44365ccb35036ec5baaba76192"
+    },
+    "payee": {
+      "publicKey": "GDEALEJZQQE7T2Z2RY6PUXQNKL7RRFVOPRXTQTXPUVQXGWHJFRWXIVAR",
+      "keyFile": ".duly-payee-key",
+      "fundingHash": "2f4727c4e859da5ce1858a9c785170c7c0a95e18e41d368c639899048f490301",
+      "trustlineHash": "0091c0dbe3c4cbd810574a6866ca374e07b0bdb4ca027d6011f8a78b5cd45328"
+    }
+  },
+  "updatedAt": "2026-09-19T09:54:44.834Z",
+  "wasm": {
+    "path": "deployments/duly_treasury_v2.wasm",
+    "sha256": "ba49defc0fee7c77fa866999a6dce1a8784853726d613b41194e52e80ce7ec1f",
+    "uploadHash": "551fedd43e4c7747597d8931822bb15239d57f4a3d33c5fad269f3932d4295ca",
+    "buildPath": "target/wasm32v1-none/release/duly_treasury.wasm"
+  },
+  "treasury": {
+    "contractId": "CC7TIRVPWB4EFE7ZPA3JZZD2VC5ZDRAHFN6UURSGW4JNJISMKGMGTKUR",
+    "token": "CBIELTK6YBZJU5UP2WWQEUCYKLPU6AUNZ2BQ4WWFEIE3USCIHMXQDAMA",
+    "deploymentHash": "3dbf9c99b612b1f7d1a3c35b0be2c60bca050df043274e1b52bb3d10e59c41ce",
+    "ledger": 4757566,
+    "config": {
+      "admin": "GBZUU76P3POO2S4MLKAJ5ZTW4HPWQDCJ5OHFOXKKFUM4ESHOC6Y53KAD",
+      "dues_try": "20000",
+      "name": "Pera Community",
+      "quorum": 2,
+      "token": "CBIELTK6YBZJU5UP2WWQEUCYKLPU6AUNZ2BQ4WWFEIE3USCIHMXQDAMA",
+      "vault": "CBYR7JQC7XBG4TJIRVLZDTJZQE6UBGUZ7C5I4J64NPVNZ64YKBTLNUTG"
+    }
+  },
+  "vault": {
+    "contractId": "CBYR7JQC7XBG4TJIRVLZDTJZQE6UBGUZ7C5I4J64NPVNZ64YKBTLNUTG",
+    "factory": "CDSCWE4GLNBYYTES2OCYDFQA2LLY4RBIAX6ZI32VSUXD7GO6HRPO4A32",
+    "creationHash": "58cd164bfed3297014148e2e929b47e2b88b4938df2eec08785020e0f18148ad",
+    "ledger": 4757450,
+    "token": "CBIELTK6YBZJU5UP2WWQEUCYKLPU6AUNZ2BQ4WWFEIE3USCIHMXQDAMA",
+    "assets": [
+      {
+        "address": "CBIELTK6YBZJU5UP2WWQEUCYKLPU6AUNZ2BQ4WWFEIE3USCIHMXQDAMA",
+        "strategies": []
+      }
+    ],
+    "upgradable": false,
+    "vaultFeeBps": 0,
+    "mode": "idle",
+    "yieldStrategy": null
+  },
+  "brand": "Duly",
+  "version": 2,
+  "history": [
+    {
+      "proof": "deployments/archive/aidat-testnet-v1.json",
+      "contractId": "CC3TJ6VPGEXYNIN7XEBGFMU57LSBH3KXMIYXMQ7UAQZE3XYUVIW5KJQN",
+      "reason": "Replaced by Duly V2; full balance moved with two member approvals."
+    }
+  ],
+  "migration": {
+    "oldContract": "CC3TJ6VPGEXYNIN7XEBGFMU57LSBH3KXMIYXMQ7UAQZE3XYUVIW5KJQN",
+    "newContract": "CC7TIRVPWB4EFE7ZPA3JZZD2VC5ZDRAHFN6UURSGW4JNJISMKGMGTKUR",
+    "amount": "20792181",
+    "seedAnchorId": "sep_pa2x9hauw53qewb1n27q",
+    "seedSettlementHash": "5f9ace3538a42cd7aca600456e45a097cf22cc50bb7b7a02995c12ec94647d85",
+    "seedDepositHash": "adbb5a4bdb6c29f56d3586921a2590b26ef40fd3b7b8de934a7cbc33bcf4a09a",
+    "seedAmount": "10000000",
+    "initialLockedUnits": "1000",
+    "proposeHash": "4c6eb2107a025e70798d52a67a973abcc5485ec977c7830f597be189afeb23d6",
+    "approveHash": "bf8939870e4601fac085cafcd0025ca5742a4c9ba949e46584264611db10ca81",
+    "executeHash": "12c83eac9a01b3f64411ecc54b206f33ac397f0977a70c1bd3d3a64f201407d0",
+    "investHash": "fc24c3f098154c5bd097d57dd0f4eb81b6dfc339ef3ecc70c1d42d2158078146",
+    "oldBalanceAfter": "0",
+    "newVaultBalanceAfter": "20792181"
+  },
+  "deposit": {
+    "account": "GD7CIRQNRJAKOEESAMN7G6BMUK6GIMJE6KVHPICFVTF3Y47JGLTKTEVX",
+    "anchorId": "sep_hof5g0bbtrksgl1d6tmz",
+    "status": "completed",
+    "quoteId": "qt_1pegxtlcpl1kzlug2186",
+    "amountIn": "200.00",
+    "amountOut": "4.0792181",
+    "stellarHash": "5e5abae04e2499e15d0bbee57400594d1be072e7daa529f92b280106ca268b54",
+    "treasury": "CC7TIRVPWB4EFE7ZPA3JZZD2VC5ZDRAHFN6UURSGW4JNJISMKGMGTKUR",
+    "contributionHash": "e6e70f84c7ca14a5cebaf2fedfa1102ffaf03f314327327333d11af3948e3c5d",
+    "contributionAmount": "4.0792181",
+    "memberRemainingUSDC": "0.0000000",
+    "bankSettlement": "simulated",
+    "stellarNetwork": "testnet"
+  },
+  "demo": {
+    "treasury": "CC7TIRVPWB4EFE7ZPA3JZZD2VC5ZDRAHFN6UURSGW4JNJISMKGMGTKUR",
+    "proposalId": 1,
+    "amountUSDC": "2.0000000",
+    "proposeHash": "39dcef8f127a9f9eb2567c01d1b06aee7ff43b8b147be21b848f4bb16fdd3cee",
+    "approveHash": "294b297c831c68dd4fca6bb482bf964ca867dfbf1b45f37ef0684fd25df15bd7",
+    "executeHash": "7988608557950395fcdbda2010590a7078f2c3f33c134e39c4e1ec66c0ea91f3",
+    "approvals": [
+      "GD7CIRQNRJAKOEESAMN7G6BMUK6GIMJE6KVHPICFVTF3Y47JGLTKTEVX",
+      "GBZUU76P3POO2S4MLKAJ5ZTW4HPWQDCJ5OHFOXKKFUM4ESHOC6Y53KAD"
+    ],
+    "status": "Executed",
+    "balanceAfter": "4.1584362",
+    "payeeAfter": "2.0000000",
+    "rejectedBeforeQuorum": true
+  },
+  "withdrawal": {
+    "account": "GDEALEJZQQE7T2Z2RY6PUXQNKL7RRFVOPRXTQTXPUVQXGWHJFRWXIVAR",
+    "anchorId": "sep_pv8i9au9ygmlc2em10uf",
+    "status": "completed",
+    "quoteId": "qt_dic6r3qi6zkqpofpm8aq",
+    "amountIn": "2.0000000",
+    "amountOut": "97.08",
+    "stellarHash": "3787ff7a67b884975a4e869e8f06cf7db8cf25266fa88442f0ed1ef35fc44820",
+    "paymentHash": "3787ff7a67b884975a4e869e8f06cf7db8cf25266fa88442f0ed1ef35fc44820",
+    "bankReference": "FAST-82FQF7QZO6",
+    "anchorAccount": "GCLCZEQZ2THTEDAOFI66LACNPLY4OBKN7VKLEZFMBIHYKYQOW2W7T3Z6",
+    "memo": "267935521406",
+    "bankSettlement": "simulated",
+    "stellarNetwork": "testnet"
+  }
+}

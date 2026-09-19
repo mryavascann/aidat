@@ -1,17 +1,31 @@
 # Secrets and deploy state: never commit
+.duly-*-key
+.duly-contract-id
+.duly-vault-id
+.duly-state.json
+.duly-state.json.tmp
+.duly-state.lock
 .aidat-*-key
 .aidat-contract-id
+.aidat-state.json
+.aidat-state.json.tmp
+.aidat-state.lock
 .env
 .env.*
 !.env.example
 
 # Build output and dependencies
 target/
+test_snapshots/
 node_modules/
 dist/
+*.tsbuildinfo
+test-results/
 
 # Local tool settings and OS noise
 .claude/settings.local.json
+.stellar-build/bmm/config.user.yaml
+.stellar-build/custom/*.user.toml
 .DS_Store
 Thumbs.db
 *.log

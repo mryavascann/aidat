@@ -1,0 +1,32 @@
+{
+  "name": "duly",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "setup": "node scripts/setup.mjs",
+    "test": "node --test scripts/test/*.test.mjs",
+    "test:contract": "cargo test -p duly-treasury",
+    "build:contract": "cargo build --locked --target wasm32v1-none --release -p duly-treasury",
+    "deploy": "node scripts/deploy.mjs",
+    "anchor:deposit": "node scripts/anchor-e2e.mjs --only=deposit --try=200",
+    "anchor:withdraw": "node scripts/anchor-e2e.mjs --only=withdraw --usdc=2",
+    "payee:withdraw": "node scripts/anchor-e2e.mjs --only=withdraw --usdc=2 --key=.duly-payee-key",
+    "demo": "node scripts/demo.mjs",
+    "verify": "node scripts/verify.mjs",
+    "probe:defindex": "node scripts/probe-defindex.mjs",
+    "vault:create": "node scripts/create-vault.mjs",
+    "migrate:v2": "node scripts/migrate-v2.mjs",
+    "web:dev": "npm --prefix web run dev",
+    "web:build": "node scripts/sync-web.mjs && npm --prefix web run build",
+    "web:preview": "npm --prefix web run preview",
+    "verify:browser": "node scripts/verify-browser.mjs",
+    "export:browser": "node scripts/export-browser-proof.mjs",
+    "verify:guided": "node scripts/verify-browser.mjs deployments/browser-testnet-guided.json"
+  },
+  "dependencies": {
+    "@stellar/stellar-sdk": "17.1.0"
+  }
+}

@@ -1,0 +1,7 @@
+# Project-local artifact locations; no global installer or hooks are required.
+project_name: Duly
+communication_language: Turkish
+document_output_language: English
+planning_artifacts: duly/docs/planning
+implementation_artifacts: duly/docs/stories
+project_knowledge: duly/docs

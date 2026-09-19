@@ -1,0 +1,146 @@
+{
+  "network": "Test SDF Network ; September 2015",
+  "accounts": {
+    "admin": {
+      "publicKey": "GBZUU76P3POO2S4MLKAJ5ZTW4HPWQDCJ5OHFOXKKFUM4ESHOC6Y53KAD",
+      "keyFile": ".aidat-admin-key",
+      "fundingHash": "0a0068cf6abefdece0e2efce873025135cd4e48bd44ab1cad6aa95f5a79d63ec",
+      "trustlineHash": "23720e7960913392b04f15035290a889426f8f11caac8f9f9761c714e10b5307"
+    },
+    "member": {
+      "publicKey": "GD7CIRQNRJAKOEESAMN7G6BMUK6GIMJE6KVHPICFVTF3Y47JGLTKTEVX",
+      "keyFile": ".aidat-testnet-key",
+      "fundingHash": "b645c804b0abc6c95510a27fc7ca6c1619680cbb66f69eb68f31cc05977fcb00",
+      "trustlineHash": "7c989d3af5409116784a59082b15c8bf083e1c44365ccb35036ec5baaba76192"
+    },
+    "payee": {
+      "publicKey": "GDEALEJZQQE7T2Z2RY6PUXQNKL7RRFVOPRXTQTXPUVQXGWHJFRWXIVAR",
+      "keyFile": ".aidat-payee-key",
+      "fundingHash": "2f4727c4e859da5ce1858a9c785170c7c0a95e18e41d368c639899048f490301",
+      "trustlineHash": "0091c0dbe3c4cbd810574a6866ca374e07b0bdb4ca027d6011f8a78b5cd45328"
+    }
+  },
+  "updatedAt": "2026-09-19T09:31:50.738Z",
+  "wasm": {
+    "path": "deployments/archive/aidat_treasury_v1.wasm",
+    "sha256": "26940247f69cbf1763623f7cbf8fe3909adee3ea918bf2d8ebb5758a47cacedc",
+    "uploadHash": "645224f2df57b60d787ff859e88c798f2526b39e66d897247aeac96e6e03080b"
+  },
+  "treasury": {
+    "contractId": "CC3TJ6VPGEXYNIN7XEBGFMU57LSBH3KXMIYXMQ7UAQZE3XYUVIW5KJQN",
+    "token": "CBIELTK6YBZJU5UP2WWQEUCYKLPU6AUNZ2BQ4WWFEIE3USCIHMXQDAMA",
+    "deploymentHash": "bf01e89eed4b7fff3a894ab3ae0873b6b12a5c5eab1e0c8f0592fd0841b3eed5",
+    "ledger": 4757231,
+    "config": {
+      "admin": "GBZUU76P3POO2S4MLKAJ5ZTW4HPWQDCJ5OHFOXKKFUM4ESHOC6Y53KAD",
+      "dues_try": "20000",
+      "name": "Pera Building",
+      "quorum": 2,
+      "token": "CBIELTK6YBZJU5UP2WWQEUCYKLPU6AUNZ2BQ4WWFEIE3USCIHMXQDAMA"
+    }
+  },
+  "priorDeployments": [
+    {
+      "contractId": "CBBQE3PCIFIACJIQMV4JPP2EZDIXSM6NRV6D53UEPUOKQN5H3VIHQNLS",
+      "token": "CBIELTK6YBZJU5UP2WWQEUCYKLPU6AUNZ2BQ4WWFEIE3USCIHMXQDAMA",
+      "deploymentHash": "cd7651b841d2e7c659ebfa12d92fca5e6f6af60d4d16c5c12c446ecbdd29897e",
+      "ledger": 4757163,
+      "config": {
+        "admin": "GBZUU76P3POO2S4MLKAJ5ZTW4HPWQDCJ5OHFOXKKFUM4ESHOC6Y53KAD",
+        "dues_try": "20000",
+        "name": "Pera Building",
+        "quorum": 2,
+        "token": "CBIELTK6YBZJU5UP2WWQEUCYKLPU6AUNZ2BQ4WWFEIE3USCIHMXQDAMA"
+      },
+      "wasm": {
+        "path": "target/wasm32v1-none/release/aidat_treasury.wasm",
+        "sha256": "fb03d85639f0a47a197438b82fef30a403d746a7c1f794ae4bd5d029b7815df3",
+        "uploadHash": "ac74444ab4b7e2f2d7cc80b9ca9d6007ecc23107c88347bb1c29bb33f44776d3"
+      },
+      "retiredReason": "Rebuilt before funding; balance was zero."
+    }
+  ],
+  "deposit": {
+    "account": "GD7CIRQNRJAKOEESAMN7G6BMUK6GIMJE6KVHPICFVTF3Y47JGLTKTEVX",
+    "anchorId": "sep_ioy4vxulpkop8ae6pubc",
+    "status": "completed",
+    "quoteId": "qt_aj2p1l8lak9ke0r1z4g3",
+    "amountIn": "200.00",
+    "amountOut": "4.0792181",
+    "stellarHash": "12c61f01471ef3fcab9e658136c58c6bcbc9c848084d63a3cf7bd7c31a49de8b",
+    "treasury": "CC3TJ6VPGEXYNIN7XEBGFMU57LSBH3KXMIYXMQ7UAQZE3XYUVIW5KJQN",
+    "inviteHash": "ca7125c2035b1998374bf61425184f633f8eb6cf4c6cfc968637a8131a3eafaf",
+    "joinHash": "eba7ee4c0c72772f832ed4993fe8c2d093e8497e9185a37819a54e478e4cec8f",
+    "contributionHash": "201a7d65f40905345bd1f70b08becead3a07076b5e3ebd6054b2509d69c60772",
+    "contributionAmount": "4.0792181",
+    "memberRemainingUSDC": "0.0000000",
+    "bankSettlement": "simulated",
+    "stellarNetwork": "testnet"
+  },
+  "demo": {
+    "treasury": "CC3TJ6VPGEXYNIN7XEBGFMU57LSBH3KXMIYXMQ7UAQZE3XYUVIW5KJQN",
+    "proposalId": 1,
+    "amountUSDC": "2.0000000",
+    "proposeHash": "312892d22001e48294843e45f73195c56bd72e7e25e6b9f6b8d88301e05e315f",
+    "approveHash": "3e206c7b495cae0c1246c782ac1bb8180f82dedcc077ea2d6a29e95719bb7ec3",
+    "executeHash": "d2d65a341d1b3286d3945876eb857767c41720c0c965a76b4395aa2a7b02f5b0",
+    "approvals": [
+      "GD7CIRQNRJAKOEESAMN7G6BMUK6GIMJE6KVHPICFVTF3Y47JGLTKTEVX",
+      "GBZUU76P3POO2S4MLKAJ5ZTW4HPWQDCJ5OHFOXKKFUM4ESHOC6Y53KAD"
+    ],
+    "status": "Executed",
+    "balanceAfter": "2.0792181",
+    "payeeAfter": "2.0000000",
+    "rejectedBeforeQuorum": true
+  },
+  "withdrawal": {
+    "account": "GDEALEJZQQE7T2Z2RY6PUXQNKL7RRFVOPRXTQTXPUVQXGWHJFRWXIVAR",
+    "anchorId": "sep_bilwa5sbyw553xg8ry8p",
+    "status": "completed",
+    "quoteId": "qt_k8wx5m9ceaao56v55h0a",
+    "amountIn": "2.0000000",
+    "amountOut": "97.08",
+    "stellarHash": "f9878b77b284cff9b178ee4eb0115180eabb5b5ca2eae8d16ddb069a8b449e19",
+    "paymentHash": "f9878b77b284cff9b178ee4eb0115180eabb5b5ca2eae8d16ddb069a8b449e19",
+    "bankReference": "FAST-4O2BDEQ9YO",
+    "bankSettlement": "simulated",
+    "stellarNetwork": "testnet",
+    "anchorAccount": "GCLCZEQZ2THTEDAOFI66LACNPLY4OBKN7VKLEZFMBIHYKYQOW2W7T3Z6",
+    "memo": "807956203911"
+  },
+  "defindexProbe": {
+    "checkedAt": "2026-09-19T09:31:50.735Z",
+    "source": "https://raw.githubusercontent.com/defindex-io/stellar-contracts/main/public/testnet.contracts.json",
+    "vault": "CBMVK2JK6NTOT2O4HNQAIQFJY232BHKGLIMXDVQVHIIZKDACXDFZDWHN",
+    "assets": [
+      {
+        "address": "CAQCFVLOBK5GIULPNZRGATJJMIZL5BSP7X5YJVMGCPTUEPFM4AVSRCJU",
+        "strategies": [
+          {
+            "address": "CALLOM5I7XLQPPOPQMYAHUWW4N7O3JKT42KQ4ASEEVBXDJQNJOALFSUY",
+            "name": "USDC Blend Strategy",
+            "paused": false
+          }
+        ]
+      }
+    ],
+    "funds": [
+      {
+        "asset": "CAQCFVLOBK5GIULPNZRGATJJMIZL5BSP7X5YJVMGCPTUEPFM4AVSRCJU",
+        "idle_amount": "9421856304",
+        "invested_amount": "0",
+        "strategy_allocations": [
+          {
+            "amount": "0",
+            "paused": false,
+            "strategy_address": "CALLOM5I7XLQPPOPQMYAHUWW4N7O3JKT42KQ4ASEEVBXDJQNJOALFSUY"
+          }
+        ],
+        "total_amount": "9421856304"
+      }
+    ],
+    "expectedCircleToken": "CBIELTK6YBZJU5UP2WWQEUCYKLPU6AUNZ2BQ4WWFEIE3USCIHMXQDAMA",
+    "compatibleSingleAssetVault": false,
+    "verification": "Read-only asset/interface probe; no deposit, investment or withdrawal performed."
+  }
+}

@@ -1,0 +1,17 @@
+import { tr as t } from "../src/i18n/tr.ts";
+import { chromium } from "playwright";
+const browser = await chromium.launch({ channel: "chrome", headless: true });
+const context = await browser.newContext();
+const page = await context.newPage();
+page.setDefaultTimeout(45000);
+page.on("pageerror", (e) => console.log("pageerror:", e.message));
+await page.goto("http://127.0.0.1:5173");
+await page.locator(".balance-value").waitFor();
+await page.locator(".wallet-button").click();
+await page.getByRole("button", { name: t.openWallet, exact: true }).click();
+await page.getByText("Freighter", { exact: true }).waitFor();
+await page.getByText("xBull", { exact: true }).waitFor();
+await page.getByText("Albedo", { exact: true }).waitFor();
+await page.screenshot({ path: "test-results/wallets.png" });
+console.log("Wallets Kit chooser displays Freighter, xBull and Albedo.");
+await browser.close();

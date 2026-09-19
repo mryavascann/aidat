@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#176B58" />
+    <script>
+      (() => {
+        let saved;
+        try { saved = JSON.parse(localStorage.getItem("duly:theme") ?? "null"); } catch {}
+        const theme = saved === "dark" || saved === "light" ? saved : matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        document.documentElement.dataset.theme = theme;
+        document.querySelector('meta[name="theme-color"]').content = theme === "dark" ? "#101a16" : "#f7f7f2";
+      })();
+    </script>
+    <meta name="description" content="Duly — a shared treasury for communities. Collect dues, approve expenses together, and follow every payment." />
+    <link rel="icon" type="image/svg+xml" href="/duly.svg" />
+    <title>Duly · Community treasury</title>
+  </head>
+  <body><div id="root"></div><script type="module" src="/src/main.tsx"></script></body>
+</html>
