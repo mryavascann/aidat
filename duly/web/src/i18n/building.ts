@@ -161,6 +161,31 @@ const copy = {
     "No need to enter your name again. Choose the Duly passkey saved on your device.",
   ],
   otherSignIn: ["Diğer giriş yöntemleri", "Other sign-in methods"],
+  useThisDevice: ["Bu cihazla devam et", "Continue on this device"],
+  useWindowsHello: [
+    "Windows Hello ile devam et",
+    "Continue with Windows Hello",
+  ],
+  useOtherDevice: [
+    "Telefon veya güvenlik anahtarı kullan",
+    "Use a phone or security key",
+  ],
+  tryWithoutPasskey: [
+    "Passkey olmadan demoyu dene",
+    "Try the demo without a passkey",
+  ],
+  devicePasskeyHelp: [
+    "Bu cihazın ekran kilidini kullanın. Windows’ta Windows Hello PIN’i, yüz veya parmak iziyle devam edebilirsiniz.",
+    "Use this device’s screen lock. On Windows, you can use your Windows Hello PIN, face or fingerprint.",
+  ],
+  devicePasskeyUnavailable: [
+    "Bu cihazda ekran kilidiyle passkey kullanımı hazır değil. Windows’ta Ayarlar → Hesaplar → Oturum açma seçeneklerinden Windows Hello PIN’i kurun veya passkey gerektirmeyen demoyu deneyin.",
+    "Passkeys with this device’s screen lock are not ready. On Windows, set up a Windows Hello PIN in Settings → Accounts → Sign-in options, or try the demo without a passkey.",
+  ],
+  passkeyDeviceHelp: [
+    "Giriş için bu cihazda veya eşitlenen parola yöneticinizde kayıtlı Duly passkey’i gerekir. Mac’teki passkey Windows’a kendiliğinden taşınmaz. Yeni hesap ayrı bir hesaptır.",
+    "Sign-in needs your Duly passkey on this device or in a synced password manager. A Mac passkey does not automatically move to Windows. A new account is a separate account.",
+  ],
   passkeyCancelled: [
     "Cihaz onayı tamamlanmadı. Adınız korunuyor; hazır olduğunuzda yeniden deneyin.",
     "Device verification was not completed. Your name is preserved; try again when ready.",
@@ -285,6 +310,106 @@ const copy = {
     "Saved in this browser for this building and manager. Enter it again on another device. Changes apply only to new expenses.",
   ],
   saveManagerIban: ["Yönetici IBAN’ını kaydet", "Save manager’s IBAN"],
+  demoIban: ["Demo IBAN’ı (örnek hesap)", "Demo IBAN (sample account)"],
+  demoIbanHelp: [
+    "Örnek IBAN hazır. Kendi IBAN’ınızı girmeniz gerekmez; banka ödemesi simülasyondur.",
+    "A sample IBAN is ready. You do not need your own IBAN; bank payments are simulated.",
+  ],
+  useDemoIban: ["Demo IBAN’ını kullan", "Use the demo IBAN"],
+  availableTreasury: [
+    "Giderler için kullanılabilir kasa",
+    "Treasury available for expenses",
+  ],
+  reservedTreasury: [
+    "Bekleyen giderlerin payı ayrılmıştır.",
+    "Pending expenses have been reserved.",
+  ],
+  insufficientTreasury: [
+    "Kasada yeterli bakiye yok.",
+    "There is not enough money in the treasury.",
+  ],
+  addTreasuryFunds: [
+    "Kasaya test aidatı ekle",
+    "Add test dues to the treasury",
+  ],
+  treasuryFundsHelp: [
+    "Önce kasaya aidat ekleyin veya gider tutarını azaltın. Cüzdan bakiyesi kasaya aktarılmadan gider ödenemez.",
+    "Add dues to the treasury first, or reduce the expense amount. Wallet funds must be contributed before the treasury can pay an expense.",
+  ],
+  demoFundExpense: [
+    "Demo kasasını 500 TL test aidatıyla hazırla",
+    "Prepare the demo treasury with 500 TRY test dues",
+  ],
+  demoFundExpenseHelp: [
+    "Örnek banka havalesi simüle edilir ve 1. dairenin test aidatı kasaya yatırılır. Gerçek para kullanılmaz.",
+    "A sample bank transfer is simulated and apartment 1’s test dues enter the treasury. No real money is used.",
+  ],
+  fundingTreasury: [
+    "Demo kasasına test aidatı ekleniyor…",
+    "Adding test dues to the demo treasury…",
+  ],
+  paymentPending: [
+    "Ödemeniz kaydedildi. Banka teyidi henüz gelmedi; aynı ödeme kaydından devam edebilirsiniz.",
+    "Your payment is saved. Bank confirmation has not arrived yet; you can resume the same payment.",
+  ],
+  awaitingFunds: ["Kasa bakiyesi bekleniyor", "Waiting for treasury funds"],
+  paymentNeedsReview: ["Ödeme kontrol edilmeli", "Payment needs review"],
+  quoteExpired: [
+    "Bu ödemenin banka teklifinin süresi doldu. Ödeme durduruldu. Yeni ödeme başlatmadan önce mevcut banka referansını kontrol edin.",
+    "The bank quote for this payment has expired. Payment is paused. Check the existing bank reference before starting another payment.",
+  ],
+  errorGeneric: [
+    "İşlem şu anda tamamlanamadı. Bağlantınızı kontrol edip yeniden deneyin.",
+    "The action could not be completed. Check your connection and try again.",
+  ],
+  invalidAmount: [
+    "Geçerli, sıfırdan büyük bir tutar girin.",
+    "Enter a valid amount greater than zero.",
+  ],
+  permissionDenied: [
+    "Bu işlem için yetkiniz yok. İlgili yönetici veya daire sahibi hesabıyla giriş yapın.",
+    "This account cannot perform that action. Sign in as the relevant manager or apartment owner.",
+  ],
+  alreadyProcessed: [
+    "Bu kayıt artık beklemede değil. Son durumu görmek için yenileyin.",
+    "This record is no longer pending. Refresh to see its latest status.",
+  ],
+  majorityRequired: [
+    "Ödeme için dairelerin çoğunluğunun onayı gerekiyor.",
+    "A majority of apartments must approve this payment.",
+  ],
+  waitForNotice: [
+    "İtiraz süresi henüz dolmadı. Süre dolunca yeniden deneyin.",
+    "The objection window is still open. Try again after it ends.",
+  ],
+  budgetExceeded: [
+    "Bu ödeme onaylı bütçeyi aşıyor. Dairelerin çoğunluğunun onayı gerekiyor.",
+    "This payment exceeds the approved budget. A majority of apartments must approve it.",
+  ],
+  recipientNotApproved: [
+    "Bu alıcı henüz onaylanmadı. Bina kararlarını kontrol edin.",
+    "This recipient has not been approved. Check the building’s decisions.",
+  ],
+  bankQuoteMismatch: [
+    "Banka teklifi kayıtlı tutar veya alıcıyla eşleşmiyor. Ödeme gönderilmedi; mevcut kaydı kontrol edin.",
+    "The bank quote does not match the saved amount or recipient. Payment was not sent; check the existing record.",
+  ],
+  bankQuoteTooHigh: [
+    "Banka kuru harcama üst sınırını aşıyor. Mevcut gideri kontrol edin; otomatik olarak daha fazla harcanmayacak.",
+    "The bank quote exceeds the spending limit. Review this expense; no extra money will be spent automatically.",
+  ],
+  existingPayment: [
+    "Bu gider için banka talimatı zaten var. Yeni işlem yerine mevcut ödeme kaydını sürdürün.",
+    "This expense already has bank instructions. Resume the existing payment instead of starting another.",
+  ],
+  buildingNotFound: [
+    "Bina veya kayıt bulunamadı. Bağlantıyı kontrol edip yenileyin.",
+    "The building or record was not found. Check the link and refresh.",
+  ],
+  serviceUnavailable: [
+    "Ödeme hizmetine ulaşılamıyor. Kaydınız korunuyor; biraz sonra yeniden deneyin.",
+    "The payment service is unavailable. Your saved record is preserved; try again shortly.",
+  ],
   invalidIban: [
     "Kontrol basamakları doğru, geçerli bir Türkiye IBAN’ı girin.",
     "Enter a valid Turkish IBAN with a correct checksum.",
@@ -494,5 +619,12 @@ const copy = {
   ],
 };
 export type BuildingKey = keyof typeof copy;
+export function buildingMessageKey(value: string): BuildingKey | undefined {
+  if (Object.prototype.hasOwnProperty.call(copy, value))
+    return value as BuildingKey;
+  return (Object.keys(copy) as BuildingKey[]).find((key) =>
+    copy[key].includes(value),
+  );
+}
 export const buildingCopy = (lang: "tr" | "en") => (key: BuildingKey) =>
   copy[key][lang === "tr" ? 0 : 1];

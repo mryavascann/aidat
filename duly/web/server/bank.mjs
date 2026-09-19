@@ -45,6 +45,32 @@ const status = (value) => (Array.isArray(value) ? value[0] : value);
 const preparedQuote = (expense) =>
   expense.quote?.[0] === "Prepared" ? expense.quote[1] : null;
 
+// Pause before creating a bank order or attempting a doomed contract call.
+// Existing orders keep their original recipient, quote and idempotency key.
+export function expensePaymentBlock(
+  expense,
+  balance,
+  ledger,
+  now = Date.now(),
+) {
+  if (status(expense.status) !== "Pending") return null;
+  const quote = preparedQuote(expense);
+  if (
+    quote &&
+    (ledger >= quote.expires_at || now >= Number(quote.expires_time) * 1000)
+  )
+    return { phase: "needs-review", reason: "QUOTE_EXPIRED" };
+  const required = quote?.amount_usdc ?? expense.max_usdc;
+  if (balance < required)
+    return {
+      phase: "awaiting-funds",
+      reason: "INSUFFICIENT_TREASURY_BALANCE",
+      availableUsdc: fromUnits(balance),
+      requiredUsdc: fromUnits(required),
+    };
+  return null;
+}
+
 async function anchorFor(scope, iban) {
   const key = derivedKey(scope);
   await funded(key, true);
@@ -110,6 +136,8 @@ async function withdrawal(request) {
     throw new Error("The bank quote exceeds the approved USDC ceiling.");
   if (Date.parse(quote.expires_at) <= Date.now())
     throw new Error("The bank quote expired.");
+  if ((await read(request.treasury, "balance")) < usdc)
+    throw new Error("INSUFFICIENT_TREASURY_BALANCE");
   const order = await anchor.request(
     `${anchor.toml.TRANSFER_SERVER}/withdraw?${new URLSearchParams({
       asset_code: "USDC",
@@ -392,6 +420,9 @@ function queueView(value) {
   return {
     saved: "",
     phase: r.phase ?? value.phase ?? "scheduled",
+    reason: null,
+    availableUsdc: null,
+    requiredUsdc: null,
     amountTry: r.amountTry,
     amountUsdc: r.amountUsdc,
     receipt: r.receipt,
@@ -447,6 +478,23 @@ export async function advanceExpense(request) {
     await writeJournal(scope, value, journal.version);
     await removeIndex(scope);
     return queueView(value);
+  }
+  if (status(expense.status) === "Pending") {
+    const [balance, ledger] = await Promise.all([
+      read(value.treasury, "balance"),
+      server.getLatestLedger(),
+    ]);
+    const block = expensePaymentBlock(expense, balance, ledger.sequence);
+    if (block) return { ...queueView(value), ...block };
+    if (
+      value.record?.expiresAt &&
+      Date.parse(value.record.expiresAt) <= Date.now()
+    )
+      return {
+        ...queueView(value),
+        phase: "needs-review",
+        reason: "QUOTE_EXPIRED",
+      };
   }
   if (!value.record) {
     const [tally, ledger] = await Promise.all([

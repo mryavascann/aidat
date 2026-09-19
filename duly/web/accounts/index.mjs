@@ -2,6 +2,14 @@
 // Duly's treasury/anchor clients use SDK 17. Never exchange SDK objects here.
 import { SmartAccountKit, IndexedDBStorage } from "smart-account-kit";
 import { xdr, TransactionBuilder } from "@stellar/stellar-sdk";
+import {
+  startRegistration,
+  startAuthentication,
+} from "@simplewebauthn/browser";
+import {
+  registrationSelection,
+  authenticationOptions,
+} from "./passkey-options.mjs";
 
 export const ACCOUNT_WASM =
   "1b5f4534a76322da2ad7c745f6900857a6802b0ca79850c35a03561df997785a";
@@ -29,6 +37,13 @@ function account() {
       rpId: location.hostname,
       rpName: "Duly",
       allowedOrigins: [location.origin],
+      webAuthn: {
+        startRegistration,
+        startAuthentication: (options) =>
+          startAuthentication(
+            authenticationOptions(options, load("passkey-method") ?? "device"),
+          ),
+      },
     });
     relaySend = kit.relayer.send.bind(kit.relayer);
     kit.relayer.send = async (func, auth) => {
@@ -39,7 +54,7 @@ function account() {
   return kit;
 }
 
-export async function createAccount(label) {
+export async function createAccount(label, method = "device") {
   label = typeof label === "string" ? label.trim().replace(/\s+/g, " ") : "";
   if (label.length < 2 || label.length > 40)
     throw new Error(
@@ -50,17 +65,26 @@ export async function createAccount(label) {
   const client = account();
   let pending = load("account-creation");
   if (!pending) {
+    if (
+      method === "device" &&
+      !(await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable())
+    )
+      throw new Error("PASSKEY_DEVICE_UNAVAILABLE");
+    save("passkey-method", method);
     const created = await client.createWallet("Duly", label, {
       autoSubmit: false,
+      authenticatorSelection: registrationSelection(method),
     });
     pending = {
       label,
       contractId: created.contractId,
       credentialId: created.credentialId,
       payload: created.relayerPayload,
+      method,
     };
     save("account-creation", pending);
   }
+  save("passkey-method", pending.method ?? method);
   const result = await relaySend(pending.payload.func, pending.payload.auth, {
     timeout: 120000,
   });
@@ -93,6 +117,11 @@ export async function createAccount(label) {
     credentialId: pending.credentialId,
     contractId: pending.contractId,
   });
+  save("account-hint", {
+    credentialId: pending.credentialId,
+    contractId: pending.contractId,
+    method: pending.method ?? method,
+  });
   localStorage.removeItem("duly:v3:account-creation");
   return {
     address: pending.contractId,
@@ -102,8 +131,14 @@ export async function createAccount(label) {
   };
 }
 
-export async function connectAccount(prompt = true) {
-  const result = await account().connectWallet({ prompt });
+export async function connectAccount(prompt = true, method = "device") {
+  if (prompt) save("passkey-method", method);
+  const hint = prompt && method === "device" ? load("account-hint") : null;
+  const result = await account().connectWallet(
+    hint?.method === "device"
+      ? { credentialId: hint.credentialId, contractId: hint.contractId }
+      : { prompt, ...(prompt && method === "other" ? { fresh: true } : {}) },
+  );
   return result ? { address: result.contractId } : null;
 }
 

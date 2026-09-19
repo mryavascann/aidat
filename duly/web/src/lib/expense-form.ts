@@ -5,6 +5,18 @@ export const DEMO_MANAGER_IBAN = "TR330006100519786457841326";
 export const managerIbanKey = (building: string, manager: string) =>
   `v3:manager-iban:${building}:${manager}`;
 
+export function availableExpenseFunds(
+  total: bigint,
+  expenses: { status: string; max_usdc: bigint }[],
+): bigint {
+  const reserved = expenses.reduce(
+    (sum, expense) =>
+      sum + (expense.status === "Pending" ? expense.max_usdc : 0n),
+    0n,
+  );
+  return total > reserved ? total - reserved : 0n;
+}
+
 /** 10% headroom, rounded upward to a USDC cent using integer arithmetic. */
 export function expenseCeiling(amountTry: string, sellRate: number): string {
   const amount = toUnits(amountTry, 2);

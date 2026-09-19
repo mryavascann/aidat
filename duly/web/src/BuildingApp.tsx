@@ -46,12 +46,14 @@ import { connectWallet } from "./lib/wallet";
 import { normalizeIban, recipientId, formatIban } from "./lib/iban";
 import {
   DEMO_MANAGER_IBAN,
+  availableExpenseFunds,
   displayName,
   expenseCeiling,
   isFreshRate,
   managerIbanKey,
 } from "./lib/expense-form";
 import { buildingLink } from "./lib/building-access";
+import { actionErrorMessage } from "./lib/action-errors";
 import {
   accountBalance,
   addr,
@@ -149,9 +151,10 @@ export default function BuildingApp() {
   const [balance, setBalance] = useState<bigint | null>(null);
   const [rateReceivedAt, setRateReceivedAt] = useState(0);
   const [, setProfileRevision] = useState(0);
-  const [busy, setBusy] = useState(""),
+  const [busy, setBusy] = useState<BuildingKey | "">(""),
     [error, setError] = useState(""),
-    [success, setSuccess] = useState("");
+    [success, setSuccess] = useState<BuildingKey | "">("");
+  const [busyDetail, setBusyDetail] = useState("");
   const [records, setRecords] = useState<BankRecord[]>([]);
   const [duesLedger, setDuesLedger] = useState<DuesLedger | null>(null);
   const [duesError, setDuesError] = useState("");
@@ -168,9 +171,11 @@ export default function BuildingApp() {
   const advancing = useRef(false);
   const selectedExpense = useRef<Expense | null>(null),
     selectedSeat = useRef<Seat | null>(null);
+  const expenseDraft = useRef<Record<string, string> | null>(null);
   const isManager = !!actor && actor.address === data?.config.manager;
   const managerIban = data
-    ? load<string>(managerIbanKey(treasury, data.config.manager), "")
+    ? load<string>(managerIbanKey(treasury, data.config.manager), "") ||
+      DEMO_MANAGER_IBAN
     : "";
   const accountName = account ? load<string>(`v3:profile:${account}`, "") : "";
   const pendingExpense = form.pending === "true";
@@ -178,13 +183,18 @@ export default function BuildingApp() {
   try {
     autoCap = pendingExpense
       ? form.cap
-      : rate && isFreshRate(rateReceivedAt, now)
+      : rate && (isFreshRate(rateReceivedAt, now) || !!busy)
         ? expenseCeiling(form.amount, rate.sell)
         : "";
   } catch {
     /* The amount may be incomplete while the user types. */
   }
   const expenseIban = pendingExpense ? form.iban : managerIban;
+  const availableFunds = data
+    ? availableExpenseFunds(data.total, data.expenses)
+    : 0n;
+  const insufficientFunds =
+    !pendingExpense && !!autoCap && toUnits(autoCap) > availableFunds;
   const eligibleSeats =
     data?.seats.filter((s) => s.owner === account || s.delegate === account) ??
     [];
@@ -263,31 +273,18 @@ export default function BuildingApp() {
     return () => clearInterval(id);
   }, []);
 
-  // Only the explicitly selected solo demo receives an example payout account.
-  useEffect(() => {
-    if (
-      demoActive &&
-      actor?.kind === "demo" &&
-      data?.config.demo &&
-      !managerIban
-    ) {
-      save(managerIbanKey(treasury, data.config.manager), DEMO_MANAGER_IBAN);
-      setProfileRevision((value) => value + 1);
-    }
-  }, [
-    demoActive,
-    actor?.kind,
-    data?.config.manager,
-    data?.config.demo,
-    managerIban,
-    treasury,
-  ]);
   useEffect(() => {
     const timer = setInterval(async () => {
       if (working.current || advancing.current || document.hidden) return;
       const record = records.find(
         (r) =>
           r.queued &&
+          r.phase !== "needs-review" &&
+          !(
+            r.phase === "awaiting-funds" &&
+            r.requiredUsdc &&
+            (data?.total ?? 0n) < toUnits(r.requiredUsdc)
+          ) &&
           !["complete", "cancelled"].includes(r.phase) &&
           data?.expenses.some(
             (e) =>
@@ -333,13 +330,19 @@ export default function BuildingApp() {
   async function run(action: () => Promise<unknown>, close = true) {
     if (working.current) return;
     working.current = true;
-    setBusy(t("processing"));
+    setBusy("processing");
+    setBusyDetail("");
     setError("");
     setSuccess("");
     try {
-      await exclusive(action);
+      const result = await exclusive(action);
       if (close) setModal(null);
-      setSuccess(t("success"));
+      const pending =
+        result &&
+        typeof result === "object" &&
+        "phase" in result &&
+        result.phase !== "complete";
+      setSuccess(pending ? "paymentPending" : "success");
       await refresh();
     } catch (e: any) {
       setError(
@@ -347,7 +350,7 @@ export default function BuildingApp() {
           /notallowederror|cancelled|canceled|timed out or was not allowed/i.test(
             e?.message ?? "",
           )
-          ? t("passkeyCancelled")
+          ? "passkeyCancelled"
           : (e?.message ?? String(e)),
       );
     } finally {
@@ -371,13 +374,19 @@ export default function BuildingApp() {
       "recording-dues": "indexingDues",
       "demo-usdc": "fundingDemoUsdc",
       scheduled: "scheduled",
+      "awaiting-funds": "awaitingFunds",
+      "needs-review": "paymentNeedsReview",
     };
-    setBusy(t(labels[phase] ?? "processing"));
+    setBusy(labels[phase] ?? "processing");
+    setBusyDetail("");
     setRecords(bankRecords(treasury, account));
   };
   function open(modal: Modal, values: Record<string, string> = {}) {
-    setForm(values);
+    setForm(
+      modal === "setup" ? { iban: DEMO_MANAGER_IBAN, ...values } : values,
+    );
     setError("");
+    setSuccess("");
     setModal(modal);
   }
   function openExpense() {
@@ -396,7 +405,36 @@ export default function BuildingApp() {
         iban: load(metadataKey(treasury, recipient), ""),
         pending: "true",
       });
-    } else open("expense", { amount: "", description: "" });
+    } else
+      open(
+        "expense",
+        expenseDraft.current ?? {
+          amount: demoActive ? "100" : "",
+          description: "",
+        },
+      );
+  }
+  function addTreasuryFunds() {
+    if (modal === "expense" && !pendingExpense) expenseDraft.current = form;
+    setModal(null);
+    setPage("dues");
+    setDues({
+      seat: String(chosenSeat?.id ?? 1),
+      amount: "500",
+      currency: "TRY",
+    });
+    setError("");
+  }
+  async function prepareDemoTreasury() {
+    if (!demoActive || actor?.kind !== "demo" || !data?.config.demo)
+      throw new Error("permissionDenied");
+    let record = pendingContribution;
+    if (!record) record = await startDeposit(treasury, actor, 1, "500");
+    const result =
+      record.kind === "usdc"
+        ? await finishDirectDues(record, actor, progress)
+        : await finishDeposit(record, actor, progress);
+    return result;
   }
   function selectBuilding(id: string) {
     setNormalBuilding(id);
@@ -425,12 +463,16 @@ export default function BuildingApp() {
       setError(t("rateUnavailable"));
     }
   }
-  async function makeAccount(create: boolean, name?: string) {
+  async function makeAccount(
+    create: boolean,
+    name?: string,
+    method: "device" | "other" = "device",
+  ) {
     const label = create ? displayName(name ?? "") : undefined;
     const kit = await import("@duly/accounts");
     const result = create
-      ? await kit.createAccount(label!)
-      : await kit.connectAccount();
+      ? await kit.createAccount(label!, method)
+      : await kit.connectAccount(true, method);
     if (!result) throw new Error("Passkey account is unavailable.");
     if (label)
       save(
@@ -452,7 +494,7 @@ export default function BuildingApp() {
   }
   async function copy(value: string) {
     await navigator.clipboard.writeText(value);
-    setSuccess(t("copied"));
+    setSuccess("copied");
   }
   async function createExpense() {
     if (!isManager)
@@ -464,6 +506,12 @@ export default function BuildingApp() {
     const amount = toUnits(form.amount, 2),
       cap = toUnits(autoCap);
     if (amount <= 0n || cap <= 0n) throw new Error("Enter positive amounts.");
+    if (!pendingExpense) {
+      const current = await buildingSnapshot(treasury);
+      setData(current);
+      if (cap > availableExpenseFunds(current.total, current.expenses))
+        throw new Error("INSUFFICIENT_TREASURY_BALANCE");
+    }
     const fields = [recipient, form.description, form.amount, autoCap],
       key = `expense:${treasury}:${account}`;
     save(metadataKey(treasury, recipient), iban);
@@ -479,6 +527,7 @@ export default function BuildingApp() {
     );
     await registerPayment(treasury, Number(receipt.value), iban);
     completeIntent(key);
+    expenseDraft.current = null;
     setPage("expenses");
   }
   async function voteExpense(expense: Expense, support: boolean) {
@@ -632,8 +681,9 @@ export default function BuildingApp() {
         );
       setRecords(bankRecords(treasury, account));
     }
-    if (record.kind === "usdc") await finishDirectDues(record, actor, progress);
-    else await finishDeposit(record, actor, progress);
+    if (record.kind === "usdc")
+      return finishDirectDues(record, actor, progress);
+    return finishDeposit(record, actor, progress);
   }
 
   const remaining = (time: bigint, ledger: number) => {
@@ -696,6 +746,20 @@ export default function BuildingApp() {
             <span className="v3-tag amber">{t("vetoed")}</span>
           )}
         </div>
+        {e.status === "Pending" &&
+          (e.quote?.[0] === "Prepared" ? e.quote[1].amount_usdc : e.max_usdc) >
+            (data?.total ?? 0n) && (
+            <div className="payment-notice">
+              <strong>{t("insufficientTreasury")}</strong>
+              <p>{t("treasuryFundsHelp")}</p>
+              <button className="text-button" onClick={addTreasuryFunds}>
+                {t("addTreasuryFunds")}
+              </button>
+            </div>
+          )}
+        {record?.phase === "needs-review" && (
+          <p className="payment-notice">{t("quoteExpired")}</p>
+        )}
         <div className="v3-expense-info">
           <span>
             {e.tally[0]}/{data?.config.seat_count} {t("yes").toLowerCase()}
@@ -1125,7 +1189,13 @@ export default function BuildingApp() {
             <div className="error-box" role="alert">
               <div>
                 <strong>{t("error")}</strong>
-                <p>{t("errorHint")}</p>
+                <p>{actionErrorMessage(error, lang)}</p>
+                {actionErrorMessage(error, lang) ===
+                  t("insufficientTreasury") && (
+                  <button className="text-button" onClick={addTreasuryFunds}>
+                    {t("addTreasuryFunds")}
+                  </button>
+                )}
                 <details open={false}>
                   <summary>{t("details")}</summary>
                   <p className="technical">{error}</p>
@@ -1143,13 +1213,13 @@ export default function BuildingApp() {
           {!!busy && (
             <div className="progress-bar" role="status">
               <LoaderCircle className="spin" size={17} />
-              {busy}
+              {t(busy)} {busyDetail}
             </div>
           )}
           {!!success && !busy && (
             <div className="success-bar" role="status">
               <Check size={16} />
-              {success}
+              {t(success)}
               <button
                 className="icon-button"
                 aria-label={t("close")}
@@ -1734,14 +1804,19 @@ export default function BuildingApp() {
           {!!busy && (
             <p className="v3-modal-status" role="status">
               <LoaderCircle className="spin" size={16} />
-              {busy}
+              {t(busy)} {busyDetail}
             </p>
           )}
           {!!error && (
             <div className="v3-modal-error" role="alert">
               <strong>{t("error")}</strong>
-              <p>{error}</p>
+              <p>{actionErrorMessage(error, lang)}</p>
             </div>
+          )}
+          {!!success && !busy && (
+            <p className="v3-modal-status" role="status">
+              {t(success)}
+            </p>
           )}
           {modal === "account" &&
             (actor ? (
@@ -1803,8 +1878,13 @@ export default function BuildingApp() {
                   load<{ label?: string } | null>("v3:account-creation", null)
                     ?.label
                 }
-                onCreate={(name) => void run(() => makeAccount(true, name))}
-                onSignIn={() => void run(() => makeAccount(false))}
+                onCreate={(name, method) =>
+                  void run(() => makeAccount(true, name, method))
+                }
+                onSignIn={(method) =>
+                  void run(() => makeAccount(false, undefined, method))
+                }
+                onDemo={() => open("demo")}
                 onWallet={() => {
                   setModal(null);
                   void run(async () => {
@@ -1829,13 +1909,18 @@ export default function BuildingApp() {
                 disabled={!!busy}
                 onClick={() =>
                   void run(async () => {
-                    const created = await startBuildingDemo((stage) =>
+                    const created = await startBuildingDemo((stage) => {
                       setBusy(
                         stage.startsWith("demo-fund")
-                          ? `${t("fundDemo")} (${stage.split(":")[1]}/3)`
-                          : t("deployDemo"),
-                      ),
-                    );
+                          ? "fundDemo"
+                          : "deployDemo",
+                      );
+                      setBusyDetail(
+                        stage.startsWith("demo-fund")
+                          ? `(${stage.split(":")[1]}/3)`
+                          : "",
+                      );
+                    });
                     setDemo(created);
                     setDemoActive(true);
                     save("v3:demo-active", true);
@@ -1921,7 +2006,10 @@ export default function BuildingApp() {
                 />
               </label>
               <p id="setup-iban-help" className="v3-help">
-                {t("managerIbanHelp")} {t("managerIbanStorage")}
+                {form.iban === DEMO_MANAGER_IBAN
+                  ? t("demoIbanHelp")
+                  : t("managerIbanHelp")}{" "}
+                {t("managerIbanStorage")}
               </p>
               <label>
                 {t("duesAmount")}
@@ -1990,7 +2078,11 @@ export default function BuildingApp() {
                 <Landmark size={22} aria-hidden="true" />
                 <div>
                   <strong>
-                    {pendingExpense ? t("iban") : t("paidToManager")}
+                    {expenseIban === DEMO_MANAGER_IBAN
+                      ? t("demoIban")
+                      : pendingExpense
+                        ? t("iban")
+                        : t("paidToManager")}
                   </strong>
                   <p className="mono">
                     {expenseIban ? formatIban(expenseIban) : "—"}
@@ -2013,6 +2105,23 @@ export default function BuildingApp() {
                   </button>
                 )}
               </div>
+              {expenseIban === DEMO_MANAGER_IBAN ? (
+                <p className="v3-help">{t("demoIbanHelp")}</p>
+              ) : (
+                !pendingExpense && (
+                  <button
+                    type="button"
+                    className="text-button"
+                    disabled={!!busy}
+                    onClick={() => {
+                      saveManagerIban(DEMO_MANAGER_IBAN);
+                      setForm((f) => ({ ...f, editIban: "false" }));
+                    }}
+                  >
+                    {t("useDemoIban")}
+                  </button>
+                )
+              )}
               {form.editIban === "true" && !pendingExpense && (
                 <div className="v3-inline-bank">
                   <label>
@@ -2076,13 +2185,57 @@ export default function BuildingApp() {
                   </button>
                 )}
               </div>
+              {!pendingExpense && (
+                <section className="v3-treasury-check" aria-live="polite">
+                  <p>
+                    {t("availableTreasury")}:{" "}
+                    <strong>{usd(availableFunds)}</strong>
+                  </p>
+                  <p className="v3-help">{t("reservedTreasury")}</p>
+                  {insufficientFunds && (
+                    <p role="status">
+                      <strong>{t("insufficientTreasury")}</strong>{" "}
+                      {t("treasuryFundsHelp")}
+                    </p>
+                  )}
+                  {(insufficientFunds || availableFunds === 0n) &&
+                    (demoActive && actor?.kind === "demo" ? (
+                      <>
+                        <button
+                          type="button"
+                          className="button secondary full"
+                          disabled={!!busy}
+                          onClick={() => void run(prepareDemoTreasury, false)}
+                        >
+                          {pendingContribution
+                            ? t("resume")
+                            : t("demoFundExpense")}
+                        </button>
+                        <p className="v3-help">{t("demoFundExpenseHelp")}</p>
+                      </>
+                    ) : (
+                      <button
+                        type="button"
+                        className="button secondary full"
+                        disabled={!!busy}
+                        onClick={addTreasuryFunds}
+                      >
+                        {t("addTreasuryFunds")}
+                      </button>
+                    ))}
+                </section>
+              )}
               <p className="payment-notice">
                 {t(data?.config.demo ? "demoExpenseNotice" : "expenseNotice")}
               </p>
               <button
                 className="button full"
                 disabled={
-                  !!busy || !autoCap || !expenseIban || form.editIban === "true"
+                  !!busy ||
+                  !autoCap ||
+                  !expenseIban ||
+                  insufficientFunds ||
+                  form.editIban === "true"
                 }
               >
                 {t(pendingExpense ? "resumeExpense" : "submit")}
@@ -2097,14 +2250,16 @@ export default function BuildingApp() {
           {modal === "pay" && (
             <form
               onSubmit={(e) =>
-                submit(e, () =>
-                  payExpense(
+                submit(e, async () => {
+                  const result = await payExpense(
                     treasury,
                     selectedExpense.current!.id,
                     form.iban,
                     progress,
-                  ),
-                )
+                  );
+                  if (result.reason) throw new Error(result.reason);
+                  return result;
+                })
               }
             >
               <p>

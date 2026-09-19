@@ -1,0 +1,19 @@
+{
+  "network": "testnet",
+  "bank": "simulated",
+  "treasury": "CA3KJUSOEGEUFAUNEGERB7V5SB7EYQAFUFENKYAKVCEKTLGGGDZCV3U6",
+  "expenseId": 2,
+  "amountTry": "100.00",
+  "maxUsdc": "2.2700000",
+  "actualUsdc": "2.0601077",
+  "bankReference": "FAST-NVXJ9O5Y48",
+  "disbursementHash": "8037e829426810484107dc51389a648f030c9f67c522e443ac54995a56a54bb0",
+  "status": "Settled",
+  "recipientHash": "484ad8ee2b198ff95b3ceb1876cd23bf6e63c51286d76a2d3ebf6bff5c5d4062",
+  "bankReceiptHash": "4d46ebc07d1283cc083ba107ba10808b918cdcefd6ebf4b62b96a39fce393bac",
+  "verifiedAt": "2026-09-19T21:48:20.302Z",
+  "notes": [
+    "Sample IBAN payout completed through the expense UI.",
+    "A separate fresh demo deposit remains pending with the external anchor; no completion is claimed for it."
+  ]
+}

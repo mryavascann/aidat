@@ -82,7 +82,7 @@ try {
     await page.getByRole("button", { name: "Devam et", exact: true }).click();
     await page
       .getByRole("dialog")
-      .getByRole("button", { name: "Passkey ile hesap oluştur", exact: true })
+      .getByRole("button", { name: "Bu cihazla devam et", exact: true })
       .click();
     await page.waitForFunction(
       () =>

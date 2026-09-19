@@ -8,6 +8,7 @@ import {
   QrCode,
 } from "lucide-react";
 import type QrScanner from "qr-scanner";
+import { actionErrorMessage } from "../lib/action-errors";
 import { buildingCopy } from "../i18n/building";
 import { buildingLink, parseBuildingLink } from "../lib/building-access";
 import { buildingSnapshot, type BuildingData } from "../lib/building";
@@ -208,7 +209,7 @@ export function JoinBuilding({
       )}
       {error && (
         <p className="v3-field-error" role="alert">
-          {error}
+          {actionErrorMessage(error, lang)}
         </p>
       )}
       {preview && (
@@ -310,7 +311,7 @@ export function ShareBuilding({
       )}
       {error && (
         <p role="alert" className="v3-field-error">
-          {error}
+          {actionErrorMessage(error, lang)}
         </p>
       )}
     </div>

@@ -392,6 +392,9 @@ export async function simulateVotes(
 }
 
 export type BankRecord = {
+  reason?: string | null;
+  availableUsdc?: string | null;
+  requiredUsdc?: string | null;
   queued?: boolean;
   saved: string;
   phase: string;
@@ -629,6 +632,8 @@ export async function payExpense(
         ? "execute"
         : "resume";
     record = await resumeBank(record, action);
+    if (["awaiting-funds", "needs-review"].includes(record.phase))
+      return record;
     if (record.phase !== "complete") await delay(1500);
   }
   return record;

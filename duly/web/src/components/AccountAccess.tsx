@@ -4,6 +4,7 @@ import {
   ArrowRight,
   Check,
   Fingerprint,
+  Sparkles,
   Wallet,
 } from "lucide-react";
 import { buildingCopy } from "../i18n/building";
@@ -16,19 +17,41 @@ export function AccountAccess({
   onCreate,
   onSignIn,
   onWallet,
+  onDemo,
 }: {
   lang: "tr" | "en";
   busy: boolean;
   pendingName?: string;
-  onCreate: (name: string) => void;
-  onSignIn: () => void;
+  onCreate: (name: string, method: "device" | "other") => void;
+  onSignIn: (method: "device" | "other") => void;
   onWallet: () => void;
+  onDemo: () => void;
 }) {
   const t = buildingCopy(lang);
   const [mode, setMode] = useState<"create" | "signin">("create");
   const [step, setStep] = useState(1);
   const [name, setName] = useState(pendingName ?? "");
-  const [error, setError] = useState("");
+  const [error, setError] = useState(false);
+  const [deviceReady, setDeviceReady] = useState<boolean | null>(null);
+  const windows = /Windows/i.test(navigator.userAgent);
+  useEffect(() => {
+    let active = true;
+    const check =
+      window.PublicKeyCredential?.isUserVerifyingPlatformAuthenticatorAvailable;
+    if (!check) setDeviceReady(false);
+    else
+      void check.call(window.PublicKeyCredential).then(
+        (ready) => {
+          if (active) setDeviceReady(ready);
+        },
+        () => {
+          if (active) setDeviceReady(false);
+        },
+      );
+    return () => {
+      active = false;
+    };
+  }, []);
   const nameRef = useRef<HTMLInputElement>(null);
   const confirmRef = useRef<HTMLButtonElement>(null);
   useEffect(() => {
@@ -54,7 +77,7 @@ export function AccountAccess({
           disabled={busy}
           onClick={() => {
             setMode("create");
-            setError("");
+            setError(false);
           }}
         >
           {t("newAccount")}
@@ -66,7 +89,7 @@ export function AccountAccess({
           disabled={busy}
           onClick={() => {
             setMode("signin");
-            setError("");
+            setError(false);
           }}
         >
           {t("existingAccount")}
@@ -93,10 +116,10 @@ export function AccountAccess({
                 event.preventDefault();
                 try {
                   setName(displayName(name));
-                  setError("");
+                  setError(false);
                   setStep(2);
                 } catch {
-                  setError(t("nameRequired"));
+                  setError(true);
                   nameRef.current?.focus();
                 }
               }}
@@ -122,7 +145,7 @@ export function AccountAccess({
                 aria-invalid={!!error}
                 onChange={(e) => {
                   setName(e.target.value);
-                  setError("");
+                  setError(false);
                 }}
               />
               {error && (
@@ -131,7 +154,7 @@ export function AccountAccess({
                   className="v3-field-error"
                   role="alert"
                 >
-                  {error}
+                  {t("nameRequired")}
                 </p>
               )}
               <button className="button full" disabled={busy}>
@@ -157,15 +180,20 @@ export function AccountAccess({
                   {t("edit")}
                 </button>
               </div>
-              <p>{t("passkeyText")}</p>
+              <p>{t("devicePasskeyHelp")}</p>
+              {deviceReady === false && (
+                <p className="payment-notice">
+                  {t("devicePasskeyUnavailable")}
+                </p>
+              )}
               <button
                 ref={confirmRef}
                 className="button full"
-                disabled={busy}
-                onClick={() => onCreate(name)}
+                disabled={busy || (deviceReady === false && !pendingName)}
+                onClick={() => onCreate(name, "device")}
               >
                 <Fingerprint size={18} />
-                {t("createAccount")}
+                {t(windows ? "useWindowsHello" : "useThisDevice")}
               </button>
               <button
                 className="text-button"
@@ -185,19 +213,42 @@ export function AccountAccess({
           </span>
           <h3>{t("welcomeBack")}</h3>
           <p>{t("signInHelp")}</p>
-          <button className="button full" disabled={busy} onClick={onSignIn}>
+          <p className="v3-help">{t("passkeyDeviceHelp")}</p>
+          <button
+            className="button full"
+            disabled={busy}
+            onClick={() => onSignIn("device")}
+          >
             <Fingerprint size={18} />
-            {t("signIn")}
+            {t(windows ? "useWindowsHello" : "signIn")}
           </button>
         </>
       )}
       <details className="v3-access-alternative">
         <summary>{t("otherSignIn")}</summary>
+        {(mode === "signin" || step === 2) && (
+          <button
+            className="text-button"
+            disabled={busy || !!pendingName}
+            onClick={() =>
+              mode === "signin" ? onSignIn("other") : onCreate(name, "other")
+            }
+          >
+            {t("useOtherDevice")}
+          </button>
+        )}
         <button className="text-button" disabled={busy} onClick={onWallet}>
           <Wallet size={16} />
           {t("existingWallet")}
         </button>
       </details>
+      <button
+        className="button secondary full"
+        disabled={busy}
+        onClick={onDemo}
+      >
+        <Sparkles size={17} /> {t("tryWithoutPasskey")}
+      </button>
       <p className="v3-help">{t("passkeyLimit")}</p>
     </div>
   );

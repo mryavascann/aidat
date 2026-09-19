@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { Landmark } from "lucide-react";
 import { buildingCopy } from "../i18n/building";
+import { DEMO_MANAGER_IBAN } from "../lib/expense-form";
 import { normalizeIban } from "../lib/iban";
 
 export function ManagerBankForm({
   lang,
-  initialIban = "",
+  initialIban = DEMO_MANAGER_IBAN,
   onSave,
 }: {
   lang: "tr" | "en";
@@ -14,7 +15,7 @@ export function ManagerBankForm({
 }) {
   const t = buildingCopy(lang);
   const [iban, setIban] = useState(initialIban);
-  const [error, setError] = useState("");
+  const [error, setError] = useState(false);
   return (
     <form
       onSubmit={(e) => {
@@ -22,14 +23,16 @@ export function ManagerBankForm({
         try {
           onSave(normalizeIban(iban));
         } catch {
-          setError(t("invalidIban"));
+          setError(true);
         }
       }}
     >
       <span className="v3-passkey-icon">
         <Landmark size={30} />
       </span>
-      <p className="v3-help">{t("managerIbanHelp")}</p>
+      <p className="v3-help">
+        {t(iban === DEMO_MANAGER_IBAN ? "demoIbanHelp" : "managerIbanHelp")}
+      </p>
       <label>
         {t("managerIban")}
         <input
@@ -42,7 +45,7 @@ export function ManagerBankForm({
           value={iban}
           onChange={(e) => {
             setIban(e.target.value);
-            setError("");
+            setError(false);
           }}
           aria-invalid={!!error}
           aria-describedby="manager-iban-help"
@@ -53,7 +56,7 @@ export function ManagerBankForm({
       </p>
       {error && (
         <p className="v3-field-error" role="alert">
-          {error}
+          {t("invalidIban")}
         </p>
       )}
       <button className="button full">{t("saveManagerIban")}</button>

@@ -24,6 +24,7 @@
 !duly/web/accounts
 !duly/web/accounts/package.json
 !duly/web/accounts/index.mjs
+!duly/web/accounts/passkey-options.mjs
 !duly/web/server
 !duly/web/server/runtime.mjs
 !duly/web/server/bank.mjs

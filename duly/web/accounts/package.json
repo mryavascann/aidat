@@ -5,6 +5,7 @@
   "type": "module",
   "exports": "./index.mjs",
   "dependencies": {
+    "@simplewebauthn/browser": "13.3.0",
     "smart-account-kit": "0.8.0",
     "@stellar/stellar-sdk": "16.3.0"
   }

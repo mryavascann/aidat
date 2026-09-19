@@ -943,3 +943,13 @@
     padding: 12px 8px;
   }
 }
+.v3-treasury-check {
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 16px;
+  display: grid;
+  gap: 10px;
+}
+.v3-treasury-check p {
+  margin: 0;
+}

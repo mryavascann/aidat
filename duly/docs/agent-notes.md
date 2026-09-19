@@ -2,6 +2,46 @@
 
 Updated September 20, 2026. The active product is **V3 building governance**, published on `main`; current UX source `c285dec`, V3 base `f3a5498`, with the friend’s `6bad646` pitch update merged before the dues work. Run Git status/log for the current revision and push status. Previous V2 notes are preserved in `archive/agent-notes-v2.md`; do not treat their old scope as current.
 
+## Demo, passkey and error follow-up — September 20, 2026
+
+- All current testnet manager/setup/expense screens default to the clearly labelled
+  sample IBAN when no preference exists. Existing saved recipients stay intact;
+  **Use the demo IBAN** explicitly replaces one for new expenses. Signed intents
+  keep the original destination and ceiling.
+- New expense preflight reads the treasury again and reserves pending ceilings.
+  Insufficient funds show **Kasada yeterli bakiye yok.** / **There is not enough
+  money in the treasury.** The solo expense dialog can run a 500 simulated TRY
+  deposit plus apartment 1 contribution, reusing any pending contribution.
+- The bank keeper pauses unfunded expenses before creating an order or executing
+  a prepared one. Prepared quotes use their actual USDC amount. Expired quotes
+  remain paused for review; no replacement order is silently created.
+- Display errors are mapped to TR/EN explanations; detailed diagnostics are only
+  available in the collapsed technical section. Progress and success store
+  translation keys, so a language change also updates existing notifications.
+  Pending bank responses are never labelled completed.
+- Passkey creation selects a platform authenticator with a required discoverable
+  credential. Authentication hints prefer the client device; an explicit alternate
+  action allows phone/security-key discovery. User verification remains required.
+  The SDK still verifies account provenance and ownership. No secrets are moved
+  between devices. Windows Hello availability is detected and the passkey-free
+  demo remains directly accessible. Physical Windows hardware is untested.
+- 37 web tests passed, including the exact reported 500 TRY / 8.1584362 USDC
+  balance case, original-quote preservation, expiry boundaries, translation
+  changes and passkey verification options. TypeScript/Vite build passed.
+- Manual browser checks verified blank-device fallback, fresh demo creation,
+  prefilled IBAN, blocking an unaffordable amount, TR → EN success-message change,
+  and mobile layout. A fresh demo deposit is retained while the external anchor
+  reports `pending_anchor`; it is not evidence of a completed transfer.
+  Test state stays in the browser at localhost:5175; never clear it.
+- A funded solo demo completed a new 100 TRY expense to the sample IBAN with
+  the 2.27 USDC automatic cap: **FAST-NVXJ9O5Y48**, contract status **Settled**.
+  Recipient and bank-reference hashes were verified against the chain. Evidence:
+  `deployments/building-demo-ux-testnet-v3.json`.
+- The user's existing 500 TRY order now has an expired bank quote. A real API
+  check returned HTTP 200 / `needs-review` / `QUOTE_EXPIRED`, with no new order
+  or transfer. Historical error #21 was insufficient treasury funds, not IBAN
+  validation. That old order was not cancelled, replaced or paid during this work.
+
 ## UX revision — September 20, 2026
 
 The current request is to clarify building access, use QR codes, route new
