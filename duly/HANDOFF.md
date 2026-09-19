@@ -1,6 +1,6 @@
 # Duly — project handoff
 
-Updated September 19, 2026. Current implementation: **V3 fixed-seat building governance**, on `codex/building-governance`. Read `docs/agent-notes.md` and Git status first. Historical V2 context is preserved in `docs/archive/`; it does not describe the current product.
+Updated September 19, 2026. Current implementation: **V3 fixed-seat building governance**, on `main`. Read `docs/agent-notes.md` and Git status first. Historical V2 context is preserved in `docs/archive/`; it does not describe the current product.
 
 This file supplies project context. The current user's instructions take precedence. `docs/handbook.md` describes organizer requirements; it does not authorize submission, publication or contacting people.
 
@@ -12,13 +12,13 @@ This file supplies project context. The current user's instructions take precede
 - Preserve keys, signed envelopes, bank references and browser recovery state. Never retry an uncertain transfer by creating another payment.
 - The user explicitly authorized commit, push and Vercel publication in this session. GitHub's existing URL is `mryavascann/aidat`; the product name is Duly.
 - Do not bundle administrator/bank keys, private journals, virtual-authenticator credentials or the supplied design ZIP.
-- Keep current status in `docs/agent-notes.md`, implementation evidence in `docs/stories/02-building-governance.md`, hosting in `docs/deployment.md`.
+- Keep current status in `docs/agent-notes.md`, implementation evidence in `docs/stories/02-building-governance.md` and `docs/stories/03-monthly-dues.md`, hosting in `docs/deployment.md`.
 
 ## Accepted model
 
 All apartments and initial owners are fixed at setup. Each seat has one vote; an owner can transfer it directly or delegate voting. Anyone may pay a seat's dues. The manager cannot create or remove seats. Manager replacement, budgets and approved recipients require apartment majority. Missing-owner recovery requires a document hash, majority of the other apartments and seven days for the old owner's veto.
 
-The user chose **three days without objection** for new recipients and budget exceptions. A majority may approve earlier; any objection requires a majority. Approved recipients within the aggregate TRY and USDC budget can be paid without another vote or wait. Budget periods last **30 days from setup**, not calendar months. Limit changes do not erase spending. Both elapsed-time and ledger boundaries apply.
+The user chose **three days without objection** for new recipients and budget exceptions. A majority may approve earlier; any objection requires a majority. Approved recipients within the aggregate TRY and USDC budget can be paid without another vote or wait. Budget and dues periods last **30 days from setup**, not calendar months. Dues clear oldest apartment debt first and surplus carries forward. The manager sees a shared per-period paid/partial/unpaid table. Limit changes do not erase spending. Both elapsed-time and ledger boundaries apply.
 
 Separate demo bytecode shortens 3 days / 7 days / 30 days to 20 seconds / 60 seconds / 10 minutes. The solo demo creates three test seats and explicitly labels simulated votes; no role switching is needed. Normal timers cannot be changed by an administrator.
 
@@ -30,6 +30,7 @@ Separate demo bytecode shortens 3 days / 7 days / 30 days to 20 seconds / 60 sec
 - Stellar testnet only. TRY bank settlement is simulated by the workshop anchor. A trusted server adapter receives treasury USDC in an isolated classic escrow, then makes the anchor's exact-memo payment to the specified IBAN.
 - Exact signed envelopes are persisted. The automatic expense queue is AES-GCM encrypted in separate classic account-data records; sequence-based concurrent-write checks prevent stale writers. Public keeper responses contain no raw IBAN or sealed bank-flow token.
 - Vercel `/api/settle` uses `CRON_SECRET`; the bank/sponsor uses `DULY_BANK_SECRET`. Frontend polling advances eligible queues; daily hosting fallback does not guarantee payment exactly at the deadline.
+- Direct USDC is the default contribution option; TRY remains available. A demo-only one-time test USDC faucet funds the wallet without paying dues. `/api/dues` verifies contribution events and writes fixed TRY credits to a shared Stellar account-data index; the bank adapter is trusted for FX/accounting. A mismatch with on-chain contribution totals shows Review needed. Preserve saved references; old RPC history is finite.
 - Existing V2 funds, keys, receipts and journals remain intact. The active UI is V3; archived V2 source and the previous branch provide legacy reconciliation. Do not load V2 journals into V3.
 
 The contract cannot verify legal title, the initial owner's identity or an IBAN's beneficial owner. Negative approval for over-budget proposals means the budget is not an absolute loss cap. Passkey integration is not independently audited; physical biometric hardware was not tested. No vault yield/APY is claimed. Mainnet, regulated banking, production wallet recovery and independent security review are outside this testnet MVP.

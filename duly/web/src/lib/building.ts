@@ -23,6 +23,7 @@ import {
   u32,
 } from "./chain";
 import { load, save } from "./storage";
+import { canRefreshDuesQuote, duesRequest } from "./dues";
 import { localSigner, type Signer } from "./wallet";
 export { deployment, addr, bytes, num, str, u32, delay };
 export { toUnits, fromUnits } from "../../../scripts/lib/amounts.mjs";
@@ -79,7 +80,9 @@ export type BuildingData = {
     vault: string;
     budget: { limit_try: bigint; limit_usdc: bigint };
     start_time: bigint;
+    start_ledger: number;
     period_seconds: bigint;
+    period_ledgers: number;
     objection_seconds: bigint;
     recovery_seconds: bigint;
   };
@@ -392,7 +395,7 @@ export type BankRecord = {
   queued?: boolean;
   saved: string;
   phase: string;
-  kind: "deposit" | "withdraw";
+  kind: "deposit" | "withdraw" | "usdc";
   key: string;
   treasury: string;
   account?: string;
@@ -477,6 +480,7 @@ export async function finishDeposit(
 ) {
   let next = record;
   if (next.phase === "complete") return next;
+  if (next.phase === "recording-dues") return finishDuesRecord(next, progress);
   for (let i = 0; i < 35 && next.phase !== "contribute"; i++) {
     progress(next.phase);
     next = await resumeBank(next);
@@ -493,7 +497,111 @@ export async function finishDeposit(
     [addr(identity.address), u32(next.seat!), num(toUnits(next.amountUsdc!))],
     `deposit:${next.key}`,
   );
-  return saveBank({ ...next, phase: "complete", receipt: receipt.hash });
+  next = saveBank({ ...next, phase: "recording-dues", receipt: receipt.hash });
+  return finishDuesRecord(next, progress);
+}
+async function finishDuesRecord(
+  record: BankRecord,
+  progress: (s: string) => void,
+) {
+  progress("recording-dues");
+  await duesRequest({
+    action: "record",
+    treasury: record.treasury,
+    saved: record.saved,
+    receipt: record.receipt,
+  });
+  return saveBank({ ...record, phase: "complete" });
+}
+export async function startDirectDues(
+  treasury: string,
+  identity: Identity,
+  seat: number,
+  amount: string,
+) {
+  const quote = await duesRequest({
+    action: "quote",
+    treasury,
+    account: identity.address,
+    seat,
+    amount,
+  });
+  return saveBank({
+    ...quote,
+    key: crypto.randomUUID(),
+    treasury,
+    account: identity.address,
+    seat,
+    kind: "usdc",
+    phase: "quoted",
+  });
+}
+export async function finishDirectDues(
+  record: BankRecord,
+  identity: Identity,
+  progress: (s: string) => void,
+) {
+  if (record.phase === "complete") return record;
+  if (record.account !== identity.address)
+    throw new Error("Reconnect the account that started this contribution.");
+  if (record.phase === "recording-dues")
+    return finishDuesRecord(record, progress);
+  const intent = `usdc:${record.key}`;
+  const signedIntent = load(
+    identity.kind === "passkey"
+      ? `v3:passkey:${identity.address}:${intent}`
+      : `tx:${identity.address}:v3:${intent}`,
+    null,
+  );
+  if (canRefreshDuesQuote(record.expiresAt, !!signedIntent)) {
+    // Nothing signed: refreshing cannot orphan an already submitted payment.
+    // Keep the same intent so uncertain signed payments are always reconciled.
+    const quote = await duesRequest({
+      action: "quote",
+      treasury: record.treasury,
+      account: record.account,
+      seat: record.seat,
+      amount: record.amountUsdc,
+    });
+    record = saveBank({ ...record, ...quote });
+  }
+  progress("contribute");
+  const receipt = await invoke(
+    identity,
+    record.treasury,
+    "contribute",
+    [
+      addr(identity.address),
+      u32(record.seat!),
+      num(toUnits(record.amountUsdc!)),
+    ],
+    intent,
+  );
+  const next = saveBank({
+    ...record,
+    phase: "recording-dues",
+    receipt: receipt.hash,
+  });
+  return finishDuesRecord(next, progress);
+}
+export async function fundDemoUsdc(
+  treasury: string,
+  account: string,
+  progress: (s: string) => void,
+) {
+  progress("demo-usdc");
+  for (let attempt = 0; attempt < 35; attempt++) {
+    const result = await duesRequest({
+      action: "demo-funds",
+      treasury,
+      account,
+    });
+    if (result.phase === "complete") return result;
+    await delay(1500);
+  }
+  throw new Error(
+    "Demo funding is pending. Use the same button to resume; no second deposit will be opened.",
+  );
 }
 export async function payExpense(
   treasury: string,

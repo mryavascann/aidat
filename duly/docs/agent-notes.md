@@ -1,6 +1,6 @@
 # Duly — current state
 
-Updated September 19, 2026. The active product is **V3 building governance**, implemented on `codex/building-governance` from `7dd03af`. Run Git status/log for the current revision and push status. Previous V2 notes are preserved in `archive/agent-notes-v2.md`; do not treat their old scope as current.
+Updated September 19, 2026. The active product is **V3 building governance**, published on `main`; V3 base `f3a5498`, with the friend’s `6bad646` pitch update merged before the dues work. Run Git status/log for the current revision and push status. Previous V2 notes are preserved in `archive/agent-notes-v2.md`; do not treat their old scope as current.
 
 ## User decisions
 
@@ -9,9 +9,9 @@ Updated September 19, 2026. The active product is **V3 building governance**, im
 - Fixed apartment seats; direct signed sale transfer; owner-delegated voting; anyone can pay a seat's dues. Each apartment counts once.
 - Recovery: manager plus deed hash, other apartments' majority, then seven days for old-owner veto. Apartment majority replaces managers and approves budgets/recipients.
 - **New recipient or over-budget expense: three days without objection**, with majority available earlier. Any objection requires majority. Routine approved-recipient spending inside the TRY and USDC budget has no additional wait.
-- **30-day periods from setup**, not calendar months. Changing limits never resets spent amounts.
+- **30-day periods from setup** for both budgets and monthly dues, not calendar months. Changing limits never resets spent amounts.
 - Passkey smart accounts and a one-person jury demo. Demo votes/accounts must be labelled as simulated; do not weaken normal contract timers.
-- Existing authorization covers commit, push and Vercel publication. The user did not authorize mainnet payments or contacting external people.
+- Latest request: pull the friend’s contribution, make direct USDC easy for jurors, add monthly debt tracking, then push **main**. Existing authorization covers commit, push and Vercel publication. The user did not authorize mainnet payments or contacting external people.
 
 ## Implementation
 
@@ -19,11 +19,21 @@ Updated September 19, 2026. The active product is **V3 building governance**, im
 - `contracts/duly-factory`: immutable bytecode/bank/token/reserve. Salt binds the authenticated manager. Supports classic or smart-account managers.
 - `web/src/BuildingApp.tsx`, `building.css`, `i18n/building.ts`, `lib/building.ts`: TR/EN and both themes; overview, expenses, dues, apartments/decisions. Active UI has no provider, invitation inflation or role switch. Existing V2 `App.tsx` is preserved but not loaded.
 - `web/accounts`: Smart Account Kit 0.8.0 with SDK 16.3.0; SDK 17.1.0 is aliased as `@duly/stellar-sdk` for the rest of the web/server app. Only serialized XDR strings cross the boundary. Account creation is saved before submission and verifies its on-chain birth, code and passkey ownership.
-- `api/` reexports `web/server/`: bank, relay and settlement keeper. Server secret is `DULY_BANK_SECRET`; cron bearer is `CRON_SECRET`. The client receives no bank key.
+- `api/` reexports `web/server/`: bank, relay, dues accounting and settlement keeper. Server secret is `DULY_BANK_SECRET`; cron bearer is `CRON_SECRET`. The client receives no bank key.
 - Bank routes use the actual sandbox SEP-12 IBAN, exact TRY SEP-38 quote and SEP-6 order. Each expense gets a distinct classic escrow so the workshop's payment watcher receives its exact memo. A C-address smart account can receive bank-funded test USDC and authorize its contribution.
 - Automatic expense queue is encrypted with AES-GCM in separate classic account-data journals. Account sequence implements compare-and-set. A registry on the bank account lets the keeper discover queued work after browser closure. Public results omit raw IBANs and sealed-flow secrets. New withdrawals can only originate through this queue; saved legacy V3 flows remain resumable.
 - UI advances eligible queues every five seconds while visible. Vercel Hobby runs `/api/settle` daily at 09:00 UTC. This is a fallback with scheduling imprecision, not exact-deadline execution. Expired or uncertain bank orders require reconciliation and do not silently create another transfer.
 - Normal clocks: 3 days, 7 days, 30 days. Demo WASM: 20 seconds, 60 seconds, 10 minutes. Both timestamp and ledger guards apply.
+
+## Dues update
+
+- Merged `origin/codex/treasury-foundation` at `6bad646` (pitch/business model) into the V3 implementation. Preserved the friend's proposed adoption/pricing sections; corrected technical claims and distinguished the now-built basic dues tracker from proposed Pro features.
+- Direct USDC is the default contribution method beside TRY. Solo demo funding is one-time, journaled and only credits the demo wallet; the user then chooses an apartment and contributes.
+- `web/src/lib/dues.ts` and `features/dues/DuesOverview.tsx`: setup-relative billing, oldest-first allocation, partial/paid/unpaid status, advance credit, current total arrears, period selection and unpaid filtering. Debt stays with the apartment. A prior period shows current settlement, not an as-of historical statement.
+- `web/server/dues.mjs`: frozen TRY accounting from exact successful treasury events. Direct USDC uses a sealed pre-payment rate; bank deposits use their actual gross TRY amount. Atomic receipt/reference claims in a derived Stellar classic account prevent double credit and share records across browsers. This is trusted adapter reporting, not a contract upgrade or a trustless FX oracle.
+- Missing historical credit is never guessed: an on-chain/index mismatch displays Review needed. Saved TRY flows can be reconciled while RPC receipts remain available. Once indexed, records survive RPC retention. Pending signed contributions retain the exact quote/intent; an unsigned expired quote can refresh safely.
+- Local live dues verification: 5 USDC and 1 USDC direct contributions, 50 TRY bank contribution, receipt replay without double credit, cross-browser visibility and mobile light/dark accessibility passed. A separate normal passkey building recorded exactly 50 TRY from a WebAuthn-authorized payment. Public evidence: `deployments/building-dues-testnet-v3.json`; read-only check: `node scripts/verify-dues.mjs`.
+- No Rust/WASM changes or V2/V3 fund migration. Details and public verification are in `stories/03-monthly-dues.md`.
 
 ## Public deployment and evidence
 
@@ -41,13 +51,13 @@ Updated September 19, 2026. The active product is **V3 building governance**, im
 ## Verification
 
 - 47 workspace Rust tests + 16 demo-feature building tests passed; format and Clippy with warnings denied passed.
-- 16 script and 14 web model/server tests passed. The Vite/TypeScript and actual Vercel builds passed.
+- 16 script and 24 web model/server tests passed. The Vite/TypeScript and actual Vercel builds passed.
 - 32 TR/EN, light/dark, desktop/mobile page scenarios passed automated accessibility checks; screenshots reviewed. This is not complete manual accessibility certification.
 - Final-WASM live solo journey: 200 TRY → 4.0792181 USDC → 100 TRY expense → automatic settlement after accelerated objection period, receipt FAST-MVXYNQXSA9.
 - Virtual CTAP2 WebAuthn with real testnet smart account: create normal building, pay dues, create proposal and change vote yes/no/yes; one apartment still counts once. Physical biometrics were not tested.
 - Direct keeper settlement with no browser, replay without extra payment, encrypted storage, public IBAN privacy and stale-write rejection passed.
 - Protected Vercel candidate bank config matched the on-chain bank. Authorized `/api/settle` returned an empty queue successfully. The final V3 deployment was promoted to https://duly-sepia.vercel.app. Its JS/CSS hashes match the local build, private/source probes return 404, and unauthenticated cron returns 401. The public HTTPS site passed 32 page checks, 16 dialog accessibility/focus checks, and the real-testnet virtual-passkey account/building/dues/voting journey. See `deployment.md`.
-- Legacy-only test scripts are named `test:legacy:*`; active V3 checks are `test:browser`, `test:live`, `test:passkey`, `test:queue`. Do not mistake legacy selectors for V3 coverage.
+- Legacy-only test scripts are named `test:legacy:*`; active V3 checks are `test:browser`, `test:live`, `test:passkey`, `test:queue`, `test:dues`. Do not mistake legacy selectors for V3 coverage.
 
 
 Final production verification: the public HTTPS solo flow completed 200 simulated TRY → 4.0792181 test USDC → 100 TRY IBAN payment (**FAST-J83IBKWCYF**). A separate 50 TRY payment completed with the browser closed through one authenticated Vercel keeper call (**FAST-ECU8EIOYRL**); retry left the treasury balance unchanged. The public-domain passkey account/building/dues/proposal/vote-change test passed against the final WASM. Allowlisted evidence: `deployments/building-production-testnet-v3.json`. Run `node scripts/verify-building.mjs building-production-testnet-v3.json` to verify it independently.
@@ -70,3 +80,5 @@ Final production verification: the public HTTPS solo flow completed 200 simulate
 Testnet funds and simulated bank transfers only. Initial owner identity, legal title and IBAN beneficial ownership are off-chain trust assumptions. Silent approval of budget exceptions means no absolute budget loss cap. The bank/fee service is trusted; expired-bank-order refunds, production rate limits/funding/monitoring, regulated banking and independent security review remain outside the MVP. No active vault yield is claimed. Wallet synchronization/recovery and physical biometric/external-wallet signing still need hands-on validation. Low/moderate advisories remain in optional wallet dependencies; no high/critical advisory was found in this lockfile.
 
 Actual team details, real attendee validation and an official deck/submission are separate work; do not invent traction or contact organizers without authorization. Root README is the jury-facing product guide.
+
+Production dues verification passed on **https://duly-sepia.vercel.app**: a fresh solo building loaded one-time test funds without paying dues, contributed 5 and 1 USDC for two apartments, and paid 50 simulated TRY for a third. All three credits survived reload and were visible from another browser; receipt replay created no extra credit. Paid/partial filtering, mobile light/dark accessibility and the separate 32 TR/EN/theme/viewport/page suite passed. Public proof: `deployments/building-dues-testnet-v3.json` (seven local/production receipts, including a normal passkey building). Deployment: `dpl_HU1WEbg9b7yWWmqqqVZob4jid2u5`.

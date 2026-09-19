@@ -1,0 +1,86 @@
+{
+  "network": "Stellar Testnet",
+  "banking": "simulated",
+  "accounting": "trusted adapter, public receipt index",
+  "scenarios": {
+    "localSolo": {
+      "treasury": "CDK6JDVF2RENWQJMUA4HDAM7FNCYK7C4BSNTI6M32GJGT6EORNCZS5IC",
+      "url": "http://localhost:5174",
+      "index": "GCTD3URMS65DP43W2KKYBQYR275C5V2JMD3GII4RTVIKJB5OAFA63NPW",
+      "payments": [
+        {
+          "hash": "e01fbbbff0fb3a67fa85d51683232914d5342371fd6ac46205ccc9ecf5991763",
+          "seat": 3,
+          "amountTry": "5000",
+          "amountUsdc": "10198086",
+          "paidAt": 1789849597,
+          "method": "TRY"
+        },
+        {
+          "hash": "a4e4efce72f88bc24eeca551db08969aa6e075f9fd086c7e9aac8997f4b70074",
+          "seat": 2,
+          "amountTry": "4854",
+          "amountUsdc": "10000000",
+          "paidAt": 1789849237,
+          "method": "USDC"
+        },
+        {
+          "hash": "8333e3ec3e7680e381f74f579316e8ba5cb6adc73c50b1aba199a73370fa5d72",
+          "seat": 1,
+          "amountTry": "24270",
+          "amountUsdc": "50000000",
+          "paidAt": 1789849207,
+          "method": "USDC"
+        }
+      ]
+    },
+    "localPasskey": {
+      "treasury": "CA7VXPHDKSUFLLJZQLOE7TUZLCXZGSNNYXU2EG7KNFR7WD6ENFOVRBXM",
+      "url": "http://localhost:5174",
+      "index": "GDZMGLKVR5EAEG3UI66LJKVQW6BFFMQNAIH2UOQXVEJJ2Q23TUFENIZY",
+      "account": "CC4VFFG3MKGS6X2X4DPSDZXQVXFGI5LRWX2HPJAMYWFA3P5E7M3CMDP3",
+      "payments": [
+        {
+          "hash": "fbe59e65ba6dd097a7ad71aec5179f38fa243fa2e183ff6b4d3e65200c5be05c",
+          "seat": 1,
+          "amountTry": "5000",
+          "amountUsdc": "10198087",
+          "paidAt": 1789849452,
+          "method": "TRY"
+        }
+      ]
+    },
+    "productionSolo": {
+      "treasury": "CCWBCYT7N7T5ZIA7SA24DJ67SLEQ5JT2YKE4TAZHAWPZW4UQI4YIRPT2",
+      "url": "https://duly-sepia.vercel.app",
+      "index": "GCFLJPYMMCZLGJB2XFA6NXUBIU2TBPKV66I5QTA4VRX6ZNB7HTFYPLFJ",
+      "payments": [
+        {
+          "hash": "d11ea862a353a27ca6dbe77defbf405ff0c8b95eef2ba63e3b2632d82988e031",
+          "seat": 3,
+          "amountTry": "5000",
+          "amountUsdc": "10198086",
+          "paidAt": 1789850147,
+          "method": "TRY"
+        },
+        {
+          "hash": "355e4faa85b41e9f24ebe2c23fed82372767ed02e95b8b051b353060c39f9371",
+          "seat": 2,
+          "amountTry": "4854",
+          "amountUsdc": "10000000",
+          "paidAt": 1789850097,
+          "method": "USDC"
+        },
+        {
+          "hash": "5e4a581c6a0d5428b17beab4ebf5badf56af4fe6c608236657ab00c9449d480c",
+          "seat": 1,
+          "amountTry": "24270",
+          "amountUsdc": "50000000",
+          "paidAt": 1789850077,
+          "method": "USDC"
+        }
+      ]
+    }
+  },
+  "productionDeployment": "dpl_HU1WEbg9b7yWWmqqqVZob4jid2u5"
+}

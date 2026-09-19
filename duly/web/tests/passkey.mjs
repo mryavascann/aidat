@@ -150,6 +150,11 @@ try {
       .filter({ hasText: "Tamamlandı" })
       .count())
   ) {
+    const tryMethod = page.getByRole("button", {
+      name: "TL banka ödemesi",
+      exact: true,
+    });
+    if (await tryMethod.isEnabled()) await tryMethod.click();
     const input = page.getByLabel("Tutar (TL)", { exact: true });
     if (await input.isEnabled()) await input.fill("50");
     await page
@@ -171,6 +176,17 @@ try {
   );
   console.log(
     "Bank → smart account → treasury contribution authorized by WebAuthn.",
+  );
+  const duesResponse = await context.request.post(
+    `${process.env.DULY_URL ?? "http://localhost:5174"}/api/dues`,
+    { data: { action: "ledger", treasury: id } },
+  );
+  assert(duesResponse.ok());
+  const duesLedger = await duesResponse.json();
+  assert(
+    duesLedger.payments.some(
+      (p) => p.seat === 1 && p.amountTry === "5000" && p.method === "TRY",
+    ),
   );
   await page
     .locator("nav")

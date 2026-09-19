@@ -30,6 +30,7 @@
 !duly/web/server/relay.mjs
 !duly/web/server/journal.mjs
 !duly/web/server/settle.mjs
+!duly/web/server/dues.mjs
 !duly/web/src
 !duly/web/src/**
 !duly/web/public

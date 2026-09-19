@@ -2,15 +2,16 @@
 
 Duly is a shared building treasury: residents pay dues, the manager announces an expense, and the money reaches the recipient’s IBAN under rules enforced by Stellar. Cleaners and other recipients do not need an app, account or wallet.
 
-**[Try the live testnet demo](https://duly-sepia.vercel.app)** · [Contract evidence](duly/deployments/building-testnet-v3.json) · [Live payment evidence](duly/deployments/building-production-testnet-v3.json) · [Implementation notes](duly/docs/stories/02-building-governance.md)
+**[Try the live testnet demo](https://duly-sepia.vercel.app)** · [Contract evidence](duly/deployments/building-testnet-v3.json) · [Live payment evidence](duly/deployments/building-production-testnet-v3.json) · [Implementation notes](duly/docs/stories/02-building-governance.md) · [Dues accounting](duly/docs/stories/03-monthly-dues.md)
 
 ## Try it alone
 
 1. Select **Tek kişilik demo / Solo demo**. Duly creates your own three-apartment test building. There is no role switching or manual account setup.
-2. Open **Aidat öde / Pay dues** and pay **200 test TRY**. The simulated bank transfer becomes test USDC in the shared reserve. Existing wallets can also contribute their USDC directly.
-3. In **Giderler / Expenses**, create a **100 TRY** cleaning expense with the prefilled sample IBAN. Review the suggested USDC spending ceiling.
-4. The demo’s **20-second objection window** replaces the normal three days. The registered payment proceeds automatically. The card distinguishes treasury disbursement from the bank’s final simulated receipt.
-5. To explore governance, simulate another apartment’s objection or approval, propose a budget or manager, transfer a seat, or delegate its vote. Simulated votes are clearly labelled.
+2. Open **Aidat öde / Pay dues**. **USDC ile katkı / Contribute USDC** is selected. In the solo demo, select **Test USDC yükle / Get test USDC** once, then contribute **5 test USDC** to an apartment. Funding your wallet does not pay dues. The **TL banka ödemesi / TRY bank payment** option remains available; try **200 simulated TRY**.
+3. Inspect **Aylık borç takibi / Monthly dues tracking** on the same page. It shows each apartment’s paid, partial or unpaid status, remaining period debt and total arrears. Filter unpaid apartments or choose a previous period. Records are shared across browsers.
+4. In **Giderler / Expenses**, create a **100 TRY** cleaning expense with the prefilled sample IBAN. Review the suggested USDC spending ceiling.
+5. The demo’s **20-second objection window** replaces the normal three days. The registered payment proceeds automatically. The card distinguishes treasury disbursement from the bank’s final simulated receipt.
+6. To explore governance, simulate another apartment’s objection or approval, propose a budget or manager, transfer a seat, or delegate its vote. Simulated votes are clearly labelled.
 
 For a personal account, select **Passkey ile hesap oluştur / Create account with passkey**. Your device’s passkey signs a real Stellar smart account. Duly sponsors testnet fees; no recovery phrase is entered into the app. Freighter, xBull and Albedo remain optional. Passkeys are bound to the site’s domain. Physical device signing, multi-device recovery and production wallet hardening require further validation.
 
@@ -25,6 +26,7 @@ For a personal account, select **Passkey ile hesap oluştur / Create account wit
 | Routine spending | Majority-approved recipient plus remaining TRY **and USDC** budget allows payment without another vote or wait. |
 | New recipient / budget exception | Explicit notice, then 3 days without objection; a majority may approve earlier. One objection requires a majority. Ordinary invoices cannot silently exceed the aggregate budget by splitting. |
 | Budget period | Fixed 30-day periods from initialization. Changing the approved limit does not reset money already spent. |
+| Dues periods | The setup-time dues amount accrues per apartment every 30 days from initialization. Payments clear oldest debt first; surplus carries forward. Debt follows the apartment when its owner changes. |
 | Tenant | Anyone can pay for a seat. Payment grants no vote. The owner can appoint or revoke a voting delegate; a seat still counts once. |
 
 Elapsed-time and ledger boundaries must both pass. The normal contract uses **3 days / 7 days / 30 days**. A separate demo WASM uses **20 seconds / 60 seconds / 10 minutes**. No administrator can shorten a deployed building’s timers.
@@ -48,6 +50,7 @@ flowchart LR
 - **Banking:** SEP-1, SEP-10, SEP-12, SEP-38 and SEP-6 against the workshop anchor. SEP-12 binds the bank recipient. The bank adapter uses an isolated classic escrow because the anchor watches classic payments with a memo. It is a trusted intermediary; bank settlement is not a trustless on-chain fact.
 - **Recovery and automatic execution:** exact signed envelopes are saved before payment. The automatic expense journal is encrypted with AES-GCM in separate testnet account-data records, with sequence-based concurrent-write rejection. Public keeper responses expose neither the IBAN nor a decryptable bank-flow token. The fee sponsor reconciles each isolated request channel before retrying.
 - **Scheduling:** registered payments advance while the app is open, with a daily Vercel keeper as fallback. This test deployment does not guarantee execution exactly at the deadline. Failed or expired bank orders remain visible for reconciliation; it does not silently send a replacement payment.
+- **Dues accounting:** successful treasury contribution receipts are verified by a server adapter. TRY payments retain their paid TRY amount; direct USDC contributions retain a TRY value quoted before payment. Per-building Stellar account-data records survive browser changes, and an atomic receipt/reference claim prevents duplicate credit. The adapter is trusted for FX and accounting; the Soroban contract continues to enforce USDC contributions and governance, not TRY debt. Unmatched historical payments show **Review needed**, not an invented unpaid balance. [Details and limits](duly/docs/stories/03-monthly-dues.md).
 - **DeFindex:** Circle testnet USDC enters the existing compatible liquid reserve; payment redeems only the shortfall. There is **no active yield strategy or APY claim**.
 
 All funds are **testnet assets**. Bank transfers and FAST references are **simulated**. A real-money release needs a regulated bank/anchor partner, identity checks, operational fee funding, refund/reconciliation procedures, wallet recovery and independent security review.
@@ -77,9 +80,11 @@ npm test
 npm --prefix web test
 npm --prefix web run build
 node scripts/verify-building.mjs building-production-testnet-v3.json
+node scripts/verify-dues.mjs
 npm --prefix web run test:browser
 # These use real testnet transactions and keep private recovery state locally:
 npm --prefix web run test:live
+npm --prefix web run test:dues
 DULY_URL=http://localhost:5174 npm --prefix web run test:passkey
 npm --prefix web run test:queue
 ```
@@ -92,6 +97,7 @@ Public artifacts contain addresses and receipts only. `.duly-*-key`, `.duly-stat
 
 - [Building contract](duly/contracts/duly-building/src/lib.rs), [tests](duly/contracts/duly-building/src/test.rs), [immutable factory](duly/contracts/duly-factory/src/lib.rs)
 - [Building interface](duly/web/src/BuildingApp.tsx), [chain workflows](duly/web/src/lib/building.ts), [passkey boundary](duly/web/accounts/index.mjs)
+- [Dues ledger](duly/web/server/dues.mjs), [dues calculation](duly/web/src/lib/dues.ts), [manager table](duly/web/src/features/dues/DuesOverview.tsx)
 - [Bank adapter](duly/web/server/bank.mjs), [encrypted journal](duly/web/server/journal.mjs), [keeper](duly/web/server/settle.mjs), [fee sponsor](duly/web/server/relay.mjs)
 - [Vercel instructions](duly/docs/deployment.md), [continuation notes](duly/docs/agent-notes.md), [brand and image provenance](duly/docs/planning/frontend-design-package.md)
 

@@ -13,6 +13,7 @@
     "format": "prettier --write src tests vite.config.ts",
     "test:passkey": "node tests/passkey.mjs",
     "test:queue": "node tests/queue.mjs",
+    "test:dues": "node tests/dues-live.mjs",
     "serve": "node server/local.mjs",
     "test:legacy:a11y": "node tests/a11y.mjs",
     "test:legacy:theme": "node tests/theme.mjs",

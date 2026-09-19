@@ -107,6 +107,11 @@ try {
     }
     console.log("Solo demo ready.");
     await nav("Aidat öde");
+    const tryMethod = page.getByRole("button", {
+      name: "TL banka ödemesi",
+      exact: true,
+    });
+    if (await tryMethod.isEnabled()) await tryMethod.click();
     const completed = await page
       .locator(".v3-history")
       .filter({ hasText: "Tamamlandı" })

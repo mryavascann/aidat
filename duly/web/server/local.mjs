@@ -5,6 +5,7 @@ import { resolve, extname } from "node:path";
 import bank from "./bank.mjs";
 import relay from "./relay.mjs";
 import settle from "./settle.mjs";
+import dues from "./dues.mjs";
 const root = resolve(import.meta.dirname, "../dist");
 if (!process.env.DULY_BANK_SECRET)
   process.env.DULY_BANK_SECRET = (
@@ -26,6 +27,7 @@ createServer(async (req, res) => {
     if (path === "/api/bank") return bank(req, res);
     if (path === "/api/relay") return relay(req, res);
     if (path === "/api/settle") return settle(req, res);
+    if (path === "/api/dues") return dues(req, res);
     const file = resolve(
       root,
       "." + decodeURIComponent(path === "/" ? "/index.html" : path),

@@ -1,6 +1,6 @@
 # Duly — pitch and submission draft
 
-This copy matches the September 19 testnet implementation. It is not a submitted deck. The official template's five sections are retained below. Team identities, a public demo URL and real validation must be supplied before submission; no traction is inferred from automated tests.
+This copy matches the September 19 testnet implementation. It is not a submitted deck. The official template's five sections are retained below. The public demo is available; team identities and real validation must be supplied before submission; no traction is inferred from automated tests.
 
 ## 1. Cover
 
@@ -16,11 +16,13 @@ Stellar Pro Hackathon · Istanbul · September 19–20, 2026 · Genesis track.
 
 A community should be able to see its fund and decide how it is spent.
 
-Duly holds community contributions in a Soroban treasury instead of a manager's personal wallet. Members can inspect the balance and record their approvals. Every proposal fixes a payee and amount; payment needs two member signatures in the demonstration.
+Duly holds building contributions in a Soroban treasury instead of a manager's personal wallet. Apartment seats are fixed at setup; each apartment has one vote. Residents elect the manager, approve budgets and recipients, and can object to exceptional expenses.
 
-The Turkish/English interface connects a TRY bank sandbox to Circle testnet USDC. Contributions automatically enter a DeFindex reserve; approved payments redeem the amount they need. The recipient can withdraw through the same sandbox.
+The Turkish/English interface accepts direct Circle testnet USDC or simulated TRY bank payments. It tracks dues in 30-day periods from setup and shows the manager unpaid and partially paid apartments. Contributions enter a DeFindex reserve. A manager creates a TRY expense with the recipient's IBAN; the recipient needs neither a Duly account nor a crypto wallet.
 
-Demo boundary: bank settlement is simulated, Stellar transfers run on testnet, and the liquid reserve has no active yield strategy. The administrator controls membership, so quorum does not establish independent human voters.
+Routine payments to approved recipients within the budget need no further vote. New recipients and budget exceptions wait three days without objection, or can pass earlier with an apartment majority. An objection requires majority approval. This policy is not an absolute budget loss cap.
+
+Demo boundary: bank settlement is simulated, Stellar transfers run on testnet, and the liquid reserve has no active yield strategy. Initial owner identity and legal title still require off-chain verification. The bank/dues adapter is trusted for bank settlement, FX and TRY accounting.
 
 ## 3. PMF
 
@@ -38,18 +40,16 @@ Record actual, consented responses and distinguish feedback from committed pilot
 
 ## 4. Technical Workflow
 
-1. **Start or join.** The browser can create an independent demo treasury and three test accounts. An administrator can issue a one-use QR invitation. Existing wallets connect through Stellar Wallets Kit.
-2. **Contribute.** SEP-10 authentication → SEP-38 quote → SEP-6 bank simulation → Circle USDC → a member-signed contribution → DeFindex vault shares owned by the treasury.
-3. **Approve and pay.** A member proposes the payee and exact amount. A different member approves. `execute` redeems any liquidity shortfall and pays only the approved recipient and amount.
-4. **Withdraw.** The payee obtains a quote, sends USDC with the anchor's exact memo, and receives a sandbox bank receipt.
+1. **Start.** A jury member creates a solo demo with three simulated apartments. Personal accounts use passkey smart accounts or an existing Stellar wallet. Normal setup fixes all seats and owners; the manager cannot add fake voters later.
+2. **Contribute and track.** Direct USDC is the default payment option; the solo demo provides one-time test wallet funding. TRY remains available through SEP-10 / SEP-38 / SEP-6. The payer signs a contribution for an apartment and USDC enters the treasury's reserve. Verified receipts carry a fixed TRY credit into the shared dues ledger; payments clear oldest debt first and surplus carries forward.
+3. **Announce and pay.** The manager fixes the TRY amount, recipient IBAN hash and USDC ceiling. The contract enforces the approved-recipient budget or the selected objection/majority rule. The bank adapter redeems the required liquidity and sends the anchor's exact-memo payment.
+4. **Check the receipt.** The expense distinguishes on-chain disbursement from final simulated bank settlement. A registered queue can continue without the initiating browser. Recipients do not log in.
 
-Verified canonical round trip: **TRY 200 → 4.0792181 USDC contribution → 2 USDC approved expense → TRY 97.08 simulated bank payout**. Final reserve backing after including the migrated balance: **4.1584362 USDC**.
+The existing public V3 round trip verified **200 simulated TRY → 4.0792181 test USDC contribution → 100 TRY IBAN expense**, with simulated bank reference **FAST-J83IBKWCYF**. The separate keeper also settled an expense with the browser closed. Public receipts are in [production evidence](../deployments/building-production-testnet-v3.json). The USDC/dues accounting implementation and evidence are described in [monthly dues](stories/03-monthly-dues.md).
 
-[Treasury](https://stellar.expert/explorer/testnet/contract/CC7TIRVPWB4EFE7ZPA3JZZD2VC5ZDRAHFN6UURSGW4JNJISMKGMGTKUR) · [Contribution into reserve](https://stellar.expert/explorer/testnet/tx/e6e70f84c7ca14a5cebaf2fedfa1102ffaf03f314327327333d11af3948e3c5d) · [Automatic redemption and payout](https://stellar.expert/explorer/testnet/tx/7988608557950395fcdbda2010590a7078f2c3f33c134e39c4e1ec66c0ea91f3) · [Withdrawal](https://stellar.expert/explorer/testnet/tx/3787ff7a67b884975a4e869e8f06cf7db8cf25266fa88442f0ed1ef35fc44820).
+Rust/Soroban SDK 27.0.6; native `require_auth`, persistent seats, versioned votes and events. Apartment owners can transfer seats or delegate voting. Missing-owner recovery requires the other apartments' majority and a seven-day owner veto window. Manager replacement requires apartment majority. Smart accounts use pinned OpenZeppelin account bytecode and a WebAuthn verifier through Smart Account Kit; virtual-authenticator integration is tested, not physical biometric hardware or an independent audit.
 
-Rust/Soroban SDK 27.0.6; atomic initialization, signature checks, replay protection and explicit invitation expiry. Contributions and approvals use persistent storage. The vault accepts the verified Circle token, is not upgradable, and has no active strategy. The web checks the treasury's deployed WASM and reserve address before using invitation links.
-
-The browser flow has also been exercised independently, including a reload after the quote and a third account joining through an invitation. Proof is in `deployments/browser-testnet.json`.
+The solo demo uses separate WASM with 20-second objections, 60-second ownership recovery and 10-minute billing/budget periods. Normal buildings enforce three days, seven days and 30 days. Simulated votes are visibly labelled.
 
 ## 5. The Team
 
@@ -57,11 +57,11 @@ Actual names, roles, contact details and relevant experience have not been suppl
 
 ## Demo narration
 
-“This is Duly, a shared treasury for communities. Here we can all see the same balance. A resident gets a lira quote and simulates a bank payment. The USDC contribution goes into the community's DeFindex reserve.
+“This is Duly, a shared treasury for a building. Here everyone sees the same balance. I start a solo demo, load test USDC and contribute for one apartment. The manager's dues table updates immediately and shows which other apartments still owe money. TRY bank simulation is also available.
 
-Now the resident proposes a maintenance expense. Their signature is the first approval. We switch to a different member and approve it. Only then can the contract redeem the required reserve shares and pay the service provider. The provider withdraws through the bank sandbox, and every Stellar step has a receipt.
+Now I create a cleaning expense with the cleaner's IBAN. The cleaner needs no app. A new recipient triggers an objection window; the solo demo accelerates it to 20 seconds. The contract enforces the rule, the queue completes the bank simulation, and the expense shows its receipt.
 
-This is a testnet demonstration: the bank leg is simulated and no yield strategy is active. Our next work is real community validation, stronger membership governance, and a production anchor partnership.”
+Each apartment has one fixed vote. Owners can replace the manager or transfer their seat. A personal account can sign with a passkey. This is a testnet demonstration with simulated banking; next we need real community validation, a regulated anchor partner and production security work.”
 
 ## Market path, business model and positioning
 
@@ -77,17 +77,17 @@ Material for the deck and for Q&A. These are plans and hypotheses, not validated
 | Tier | For | What they pay for |
 |---|---|---|
 | Free | Small communities, up to a member or volume limit | Treasury, approvals and transparent history: the base that lets Duly spread |
-| Pro (monthly fee per flat or member) | Managers and management companies | Monthly dues and arrears tracking, reminders, reports for the owners' meeting and the auditor, export, multi-building dashboard |
+| Pro (monthly fee per flat or member) | Managers and management companies | Reminders, reports for the owners' meeting and the auditor, export, multi-building dashboard; packaging of the existing dues tracker remains to be validated |
 | Partner revenue | The TRY anchor partner | Every building deposits lira every month, giving the anchor predictable volume; in return, a revenue share |
 
-The Pro features are not built yet; they are the paid roadmap. Pricing is to be set against the per-flat fees of existing dues apps. No share of reserve yield is offered: the vault has no active strategy, and a yield promise adds regulatory risk.
+Basic monthly dues and arrears tracking is now included in the MVP. Reminders, exports, reports and a multi-building dashboard are not built; they remain possible paid roadmap features. Pricing is to be set against the per-flat fees of existing dues apps. No share of reserve yield is offered: the vault has no active strategy, and a yield promise adds regulatory risk.
 
 **Positioning:** "Dues apps show the money; Duly protects it. Crypto treasuries protect the money; Duly makes it usable for everyone."
 
 ## Q&A facts
 
-- **Can one administrator take the fund?** A payout requires the configured member-signature quorum, but the administrator can enroll accounts they control. Stronger membership governance is future work.
-- **Can a manager hand over administration?** Not in this contract version. Do not claim this is solved.
+- **Can one administrator take the fund?** Seats are fixed at setup, so the manager cannot add voters. Routine payments are constrained by the majority-approved recipient list and budget. New recipients and exceptions may pass after three days without objection; residents must monitor notices. This is not an absolute loss cap, and initial owner identity still needs verification.
+- **Can a manager hand over administration?** Yes. Apartment majority elects or replaces the manager. Seat owners can separately transfer an apartment without manager approval.
 - **Does the reserve earn interest?** No. This vault currently holds liquid Circle USDC. It is integrated into every contribution and approved payout; no rate of return is claimed.
 - **Must testers install a wallet?** No; the demo creates browser-held test accounts. This is a testnet convenience, not a production custody design.
 - **Does real money move through a bank?** No. The workshop anchor simulates bank settlement and performs actual testnet Stellar transfers.
@@ -101,6 +101,6 @@ The Pro features are not built yet; they are the paid roadmap. Pricing is to be 
 
 ## Submission work remaining
 
-The frontend is published at [duly-sepia.vercel.app](https://duly-sepia.vercel.app), and the repository is public. The implementation is on `codex/treasury-foundation`. Verify the phone/extension-wallet path; confirm sandbox acceptance with mentors; add actual team details; collect real feedback; place verified links and the official deck in the portal with Genesis selected.
+The frontend is published at [duly-sepia.vercel.app](https://duly-sepia.vercel.app), and the repository is public. The implementation is on `main`. Verify the phone/extension-wallet path; confirm sandbox acceptance with mentors; add actual team details; collect real feedback; place verified links and the official deck in the portal with Genesis selected.
 
 The handbook lists September 20, 2026 at 12:00 Istanbul as the submission deadline. No submission or external outreach has been performed.

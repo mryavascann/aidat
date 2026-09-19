@@ -1,8 +1,8 @@
 # Duly on Vercel
 
-Production testnet demo: **https://duly-sepia.vercel.app**. V3 implementation branch: [`codex/building-governance`](https://github.com/mryavascann/aidat/tree/codex/building-governance).
+Production testnet demo: **https://duly-sepia.vercel.app**. Implementation branch: [`main`](https://github.com/mryavascann/aidat/tree/main).
 
-Vercel project `duly`, scope `sametgoc81tr-4111s-projects`. V3 build: [`dpl_D2NeST2o6Zs32brDM4eXkeicZvVK`](https://vercel.com/sametgoc81tr-4111s-projects/duly/D2NeST2o6Zs32brDM4eXkeicZvVK), September 19, 2026. Candidate URL: `https://duly-8cyoabymu-sametgoc81tr-4111s-projects.vercel.app`. Previous V2 publication details remain in `archive/deployment-v2.md`.
+Vercel project `duly`, scope `sametgoc81tr-4111s-projects`. Current dues build: [`dpl_HU1WEbg9b7yWWmqqqVZob4jid2u5`](https://vercel.com/sametgoc81tr-4111s-projects/duly/HU1WEbg9b7yWWmqqqVZob4jid2u5), September 19, 2026. Candidate URL: `https://duly-6dqn8vi8s-sametgoc81tr-4111s-projects.vercel.app`. It replaces V3 build `dpl_D2NeST2o6Zs32brDM4eXkeicZvVK` without changing contract addresses or server keys. Previous V2 publication details remain in `archive/deployment-v2.md`.
 
 This deployment uses Stellar testnet and the simulated workshop bank. Publishing does not make these real funds or real bank transfers. Passkeys and browser storage are origin-bound: localhost, a candidate domain and the production domain have separate credentials and saved sessions.
 
@@ -13,11 +13,11 @@ Run from the repository root. `vercel.json` sets:
 - Install: `npm ci --prefix duly && npm ci --prefix duly/web`.
 - Build: `npm --prefix duly run web:build`.
 - Static output: `duly/web/dist`.
-- Node server functions: `api/bank.mjs`, `api/relay.mjs`, `api/settle.mjs`, each with a 120-second maximum.
+- Node server functions: `api/bank.mjs`, `api/relay.mjs`, `api/settle.mjs`, `api/dues.mjs`, each with a 120-second maximum.
 - Explicit public manifest inclusion for server tracing; runtime code imports the manifest directly.
 - Once-daily keeper: `/api/settle`, 09:00 UTC (`0 9 * * *`).
 
-The source upload allowlist includes 52 files: app, server adapters, passkey package, public manifest, shared browser-safe modules and build configuration. It excludes CLI keys, private state, test fixtures, Rust sources/WASM, design ZIP, raw artwork and local server. Only compiled frontend files are served as static resources; source and private-path probes must return 404.
+The source upload allowlist includes 56 files: app, server adapters, passkey package, public manifest, shared browser-safe modules and build configuration. It excludes CLI keys, private state, test fixtures, Rust sources/WASM, design ZIP, raw artwork and local server. Only compiled frontend files are served as static resources; source and private-path probes must return 404.
 
 V3 requires two **server-only Production secrets** in Vercel:
 
@@ -56,6 +56,7 @@ node scripts/verify-building.mjs
 DULY_URL=https://duly-sepia.vercel.app npm --prefix web run test:browser
 # Explicit live testnet scenarios, with private recovery state retained locally:
 DULY_URL=https://duly-sepia.vercel.app npm --prefix web run test:live
+DULY_URL=https://duly-sepia.vercel.app npm --prefix web run test:dues
 DULY_URL=https://duly-sepia.vercel.app npm --prefix web run test:passkey
 ```
 
@@ -64,3 +65,7 @@ DULY_URL=https://duly-sepia.vercel.app npm --prefix web run test:passkey
 References: [CLI deployment](https://vercel.com/docs/projects/deploy-from-cli), [upload allowlists](https://vercel.com/docs/deployments/vercel-ignore), [cron security](https://vercel.com/docs/cron-jobs/manage-cron-jobs), [cron limits and precision](https://vercel.com/docs/cron-jobs/usage-and-pricing).
 
 Final production verification: the public HTTPS solo flow completed 200 simulated TRY → 4.0792181 test USDC → 100 TRY IBAN payment (**FAST-J83IBKWCYF**). A separate 50 TRY payment completed with the browser closed through one authenticated Vercel keeper call (**FAST-ECU8EIOYRL**); retry left the treasury balance unchanged. The public-domain passkey account/building/dues/proposal/vote-change test passed against the final WASM. Allowlisted evidence: `deployments/building-production-testnet-v3.json`. Run `node scripts/verify-building.mjs building-production-testnet-v3.json` to verify it independently.
+
+The dues update adds `/api/dues` to the same server-only deployment. Candidate checks matched the deployed bank and read the existing three-record dues index exactly. The production domain serves the same JS/CSS bytes as the tested local build. Source/private probes returned 404 and unauthorized `/api/settle` returned 401. No new Vercel secrets are required. Public contribution/index evidence is retained in `deployments/building-dues-testnet-v3.json`; see `stories/03-monthly-dues.md` for trusted-adapter boundaries and historical reconciliation limits.
+
+Production dues verification passed on **https://duly-sepia.vercel.app**: a fresh solo building loaded one-time test funds without paying dues, contributed 5 and 1 USDC for two apartments, and paid 50 simulated TRY for a third. All three credits survived reload and were visible from another browser; receipt replay created no extra credit. Paid/partial filtering, mobile light/dark accessibility and the separate 32 TR/EN/theme/viewport/page suite passed. Public proof: `deployments/building-dues-testnet-v3.json` (seven local/production receipts, including a normal passkey building). Deployment: `dpl_HU1WEbg9b7yWWmqqqVZob4jid2u5`.

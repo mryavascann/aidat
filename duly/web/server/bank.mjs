@@ -302,7 +302,7 @@ async function resumeWithdrawal(flow, action) {
   };
 }
 
-async function deposit(request) {
+export async function deposit(request) {
   await building(request.treasury);
   if (!/^[GC][A-Z2-7]{55}$/.test(request.account))
     throw new Error("Invalid contribution account.");
@@ -332,7 +332,7 @@ async function deposit(request) {
   };
 }
 
-async function resumeDeposit(flow) {
+export async function resumeDeposit(flow) {
   await building(flow.treasury);
   const { anchor, key } = await anchorFor(flow.scope);
   let settlement = await anchor.transaction(flow.order.id);

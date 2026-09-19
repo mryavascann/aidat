@@ -30,6 +30,8 @@ import { StrKey } from "@duly/stellar-sdk";
 import { Dialog } from "./components/Dialog";
 import { ThemeToggle } from "./components/ThemeToggle";
 import { BalanceScene } from "./features/overview/BalanceScene";
+import { DuesOverview } from "./features/dues/DuesOverview";
+import { duesRequest, loadDues, type DuesLedger } from "./lib/dues";
 import { tr } from "./i18n/tr";
 import { en } from "./i18n/en";
 import { buildingCopy, type BuildingKey } from "./i18n/building";
@@ -49,6 +51,9 @@ import {
   deployment,
   enumValue,
   finishDeposit,
+  finishDirectDues,
+  startDirectDues,
+  fundDemoUsdc,
   fromUnits,
   getBuildingDemo,
   hashBytes,
@@ -131,11 +136,13 @@ export default function BuildingApp() {
     [error, setError] = useState(""),
     [success, setSuccess] = useState("");
   const [records, setRecords] = useState<BankRecord[]>([]);
+  const [duesLedger, setDuesLedger] = useState<DuesLedger | null>(null);
+  const [duesError, setDuesError] = useState("");
   const [form, setForm] = useState<Record<string, string>>({});
   const [dues, setDues] = useState({
     seat: "1",
-    amount: "200",
-    currency: "TRY",
+    amount: "5",
+    currency: "USDC",
   });
   const [voter, setVoter] = useState("");
   const [now, setNow] = useState(Date.now());
@@ -174,6 +181,7 @@ export default function BuildingApp() {
       buildingSnapshot(treasury),
       rates(),
       account ? accountBalance(account) : Promise.resolve(null),
+      loadDues(treasury),
     ]);
     if (
       current !== generation.current ||
@@ -184,6 +192,13 @@ export default function BuildingApp() {
     else setError(String(results[0].reason?.message ?? results[0].reason));
     if (results[1].status === "fulfilled") setRate(results[1].value);
     if (results[2].status === "fulfilled") setBalance(results[2].value);
+    if (results[3].status === "fulfilled") {
+      setDuesLedger(results[3].value);
+      setDuesError("");
+    } else {
+      setDuesLedger(null);
+      setDuesError(String(results[3].reason));
+    }
     setRecords(bankRecords(treasury, account));
   }, [treasury, account]);
   useEffect(() => {
@@ -193,6 +208,8 @@ export default function BuildingApp() {
   useEffect(() => {
     setData(null);
     setBalance(null);
+    setDuesLedger(null);
+    setDuesError("");
     void refresh();
     return () => {
       generation.current++;
@@ -288,6 +305,8 @@ export default function BuildingApp() {
       recording: "bankConfirming",
       "transfer-ready": "depositSending",
       contribute: "contributionSigning",
+      "recording-dues": "indexingDues",
+      "demo-usdc": "fundingDemoUsdc",
       scheduled: "scheduled",
     };
     setBusy(t(labels[phase] ?? "processing"));
@@ -447,33 +466,56 @@ export default function BuildingApp() {
     );
     completeIntent(key);
   }
-  const pendingDeposit = records.find(
-    (r) => r.kind === "deposit" && r.phase !== "complete",
+  const pendingContribution = records.find(
+    (r) => ["deposit", "usdc"].includes(r.kind) && r.phase !== "complete",
   );
+  useEffect(() => {
+    if (pendingContribution)
+      setDues({
+        seat: String(pendingContribution.seat),
+        currency: pendingContribution.kind === "usdc" ? "USDC" : "TRY",
+        amount:
+          pendingContribution.kind === "usdc"
+            ? pendingContribution.amountUsdc!
+            : pendingContribution.amountTry!,
+      });
+  }, [pendingContribution?.key]);
   async function payDues() {
     if (!actor) {
       open("account");
       return;
     }
-    if (dues.currency === "USDC") {
-      const key = `dues:${treasury}:${account}`,
-        intent = intentFor(key, dues);
-      await invoke(
-        actor,
-        treasury,
-        "contribute",
-        [addr(account), u32(Number(dues.seat)), num(toUnits(dues.amount))],
-        intent,
-      );
-      completeIntent(key);
-    } else {
-      const record =
-        pendingDeposit ??
-        (await startDeposit(treasury, actor, Number(dues.seat), dues.amount));
+    const currency =
+      pendingContribution?.kind === "usdc"
+        ? "USDC"
+        : pendingContribution
+          ? "TRY"
+          : dues.currency;
+    let record = pendingContribution;
+    if (!record) {
+      if (currency === "USDC") {
+        const available = balance ?? (await accountBalance(account));
+        if (toUnits(dues.amount) > available)
+          throw new Error(t("insufficientUsdc"));
+        record = await startDirectDues(
+          treasury,
+          actor,
+          Number(dues.seat),
+          dues.amount,
+        );
+      } else
+        record = await startDeposit(
+          treasury,
+          actor,
+          Number(dues.seat),
+          dues.amount,
+        );
       setRecords(bankRecords(treasury, account));
-      await finishDeposit(record, actor, progress);
     }
+    if (record.kind === "usdc") await finishDirectDues(record, actor, progress);
+    else await finishDeposit(record, actor, progress);
   }
+
   const remaining = (time: bigint, ledger: number) => {
     const seconds = Math.max(0, Number(time) - Math.floor(now / 1000));
     if (!seconds)
@@ -1157,139 +1199,227 @@ export default function BuildingApp() {
                 </>
               )}
               {page === "dues" && (
-                <div className="v3-dues-grid">
-                  <section className="card v3-form-card">
-                    <h2>{t("dues")}</h2>
-                    <p>{t("duesSub")}</p>
-                    <form onSubmit={(e) => submit(e, payDues)}>
-                      <label>
-                        {t("apartment")}
-                        <select
-                          value={dues.seat}
-                          disabled={!!pendingDeposit}
-                          onChange={(e) =>
-                            setDues({ ...dues, seat: e.target.value })
-                          }
-                        >
-                          {data.seats.map((s) => (
-                            <option value={s.id} key={s.id}>
-                              {t("apartment")} {s.id}
-                            </option>
-                          ))}
-                        </select>
-                      </label>
-                      <fieldset className="v3-currency">
-                        <legend>{t("amount")}</legend>
-                        <button
-                          type="button"
-                          aria-pressed={dues.currency === "TRY"}
-                          disabled={!!pendingDeposit}
-                          onClick={() =>
-                            setDues({ ...dues, currency: "TRY", amount: "200" })
-                          }
-                        >
-                          TL
-                        </button>
-                        <button
-                          type="button"
-                          aria-pressed={dues.currency === "USDC"}
-                          disabled={!!pendingDeposit}
-                          onClick={() =>
-                            setDues({ ...dues, currency: "USDC", amount: "2" })
-                          }
-                        >
-                          USDC
-                        </button>
-                      </fieldset>
-                      <label>
-                        {t("amount")} ({dues.currency === "TRY" ? "TL" : "USDC"}
-                        )
-                        <input
-                          inputMode="decimal"
-                          required
-                          type="number"
-                          min={dues.currency === "TRY" ? "50" : "0.0000001"}
-                          max={dues.currency === "TRY" ? "3000" : undefined}
-                          step={dues.currency === "TRY" ? ".01" : ".0000001"}
-                          value={dues.amount}
-                          disabled={!!pendingDeposit}
-                          onChange={(e) =>
-                            setDues({ ...dues, amount: e.target.value })
-                          }
-                        />
-                      </label>
-                      <p className="v3-help">
-                        {dues.currency === "TRY" ? t("bankHelp") : t("payUsdc")}
-                      </p>
-                      {balance !== null && (
+                <>
+                  <div className="v3-dues-grid">
+                    <section className="card v3-form-card">
+                      <h2>{t("dues")}</h2>
+                      <p>{t("duesSub")}</p>
+                      <form onSubmit={(e) => submit(e, payDues)}>
+                        <label>
+                          {t("apartment")}
+                          <select
+                            aria-label={t("apartment")}
+                            value={dues.seat}
+                            disabled={!!pendingContribution}
+                            onChange={(e) =>
+                              setDues({ ...dues, seat: e.target.value })
+                            }
+                          >
+                            {data.seats.map((s) => (
+                              <option value={s.id} key={s.id}>
+                                {t("apartment")} {s.id}
+                              </option>
+                            ))}
+                          </select>
+                        </label>
+                        <fieldset className="v3-currency">
+                          <legend>{t("paymentMethod")}</legend>
+                          <button
+                            type="button"
+                            aria-pressed={dues.currency === "TRY"}
+                            disabled={!!pendingContribution}
+                            onClick={() =>
+                              setDues({
+                                ...dues,
+                                currency: "TRY",
+                                amount: fromUnits(data.config.dues_try, 2),
+                              })
+                            }
+                          >
+                            <Landmark size={18} />
+                            {t("bankTry")}
+                          </button>
+                          <button
+                            type="button"
+                            aria-pressed={dues.currency === "USDC"}
+                            disabled={!!pendingContribution}
+                            onClick={() =>
+                              setDues({
+                                ...dues,
+                                currency: "USDC",
+                                amount: "5",
+                              })
+                            }
+                          >
+                            <Wallet size={18} />
+                            {t("directUsdc")}
+                          </button>
+                        </fieldset>
+                        <label>
+                          {t("amount")} (
+                          {dues.currency === "TRY" ? "TL" : "USDC"}
+                          )
+                          <input
+                            inputMode="decimal"
+                            required
+                            type="number"
+                            min={dues.currency === "TRY" ? "50" : "0.0000001"}
+                            max={dues.currency === "TRY" ? "3000" : "10000"}
+                            step={dues.currency === "TRY" ? ".01" : ".0000001"}
+                            value={dues.amount}
+                            disabled={!!pendingContribution}
+                            onChange={(e) =>
+                              setDues({ ...dues, amount: e.target.value })
+                            }
+                          />
+                        </label>
                         <p className="v3-help">
-                          {t("walletBalance")}: {usd(balance)}
+                          {dues.currency === "TRY"
+                            ? t("bankHelp")
+                            : t("directUsdcHelp")}
                         </p>
-                      )}
-                      <button className="button full" disabled={!!busy}>
-                        {pendingDeposit
-                          ? t("resume")
-                          : !actor
-                            ? t("connect")
-                            : dues.currency === "TRY"
-                              ? t("payTry")
-                              : t("contribute")}
-                        <ArrowRight size={16} />
-                      </button>
-                    </form>
-                  </section>
-                  <section>
-                    <h2>{t("history")}</h2>
-                    {records
-                      .filter((r) => r.kind === "deposit")
-                      .map((r) => (
-                        <article className="card v3-history" key={r.key}>
-                          <header>
-                            <strong>{r.amountTry} TL</strong>
-                            <span className="v3-tag">
-                              {r.phase === "complete"
-                                ? t("complete")
-                                : t("Pending")}
-                            </span>
-                          </header>
-                          <p>
-                            {t("apartment")} {r.seat} · {r.amountUsdc ?? "—"}{" "}
-                            USDC
+                        {balance !== null && (
+                          <p className="v3-help">
+                            {t("walletBalance")}: {usd(balance)}
                           </p>
-                          {r.phase !== "complete" && actor && (
+                        )}
+                        {actor?.kind === "demo" && dues.currency === "USDC" && (
+                          <div className="v3-demo-funding">
                             <button
+                              type="button"
                               className="button small secondary"
                               disabled={!!busy}
                               onClick={() =>
                                 void run(
-                                  () => finishDeposit(r, actor, progress),
+                                  () =>
+                                    fundDemoUsdc(treasury, account, progress),
                                   false,
                                 )
                               }
                             >
-                              {t("resume")}
+                              <Sparkles size={16} />
+                              {t("demoUsdc")}
                             </button>
-                          )}
-                          <details>
-                            <summary>{t("details")}</summary>
-                            <p className="mono">{r.anchorId}</p>
-                            {r.receipt && (
-                              <a
-                                href={txUrl(r.receipt)}
-                                target="_blank"
-                                rel="noreferrer"
-                              >
-                                {t("receipt")} ↗
-                              </a>
+                            <p className="v3-help">{t("demoUsdcHelp")}</p>
+                          </div>
+                        )}
+                        <button
+                          type="submit"
+                          className="button full"
+                          disabled={!!busy}
+                        >
+                          {pendingContribution
+                            ? t("resume")
+                            : !actor
+                              ? t("connect")
+                              : dues.currency === "TRY"
+                                ? t("payTry")
+                                : t("directUsdc")}
+                          <ArrowRight size={16} />
+                        </button>
+                      </form>
+                    </section>
+                    <section>
+                      <h2>{t("history")}</h2>
+                      {records
+                        .filter(
+                          (r) => r.kind === "deposit" || r.kind === "usdc",
+                        )
+                        .map((r) => (
+                          <article className="card v3-history" key={r.key}>
+                            <header>
+                              <strong>
+                                {r.kind === "usdc"
+                                  ? `${r.amountUsdc} USDC`
+                                  : `${r.amountTry} TL`}
+                              </strong>
+                              <span className="v3-tag">
+                                {r.phase === "complete"
+                                  ? t("complete")
+                                  : t("Pending")}
+                              </span>
+                            </header>
+                            <p>
+                              {t("apartment")} {r.seat} · {r.amountUsdc ?? "—"}{" "}
+                              USDC
+                            </p>
+                            {r.kind === "usdc" && (
+                              <p>
+                                {t("usdcCredit")}: {r.amountTry} TL
+                              </p>
                             )}
-                          </details>
-                        </article>
-                      ))}
-                    {!records.some((r) => r.kind === "deposit") && (
-                      <p className="v3-help">{t("bankHelp")}</p>
-                    )}
-                  </section>
-                </div>
+                            {r.phase === "complete" &&
+                              r.receipt &&
+                              duesLedger &&
+                              !duesLedger.payments.some(
+                                (p) => p.hash === r.receipt,
+                              ) &&
+                              r.saved && (
+                                <button
+                                  className="button small secondary"
+                                  disabled={!!busy}
+                                  onClick={() =>
+                                    void run(
+                                      () =>
+                                        duesRequest({
+                                          action: "record",
+                                          treasury,
+                                          receipt: r.receipt,
+                                          saved: r.saved,
+                                        }),
+                                      false,
+                                    )
+                                  }
+                                >
+                                  {t("reconcileDues")}
+                                </button>
+                              )}
+                            {r.phase !== "complete" && actor && (
+                              <button
+                                className="button small secondary"
+                                disabled={!!busy}
+                                onClick={() =>
+                                  void run(
+                                    () =>
+                                      r.kind === "usdc"
+                                        ? finishDirectDues(r, actor, progress)
+                                        : finishDeposit(r, actor, progress),
+                                    false,
+                                  )
+                                }
+                              >
+                                {t("resume")}
+                              </button>
+                            )}
+                            <details>
+                              <summary>{t("details")}</summary>
+                              <p className="mono">{r.anchorId}</p>
+                              {r.receipt && (
+                                <a
+                                  href={txUrl(r.receipt)}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                >
+                                  {t("receipt")} ↗
+                                </a>
+                              )}
+                            </details>
+                          </article>
+                        ))}
+                      {!records.some(
+                        (r) => r.kind === "deposit" || r.kind === "usdc",
+                      ) && <p className="v3-help">{t("bankHelp")}</p>}
+                    </section>
+                  </div>
+                  <DuesOverview
+                    key={treasury}
+                    data={data}
+                    ledger={duesLedger}
+                    error={duesError}
+                    lang={lang}
+                    isManager={isManager}
+                  />
+                </>
               )}
               {page === "building" && (
                 <>
