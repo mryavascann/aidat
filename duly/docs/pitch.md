@@ -75,6 +75,6 @@ This is a testnet demonstration: the bank leg is simulated and no yield strategy
 
 ## Submission work remaining
 
-Publish the frontend on HTTPS; verify the phone/extension-wallet path; confirm sandbox acceptance with mentors; add actual team details; collect real feedback; decide repository visibility; place verified links and the official deck in the portal with Genesis selected.
+The frontend is published at [duly-sepia.vercel.app](https://duly-sepia.vercel.app), and the repository is public. The implementation is on `codex/treasury-foundation`. Verify the phone/extension-wallet path; confirm sandbox acceptance with mentors; add actual team details; collect real feedback; place verified links and the official deck in the portal with Genesis selected.
 
 The handbook lists September 20, 2026 at 12:00 Istanbul as the submission deadline. No submission or external outreach has been performed.

@@ -4,6 +4,8 @@ A shared treasury for communities. Collect dues, approve expenses together, and 
 
 **MVP focus:** collect contributions → approve expenses together → follow the payment. Dark mode supports that same journey. Periodic billing, extra administration panels, additional currencies and yield products are deferred; this release does not add separate product modules.
 
+**Live demo:** [duly-sepia.vercel.app](https://duly-sepia.vercel.app) · [Vercel deployment notes](duly/docs/deployment.md)
+
 [Treasury on Stellar](https://stellar.expert/explorer/testnet/contract/CC7TIRVPWB4EFE7ZPA3JZZD2VC5ZDRAHFN6UURSGW4JNJISMKGMGTKUR) · [DeFindex reserve](https://stellar.expert/explorer/testnet/contract/CBYR7JQC7XBG4TJIRVLZDTJZQE6UBGUZ7C5I4J64NPVNZ64YKBTLNUTG) · [Transaction evidence](duly/deployments/testnet.json)
 
 **Working on testnet:** a Turkish/English web app, a Soroban treasury with member approval, Circle USDC held in a DeFindex vault, and a TRY anchor round trip. A ₺200 sandbox deposit delivered 4.0792181 USDC to the reserve. Two members approved a 2 USDC expense; the contract redeemed the required vault shares and paid the recipient, who withdrew for a simulated ₺97.08.
@@ -178,12 +180,12 @@ New checkouts reuse the public, seeded Circle reserve unless `.duly-vault-id` se
 
 The user fixed the MVP scope on September 19, 2026: one coherent contribution, shared-approval and payment-record journey. Remaining work is delivery and validation of this flow, not additional feature epics.
 
-- Duly now has English and Turkish copy and a responsive interface. The GitHub URL still uses its original repository name. There is no public frontend deployment yet.
+- Duly has English and Turkish copy, a responsive interface and a public HTTPS demo on Vercel. The GitHub URL still uses its original repository name.
 - The bank sandbox and liquid reserve are demonstrated; real fiat settlement, an active yield strategy, real-user traction and a production launch are not claimed.
 - TRY values use the anchor's sell rate as an estimate. Final transfers use the quoted decimal amounts; display formatting never determines an on-chain payment.
 - Browser keys are a testnet convenience. Production requires a different account/security model, membership governance, audits and a production anchor integration.
 - Optional Wallets Kit dependencies still produce low/moderate npm advisories in unused cross-chain modules; no high/critical advisories remain in the current lockfile. Only Freighter, xBull and Albedo are loaded. Resolve upstream dependency findings before a production release.
-- Remaining hackathon work: publish the frontend, confirm sandbox acceptance with mentors, prepare the official deck with actual team details, collect real attendee feedback and submit. These require external details/actions; no traction or team identities are invented.
+- Remaining hackathon work: verify an installed external wallet and QR invitation on a real phone, confirm sandbox acceptance with mentors, prepare the official deck with actual team details, collect real attendee feedback and submit. These require external details/actions; no traction or team identities are invented.
 
 ## References used
 

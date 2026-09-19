@@ -74,8 +74,8 @@ visual system. Financial handlers and recovery logic were not changed.
 - `web/tests/banking.test.ts`, `recovery.mjs`: state boundaries, reload/history/account isolation and authenticated status checks without sending payment.
 - `deployments/`: public WASM and proofs; `archive/` retains V1.
 
-Run and verification commands are maintained in the root README. Browser tests use installed Chrome. The preview uses localhost; public hosting requires HTTPS for browser cryptography and Web Locks. Do not expose the source dev server or private workspace files as the public deployment.
+Run and verification commands are maintained in the root README. Browser tests use installed Chrome. The production demo is **https://duly-sepia.vercel.app**, published to the user's Vercel project `duly`; see `docs/deployment.md` for configuration and repeat deployment. The localhost preview remains available. Both serve only the production output. Do not expose the source dev server or private workspace files as the public deployment.
 
 ## Before handover
 
-Update agent notes with verified transactions, remaining work, Git state and running servers. Public hosting, repository visibility, actual team details, real attendee validation and the official deck/submission remain separate work. The handbook lists the deadline as September 20, 2026 at 12:00 Istanbul time.
+Update agent notes with verified transactions, remaining work, Git state and running servers. The user explicitly requested Vercel publication and public repository visibility on September 19. Vercel publication is complete, and the owner's repository visibility change has been verified as PUBLIC. The implementation remains on `codex/treasury-foundation`. Actual team details, real attendee validation and the official deck/submission remain separate work. The handbook lists the deadline as September 20, 2026 at 12:00 Istanbul time.

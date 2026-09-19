@@ -125,5 +125,6 @@ authored UI text. Do not paraphrase the authored strings while wiring the view.
 
 The existing large wallet/chain bundle warning remains (about 237 KB gzip for
 the main JavaScript chunk); this pass adds fonts and 7–30 KB responsive art, with
-no animation library or video download. Public HTTPS deployment and installed
-external-wallet signing remain the previously documented delivery checks.
+no animation library or video download. The subsequent public HTTPS deployment
+is documented in [deployment notes](../deployment.md). Installed external-wallet
+signing remains a hands-on delivery check.

@@ -15,7 +15,8 @@ Updated September 19, 2026. This is the continuation point for the Duly MVP: reb
 - Overview now prioritizes the current account's unfinished payments, eligible decisions, contributions or withdrawals. The bank page preserves payment history and shows three evidence-based stages, explicit expired/attention states and authenticated bank-status checking. Legacy browser orders are retained. Feature modules live in `web/src/features/`.
 - Browser demo creates a separate treasury and three new test accounts. No CLI administrator secret enters the browser. Resident/admin/payee switching supports a single tester's full journey. This is functional testing, not real-user traction.
 - On this Mac: Rust 1.98.1, Node 26.7.0, npm 11.19.0, `wasm32v1-none`, Chrome. The scripts deploy through the JS SDK; Stellar CLI is not required.
-- A production build preview is running at **http://127.0.0.1:5173**. The public site is not deployed. Latest verification serves `duly/web/dist/`.
+- The user requested Vercel publication. The production demo is **https://duly-sepia.vercel.app**, in project `duly`, deployed from `9221d5f` on September 19. Root `vercel.json` and `.vercelignore` configure a Vite build with 34 allowlisted source files and `duly/web/dist` as the only published output. See `docs/deployment.md`. GitHub automatic deployment is not connected; repeat publication uses the CLI. Local `.vercel/` metadata and `.env.local` are ignored.
+- A production build preview also remains available at **http://127.0.0.1:5173**, serving `duly/web/dist/`.
 
 ## Verification
 
@@ -27,6 +28,7 @@ Updated September 19, 2026. This is the continuation point for the Duly MVP: reb
 - Sixteen additional desktop/mobile recovery scenarios passed accessibility checks in both themes. Fixtures cover history, expired orders, valid SEP-10 authentication for status checks, a settled contribution and completed receipts. Reload retains the observed status; switching accounts hides the previous history. No payment was submitted by the fixture test. These fixtures are separate from live testnet evidence.
 - `test:theme` passed: before-app initialization, device changes, saved override, reload, keyboard toggle, TR/EN labels, 360px/768px layout and dark wallet chooser. A transient contrast failure caused by button background animation was fixed by removing that animation and rerunning recovery, theme and browser checks.
 - After the Higgsfield redesign, production build, 10 model tests, browser navigation, theme checks, 24 accessibility scenarios and 16 recovery scenarios pass again. Visual review covers 1440/1280/768/375/360px in both themes; an independent reviewer checked all four English views at breakpoint edges. Missing-image fallback, live reduced-motion changes and 44px mobile controls pass. A keyboard check found and fixed modal focus escape/restoration; `test:browser` now checks forward/reverse Tab, Escape, trigger focus and reopening. No new payment was sent in this visual pass. See the design package for complete asset and QA evidence.
+- Vercel publication passed the actual cloud build. On `https://duly-sepia.vercel.app`, browser navigation, theme/wallet-chooser tests and all 16 recovery scenarios pass. Anonymous HTTP returns 200; the generated image matches its local hash; private/source/ZIP probes return 404. The mobile HTTPS context has Web Locks and SubtleCrypto, no horizontal overflow, and no uncaught browser errors. Deployment verification submitted no new payment.
 - Public proof verifiers read no keys. `npm run verify` checks **21** successful receipts plus deployment and vault backing. `node scripts/verify-browser.mjs` checks **13** receipts, three members, two votes, exact withdrawal memo and the independent browser treasury's backing.
 - The full live browser journey was rerun after the earlier stellar-build design changes. `npm run verify:guided` independently verified its **13** receipts, three members, two votes, reserve backing and exact withdrawal memo. Public evidence: `deployments/browser-testnet-guided.json`. `npm run export:browser` recreates that allowlisted file from a completed private browser test; verify it afterward. The later Higgsfield visual refinement did not submit new payments.
 - Browser test state is private and ignored under `web/test-results/`; generated public proof is explicitly allowlisted to addresses, hashes and amounts. Final scans found no secret-shaped keys in unignored files and no broken local documentation links.
@@ -62,8 +64,8 @@ Complete public account/config/receipt data are in `deployments/testnet.json` an
 - Separate member signatures enforce quorum, but the administrator controls who can join. Membership governance and manager handover are not implemented.
 - The anchor's bank settlement, bank account and KYC are simulated. Mentor acceptance of this workshop sandbox has not been established. Do not imply production fiat settlement.
 - Only receipt-verified claims belong in README/deck. No attendee survey or real-user traction exists. Test identities are not users.
-- Root README is the jury-facing technical document. `docs/pitch.md` contains aligned draft copy; the actual official deck needs team details and a public frontend URL.
-- The GitHub repository is still private unless its owner changed visibility externally. Its old name remains in the remote URL. Do not make it public or rename the remote without the user's instruction.
+- Root README is the jury-facing technical document. `docs/pitch.md` contains aligned draft copy; the actual official deck needs team details and should use the published Vercel demo URL.
+- The user explicitly requested making the GitHub repository public and applied the change from the owner account. GitHub visibility is verified **PUBLIC** on September 19. The local `Saylool` account has write permission but `admin: false`, so repository setting changes still need the owner. The Git history scan covered 117 blobs and found no Stellar secret, private-key block or token matching the checked credential patterns. The remote retains its existing name; implementation is on `codex/treasury-foundation`.
 - Wallets Kit's unused cross-chain dependencies retain low/moderate npm advisories. `@near-js/utils` is overridden to 1.1.0 to remove the vulnerable older base-x subtree. No high/critical findings remain in the current lockfile. Only the three selected Stellar wallet modules are loaded. Resolve remaining findings before production; do not force-downgrade Kit to its incompatible 1.x API.
 - Expired/uncertain bank orders retain their reference. Recovery deliberately does not open a replacement payment automatically. Claimable-balance handling is implemented but has not been exercised by a live anchor settlement.
 
@@ -81,10 +83,10 @@ Complete public account/config/receipt data are in `deployments/testnet.json` an
 
 ## Next work
 
-1. Publish the completed frontend on an agreed host and test a public HTTPS QR invitation on a real phone. No public URL exists yet.
+1. Test a public HTTPS QR invitation at `https://duly-sepia.vercel.app` on a real phone. Publication is complete.
 2. Check signing with an installed external wallet and a real phone. Quote-expiry and bank-action-required UX now have controlled fixture coverage; actual bank-assisted resolution/cancellation remains future work.
 3. Confirm workshop sandbox acceptance with mentors; get actual team details and finish the official five-slide deck without invented traction.
-4. Validate with real attendees and record consented, actual counts/quotes. Decide repository visibility before submission.
+4. Validate with real attendees and record consented, actual counts/quotes. Use the public repository's implementation branch and the Vercel demo URL in submission materials.
 5. Submit the verified repository/demo/deck/deployment links with Genesis selected; handbook deadline: September 20, 2026, 12:00 Istanbul.
 
 Production governance, account recovery, yield and anchor/security changes require a separate scope decision after MVP validation. They are not tasks for this release.
