@@ -122,6 +122,8 @@ export const en = {
   depositBody:
     "Get a fixed exchange quote, simulate the bank transfer, and send the received USDC to your community reserve.",
   depositLimits: "Sandbox transfers: ₺50–₺3,000.",
+  joinToContribute:
+    "Join this community through an administrator’s invitation link to pay into this treasury.",
   quote: "Get transfer details",
   bankInstructions: "Your transfer details",
   iban: "Sandbox IBAN",

@@ -122,6 +122,8 @@ export const tr: Messages = {
   depositBody:
     "Sabit kur teklifi alın, banka transferini simüle edin ve gelen USDC’yi topluluk rezervine aktarın.",
   depositLimits: "Test transferi: ₺50–₺3.000.",
+  joinToContribute:
+    "Bu kasaya aidat ödemek için yöneticinin davet bağlantısıyla topluluğa katılın.",
   quote: "Transfer bilgilerini al",
   bankInstructions: "Transfer bilgileriniz",
   iban: "Test IBAN’ı",

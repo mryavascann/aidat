@@ -39,6 +39,8 @@ The deployed DeFindex vault is liquid with no strategy. **No yield, APY or infla
 
 The anchor bank leg is a **simulation**; Stellar transfers are testnet operations. Deposit amounts are TRY and withdrawals are USDC. Use the returned structured IBAN/reference and the withdrawal destination/memo exactly. Display TRY estimates at the sell rate; final amounts come from the quote. Browser contributions transfer only that deposit's received amount. Claimable-balance support is implemented but the observed live settlements used regular payments.
 
+The workshop now returns `null` for its optional limits. The shared anchor client falls back to Duly's displayed sandbox bounds (50–3,000 TRY deposit, 1 USDC minimum withdrawal), honors valid published limits, and rejects malformed values. An independent browser test completed 200 TRY → 4.0792181 USDC contribution, two-member approval and a 2 USDC payment, then a simulated 97.08 TRY withdrawal. Direct wallet-USDC contributions and fiat USD deposits are not exposed in the current UI. Connected nonmembers now see how to join before contributing.
+
 Administration controls membership, so distinct account signatures do not prove independent residents. No administrator handover or membership governance is implemented. Production needs substantially more than changing network and anchor constants.
 
 ## Browser path

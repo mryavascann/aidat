@@ -5,6 +5,13 @@ const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 export const STELLAR_USDC = `stellar:USDC:${USDC_ISSUER}`;
 const TRY = 'iso4217:TRY';
+// Match the limits shown in Duly when the workshop omits its optional limits.
+const SANDBOX_LIMITS = { min_onramp_try: '50', max_onramp_try: '3000', min_offramp_usdc: '1' };
+
+function bankLimit(limits, name) {
+  const value = limits?.[name] ?? SANDBOX_LIMITS[name];
+  return typeof value === 'number' ? String(value) : value;
+}
 
 export function validateChallenge(transaction, toml, account) {
   if (toml.NETWORK_PASSPHRASE !== NETWORK) throw new Error('Anchor is not on Stellar testnet.');
@@ -88,11 +95,18 @@ export class AnchorClient {
     if (!this.info[kind]?.USDC?.enabled) throw new Error(`Anchor ${kind} is unavailable.`);
     const deposit = kind === 'deposit';
     const units = toUnits(amount, deposit ? 2 : 7);
+    if (units <= 0n) throw new Error('Amount must be greater than zero.');
     const limits = this.health.limits;
-    if (deposit && (units < toUnits(limits.min_onramp_try, 2) || units > toUnits(limits.max_onramp_try, 2))) {
-      throw new Error(`Deposit must be ${limits.min_onramp_try}–${limits.max_onramp_try} TRY.`);
+    if (deposit) {
+      const minimum = bankLimit(limits, 'min_onramp_try');
+      const maximum = bankLimit(limits, 'max_onramp_try');
+      if (units < toUnits(minimum, 2) || units > toUnits(maximum, 2)) {
+        throw new Error(`Deposit must be ${minimum}–${maximum} TRY.`);
+      }
+    } else {
+      const minimum = bankLimit(limits, 'min_offramp_usdc');
+      if (units < toUnits(minimum)) throw new Error(`Withdrawal must be at least ${minimum} USDC.`);
     }
-    if (!deposit && units < toUnits(limits.min_offramp_usdc)) throw new Error(`Withdrawal must be at least ${limits.min_offramp_usdc} USDC.`);
     for (let attempt = 0; attempt < 3; attempt++) {
       const quote = await this.request(`${this.toml.ANCHOR_QUOTE_SERVER}/quote`, {
         method: 'POST', body: JSON.stringify({

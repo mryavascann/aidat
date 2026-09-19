@@ -980,6 +980,9 @@ export default function App() {
                       <ShieldCheck size={22} />
                     </div>
                     <p className="note">{t.depositLimits}</p>
+                    {signer && !isMember && (
+                      <p className="note">{t.joinToContribute}</p>
+                    )}
                     <button
                       className="button full"
                       disabled={!!busy || (!!signer && !isMember)}
