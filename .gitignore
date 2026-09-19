@@ -23,6 +23,7 @@ dist/
 test-results/
 
 # Local tool settings and OS noise
+.vercel/
 .claude/settings.local.json
 .stellar-build/bmm/config.user.yaml
 .stellar-build/custom/*.user.toml

@@ -1,0 +1,23 @@
+# Deploy only the browser app and its public build inputs.
+**
+!vercel.json
+!duly
+!duly/package.json
+!duly/scripts
+!duly/scripts/sync-web.mjs
+!duly/scripts/lib
+!duly/scripts/lib/anchor.mjs
+!duly/scripts/lib/amounts.mjs
+!duly/scripts/lib/config.mjs
+!duly/deployments
+!duly/deployments/testnet.json
+!duly/web
+!duly/web/package.json
+!duly/web/package-lock.json
+!duly/web/index.html
+!duly/web/tsconfig.json
+!duly/web/vite.config.ts
+!duly/web/src
+!duly/web/src/**
+!duly/web/public
+!duly/web/public/**
