@@ -1,6 +1,6 @@
 # Duly
 
-Duly is a shared building treasury: residents pay dues, the manager announces an expense, and the money reaches the recipient’s IBAN under rules enforced by Stellar. Cleaners and other recipients do not need an app, account or wallet.
+Duly is a shared building treasury: residents pay dues, the manager announces an expense, and the approved amount reaches the manager’s saved IBAN under rules enforced by Stellar. Residents can follow the shared balance, approvals and bank receipts.
 
 **[Try the live testnet demo](https://duly-sepia.vercel.app)** · [Contract evidence](duly/deployments/building-testnet-v3.json) · [Live payment evidence](duly/deployments/building-production-testnet-v3.json) · [Implementation notes](duly/docs/stories/02-building-governance.md) · [Dues accounting](duly/docs/stories/03-monthly-dues.md)
 
@@ -9,11 +9,13 @@ Duly is a shared building treasury: residents pay dues, the manager announces an
 1. Select **Tek kişilik demo / Solo demo**. Duly creates your own three-apartment test building. There is no role switching or manual account setup.
 2. Open **Aidat öde / Pay dues**. **USDC ile katkı / Contribute USDC** is selected. In the solo demo, select **Test USDC yükle / Get test USDC** once, then contribute **5 test USDC** to an apartment. Funding your wallet does not pay dues. The **TL banka ödemesi / TRY bank payment** option remains available; try **200 simulated TRY**.
 3. Inspect **Aylık borç takibi / Monthly dues tracking** on the same page. It shows each apartment’s paid, partial or unpaid status, remaining period debt and total arrears. Filter unpaid apartments or choose a previous period. Records are shared across browsers.
-4. In **Giderler / Expenses**, create a **100 TRY** cleaning expense with the prefilled sample IBAN. Review the suggested USDC spending ceiling.
+4. In **Giderler / Expenses**, enter a description and **100 TRY**. The saved manager IBAN is used automatically (the solo demo starts with a sample IBAN). The USDC spending ceiling updates with the TRY amount, using the current bank rate plus 10% headroom. Only the bank's actual quote is spent.
 5. The demo’s **20-second objection window** replaces the normal three days. The registered payment proceeds automatically. The card distinguishes treasury disbursement from the bank’s final simulated receipt.
 6. To explore governance, simulate another apartment’s objection or approval, propose a budget or manager, transfer a seat, or delegate its vote. Simulated votes are clearly labelled.
 
-For a personal account, select **Passkey ile hesap oluştur / Create account with passkey**. Your device’s passkey signs a real Stellar smart account. Duly sponsors testnet fees; no recovery phrase is entered into the app. Freighter, xBull and Albedo remain optional. Passkeys are bound to the site’s domain. Physical device signing, multi-device recovery and production wallet hardening require further validation.
+For a personal account, select **Passkey ile hesap oluştur / Create account with passkey**, enter a display name, then review it before confirming with your device. Returning users have a separate sign-in option. Your device’s passkey signs a real Stellar smart account. Duly sponsors testnet fees; no recovery phrase is entered into the app. Freighter, xBull and Albedo remain optional. Passkeys are bound to the site’s domain. Physical device signing, multi-device recovery and production wallet hardening require further validation.
+
+**Yeni bina oluştur / Create a new building** sets up a treasury; **Mevcut binaya katıl / Join an existing building** opens a shared one using a QR scan, QR image or invitation link. A verified building preview shows its name before switching. Share its QR from the building page. Viewing a QR does not grant voting rights. The manager's validated payout IBAN is saved once per building and manager in this browser; another device needs the IBAN entered again. Changes apply only to new expenses.
 
 ## The building rules
 
@@ -42,7 +44,7 @@ flowchart LR
   Owners[Apartment signatures] -->|Budget, recipients, votes and vetoes| Treasury
   Treasury -->|Authorized expense| Bridge[Bank adapter escrow]
   Bridge -->|USDC and exact memo| Anchor[TRY anchor sandbox]
-  Anchor -->|Simulated bank transfer| IBAN[Recipient IBAN]
+  Anchor -->|Simulated bank transfer| IBAN[Manager's saved IBAN]
 ```
 
 - **Stellar / Soroban:** native `require_auth`, persistent seats, versioned votes, events, immutable bank/token/vault configuration and permissionless execution of an already authorized expense.

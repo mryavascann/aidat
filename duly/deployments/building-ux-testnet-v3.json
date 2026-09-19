@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "verifiedAt": "2026-09-19T21:05:23.843Z",
+  "environment": "localhost UI and Stellar testnet; simulated bank payout",
+  "treasury": "CA3KJUSOEGEUFAUNEGERB7V5SB7EYQAFUFENKYAKVCEKTLGGGDZCV3U6",
+  "expenseId": 1,
+  "status": "Settled",
+  "amountTry": "100.00",
+  "automaticCeilingUsdc": "2.2700000",
+  "actualUsdc": "2.0601516",
+  "headroomPercent": 10,
+  "recipientHash": "06725e17aa8466342491835fec16dfcc64cab71f716a16e5c7bd92ceb3b77bf0",
+  "matchesSavedManagerIban": true,
+  "disbursementHash": "c71dd293f5ab4820a357f7834e34fad454d3c5769ed16c79de27bedfc77e9697",
+  "bankReference": "FAST-WE424K7OML",
+  "bankReceiptHash": "0b7068e067efefd7fb9c7c436b3a12e9c00513519378c2198883f8aff0a04327",
+  "checks": [
+    "Changed manager IBAN retained after reload",
+    "No recipient or USDC-ceiling entry required on new expense",
+    "Successful disbursement receipt",
+    "Bank reference hash matches the settled expense"
+  ]
+}

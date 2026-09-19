@@ -23,16 +23,17 @@
   "dependencies": {
     "@creit.tech/stellar-wallets-kit": "2.6.0",
     "@duly/accounts": "file:accounts",
+    "@duly/stellar-sdk": "npm:@stellar/stellar-sdk@17.1.0",
     "@fontsource-variable/dm-sans": "^5.3.0",
     "@fontsource-variable/manrope": "^5.3.0",
     "@fontsource/dm-mono": "^5.3.0",
     "@stellar/stellar-sdk": "16.3.0",
     "buffer": "^6.0.3",
     "lucide-react": "1.47.0",
+    "qr-scanner": "1.4.2",
     "qrcode": "1.5.4",
     "react": "19.3.0",
-    "react-dom": "19.3.0",
-    "@duly/stellar-sdk": "npm:@stellar/stellar-sdk@17.1.0"
+    "react-dom": "19.3.0"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.13.0",

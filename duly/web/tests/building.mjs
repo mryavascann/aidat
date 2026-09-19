@@ -140,6 +140,9 @@ try {
         .getByLabel("Açıklama", { exact: true })
         .fill("Temizlik · bağımsız V3 testi");
       await page
+        .getByLabel("Alıcının alacağı tutar (TL)", { exact: true })
+        .fill("100");
+      await page
         .getByRole("dialog")
         .getByRole("button", { name: "İmzala ve gönder", exact: true })
         .click();

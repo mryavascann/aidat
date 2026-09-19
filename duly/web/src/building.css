@@ -381,6 +381,180 @@
   place-items: center;
   border-radius: 19px;
 }
+.v3-access-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.v3-access-tabs .button {
+  white-space: normal;
+}
+.v3-access-tabs [aria-pressed="true"] {
+  background: var(--soft-green);
+  border-color: var(--green);
+  color: var(--ink);
+}
+.v3-access-steps {
+  display: flex;
+  gap: 18px;
+  list-style: none;
+  margin: 0;
+  padding: 4px 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+.v3-access-steps li {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.v3-access-steps li[aria-current] {
+  color: var(--ink);
+  font-weight: 700;
+}
+.v3-access-steps li > span {
+  display: grid;
+  place-items: center;
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  border: 1px solid var(--line-strong);
+  flex-shrink: 0;
+}
+.v3-access-steps li[aria-current] > span {
+  background: var(--soft-green);
+  border-color: var(--green);
+}
+.v3-profile-summary,
+.v3-recipient-summary {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+.v3-profile-summary > div,
+.v3-recipient-summary > div {
+  flex: 1;
+  min-width: 0;
+}
+.v3-profile-summary strong {
+  display: block;
+  margin-top: 3px;
+  overflow-wrap: anywhere;
+}
+.v3-profile-summary > .text-button,
+.v3-recipient-summary > .text-button {
+  flex-shrink: 0;
+}
+.v3-recipient-summary {
+  flex-wrap: wrap;
+}
+.v3-recipient-summary strong {
+  font-size: 12px;
+}
+.v3-recipient-summary p {
+  font-size: 12px;
+  line-height: 1.8;
+  margin: 4px 0 0;
+  overflow-wrap: anywhere;
+}
+.v3-inline-bank {
+  display: grid;
+  gap: 12px;
+}
+.v3-cap-summary {
+  padding: 16px;
+  border-radius: 12px;
+  background: var(--soft-green);
+}
+.v3-cap-summary > span {
+  font-size: 12px;
+}
+.v3-cap-summary output {
+  display: block;
+  font-size: 23px;
+  font-weight: 700;
+  margin: 6px 0;
+  font-variant-numeric: tabular-nums;
+}
+.v3-cap-summary p {
+  font-size: 12px;
+  line-height: 1.7;
+  margin: 0;
+  color: var(--muted);
+}
+.v3-access-alternative {
+  border-top: 1px solid var(--line);
+  padding-top: 8px;
+}
+.v3-access-alternative summary {
+  cursor: pointer;
+  min-height: 44px;
+  align-content: center;
+  font-size: 12px;
+  color: var(--ink);
+}
+.v3-access-alternative form {
+  margin-top: 12px;
+}
+.v3-field-error {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--error-ink, #96533e);
+}
+.v3-qr-choice {
+  display: grid;
+  justify-items: center;
+  gap: 12px;
+  background: var(--soft-green);
+  padding: 24px 18px;
+  border-radius: 16px;
+}
+.v3-qr-choice > svg {
+  color: var(--green);
+  margin-bottom: 8px;
+}
+.v3-qr-camera video {
+  display: block;
+  width: 100%;
+  max-height: 280px;
+  border-radius: 12px;
+  background: #10251a;
+  object-fit: cover;
+}
+.v3-building-preview {
+  display: grid;
+  gap: 10px;
+  border: 1px solid var(--green);
+  border-radius: 14px;
+  padding: 18px;
+}
+.v3-building-preview h3,
+.v3-building-preview p {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.v3-building-preview > p {
+  font-size: 13px;
+}
+.v3-share-qr {
+  display: block;
+  width: min(100%, 280px);
+  height: auto;
+  border-radius: 12px;
+  align-self: center;
+  background: #fff;
+}
+.v3-share-building > h3 {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.v3-share-building input {
+  font-size: 11px;
+}
 .v3-modal-status {
   display: flex;
   gap: 9px;
@@ -396,7 +570,7 @@
   border: 1px solid var(--line);
   border-radius: 10px;
   font-size: 12px;
-  color: var(--danger, #9e3838);
+  color: var(--error-ink, #96533e);
   margin-bottom: 16px;
   overflow-wrap: anywhere;
 }
@@ -415,6 +589,33 @@
   font-size: 10px;
   color: var(--muted);
   margin: 4px 0 0;
+}
+.v3-building-switch {
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  min-height: 44px;
+}
+.v3-building-switch > svg {
+  flex-shrink: 0;
+}
+.v3-building-switch > div:nth-child(2) {
+  min-width: 0;
+}
+.v3-expense-form {
+  gap: 14px;
+}
+@media (max-width: 700px) {
+  .v3-expense-form .v3-recipient-summary {
+    padding: 12px;
+  }
+  .v3-expense-form .v3-cap-summary {
+    padding: 12px;
+  }
 }
 @media (max-width: 1000px) {
   .v3-next {

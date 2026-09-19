@@ -18,6 +18,9 @@ export function Dialog({
     const element = ref.current!;
     const trigger = document.activeElement;
     element.showModal();
+    element
+      .querySelector<HTMLElement>("[data-autofocus]")
+      ?.focus({ preventScroll: true });
     return () => {
       element.close();
       if (trigger instanceof HTMLElement && trigger.isConnected)

@@ -61,6 +61,31 @@ themes. Theme choice needs no settings page or new product navigation.
 
 ## Information and interactions
 
+### V3 access and expense forms
+
+Use distinct actions: **Create a new building** for a manager setting up a
+treasury and **Join an existing building** for opening a shared building. Make
+joining available without signing in. The primary entry is a QR code, with an
+on-device image reader and a pasted invitation link as alternatives. Preview the
+verified building before switching; viewing never grants apartment voting rights.
+Share a QR and its link from the building page. Keep contract IDs in technical
+details and never navigate to an arbitrary scanned URL.
+
+Account creation has two explicit steps: a required display name, then a summary
+and a deliberate passkey confirmation. Returning users have a separate sign-in
+choice. Never open the authenticator on load or substitute a generic name for an
+empty display name. Focus the first relevant field and retain it after errors.
+
+New expenses pay the current manager's saved Turkish IBAN. Collect and validate
+it once during setup or before the first expense; allow changes in the manager's
+account settings. Scope the saved preference to the building and current manager
+in this browser, and explain that device scope. Existing signed expenses keep
+their original recipient. The expense form asks for a description and TRY only.
+Show an automatic, read-only USDC ceiling based on the current anchor sell rate,
+with 10% headroom rounded up to a USDC cent. Explain that only the actual bank
+quote is spent and the recipient's TRY amount stays fixed. Block submission when
+the rate is unavailable or stale, and preserve the ceiling on saved retries.
+
 Show the fund balance and an account-aware next action first: resume an unfinished
 payment, review approvals, contribute or withdraw. Follow with the three real
 summary metrics, the collection/decision/receipt rail, expenses and the ledger.

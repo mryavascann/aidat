@@ -78,7 +78,8 @@ try {
     await page
       .getByRole("button", { name: "Hesap aç / giriş yap", exact: true })
       .click();
-    await page.getByLabel("Hesap adı", { exact: true }).fill("Passkey QA");
+    await page.getByLabel("Görünen adınız", { exact: true }).fill("Passkey QA");
+    await page.getByRole("button", { name: "Devam et", exact: true }).click();
     await page
       .getByRole("dialog")
       .getByRole("button", { name: "Passkey ile hesap oluştur", exact: true })
@@ -106,11 +107,14 @@ try {
   if (!savedBuilding || savedBuilding === deployment.treasury) {
     await page
       .getByRole("dialog")
-      .getByRole("button", { name: "Bina kur", exact: true })
+      .getByRole("button", { name: "Yeni bina oluştur", exact: true })
       .click();
     await page
       .getByLabel("Bina adı", { exact: true })
       .fill("Passkey Apartmanı");
+    await page
+      .getByLabel("Yönetici IBAN’ı", { exact: true })
+      .fill("TR330006100519786457841326");
     await page
       .getByLabel("Daire sahiplerinin adresleri", { exact: true })
       .fill([address, seats[1].owner].join("\n"));

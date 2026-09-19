@@ -2,6 +2,68 @@
 
 Updated September 19, 2026. The active product is **V3 building governance**, published on `main`; V3 base `f3a5498`, with the friend’s `6bad646` pitch update merged before the dues work. Run Git status/log for the current revision and push status. Previous V2 notes are preserved in `archive/agent-notes-v2.md`; do not treat their old scope as current.
 
+## UX revision — September 20, 2026
+
+The current request is to clarify building access, use QR codes, route new
+expenses to a saved manager IBAN, calculate the USDC ceiling automatically, and
+fix the name/passkey sequence. The follow-up request explicitly authorizes
+committing and pushing these changes to `main` and publishing them on Vercel.
+Publication is in progress; the deployment record below will identify the verified
+release. The supplied older Aidat handoff is background, not the active V3
+specification or the source of this publishing authorization.
+
+- `BuildingAccess.tsx`: separate **Create a new building** and **Join an existing
+  building** actions. Joining is available without an account from the overview,
+  building page and building selector. Share a QR plus link; scan using the
+  camera, an on-device image decoder or paste a link. Validate the contract and
+  show its name/seat count before switching. A QR grants viewing only. Arbitrary
+  scanned URLs are never navigated to. The scanner is lazy-loaded with a worker
+  fallback; camera tracks are released when closing or leaving the scanner.
+- New expenses require only description and TRY amount. A manager IBAN is
+  validated and saved once at setup or first expense, and can be edited in the
+  manager account or expense preview. Storage is scoped to building + manager
+  **in this browser** (`v3:manager-iban:<building>:<manager>`); this is not a
+  cross-device bank profile. A replacement manager does not inherit the previous
+  manager's preference. Existing signed expenses keep their original recipient.
+- `expense-form.ts`: current anchor sell rate + 10% headroom, rounded upward to
+  a USDC cent with integer arithmetic. No editable expense ceiling. Missing or
+  stale rates block a new submission; saved intents retain their amount, IBAN
+  and ceiling on retry. The bank still validates its exact quote against the
+  signed maximum, and unused headroom stays in the treasury.
+- `AccountAccess.tsx`: required display name first, a separate confirmation
+  step before invoking WebAuthn, a dedicated returning-user sign-in choice,
+  preserved names on validation errors and pending deployment retries, and
+  visible saved profile names. The account adapter also rejects empty names
+  before touching browser credentials. Silent session restoration remains
+  non-interactive. Dialogs focus the name field and restore their trigger.
+- Updated the existing live/passkey regression selectors to match these flows.
+  No Rust/WASM, governance, bank destination validation or production hosting
+  configuration changed. The existing local server still serves built output
+  and APIs at **http://localhost:5174**.
+
+Verification for this revision: TypeScript/Vite build and **31 web tests** pass.
+Interactive browser checks cover blank/whitespace names, normalization and back
+navigation, distinct returning-user sign-in, keyboard focus trapping/restoration,
+valid QR image → verified building → navigation, invalid QR/link rejection,
+pasted-link preview, QR sharing/copy, invalid IBAN rejection, edited manager IBAN
+surviving reload, and recalculation from 100 to 1,000 TRY. Reviewed mobile 360/390
+and desktop layouts, both languages and themes; no horizontal overflow in the
+tested name dialog. These are developer-run UX checks, not participant research
+or full accessibility certification. Physical camera permissions and physical
+biometric signing were not exercised; QR image decoding and pre-WebAuthn steps
+were tested. Private browser demo state remains in the in-app browser; do not
+clear it. Local QR fixtures live in ignored `web/test-results/ux-access/`.
+
+Fresh UI-to-bank test passed: a new solo building
+`CA3KJUSOEGEUFAUNEGERB7V5SB7EYQAFUFENKYAKVCEKTLGGGDZCV3U6` received 5 test USDC.
+An edited manager IBAN survived reload and was used for a 100 TRY expense with
+an automatic 2.27 USDC ceiling. Actual disbursement was 2.0601516 USDC; the bank
+returned **FAST-WE424K7OML** and the contract reached **Settled**. Verified the
+recipient hash against the selected manager account, bank reference hash against
+the contract receipt, and successful disbursement transaction
+`c71dd293f5ab4820a357f7834e34fad454d3c5769ed16c79de27bedfc77e9697`.
+Public evidence: `deployments/building-ux-testnet-v3.json`. No real money moved.
+
 ## User decisions
 
 - Brand Duly; repository keeps the historical `mryavascann/aidat` URL and is public.

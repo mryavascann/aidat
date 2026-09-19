@@ -10,6 +10,7 @@ import {
   ArrowRight,
   Building2,
   Check,
+  ChevronDown,
   Clock3,
   Copy,
   Fingerprint,
@@ -18,6 +19,7 @@ import {
   LoaderCircle,
   LogOut,
   Plus,
+  QrCode,
   ReceiptText,
   RefreshCw,
   ShieldCheck,
@@ -28,6 +30,9 @@ import {
 } from "lucide-react";
 import { StrKey } from "@duly/stellar-sdk";
 import { Dialog } from "./components/Dialog";
+import { AccountAccess } from "./components/AccountAccess";
+import { JoinBuilding, ShareBuilding } from "./components/BuildingAccess";
+import { ManagerBankForm } from "./components/ManagerBankForm";
 import { ThemeToggle } from "./components/ThemeToggle";
 import { BalanceScene } from "./features/overview/BalanceScene";
 import { DuesOverview } from "./features/dues/DuesOverview";
@@ -39,6 +44,14 @@ import { rates, short, hex, txUrl, contractUrl } from "./lib/chain";
 import { exclusive, load, save } from "./lib/storage";
 import { connectWallet } from "./lib/wallet";
 import { normalizeIban, recipientId, formatIban } from "./lib/iban";
+import {
+  DEMO_MANAGER_IBAN,
+  displayName,
+  expenseCeiling,
+  isFreshRate,
+  managerIbanKey,
+} from "./lib/expense-form";
+import { buildingLink } from "./lib/building-access";
 import {
   accountBalance,
   addr,
@@ -87,6 +100,8 @@ type Modal =
   | "demo"
   | "setup"
   | "open"
+  | "share"
+  | "manager-bank"
   | "expense"
   | "decision"
   | "transfer"
@@ -132,6 +147,8 @@ export default function BuildingApp() {
     null,
   );
   const [balance, setBalance] = useState<bigint | null>(null);
+  const [rateReceivedAt, setRateReceivedAt] = useState(0);
+  const [, setProfileRevision] = useState(0);
   const [busy, setBusy] = useState(""),
     [error, setError] = useState(""),
     [success, setSuccess] = useState("");
@@ -152,6 +169,22 @@ export default function BuildingApp() {
   const selectedExpense = useRef<Expense | null>(null),
     selectedSeat = useRef<Seat | null>(null);
   const isManager = !!actor && actor.address === data?.config.manager;
+  const managerIban = data
+    ? load<string>(managerIbanKey(treasury, data.config.manager), "")
+    : "";
+  const accountName = account ? load<string>(`v3:profile:${account}`, "") : "";
+  const pendingExpense = form.pending === "true";
+  let autoCap = "";
+  try {
+    autoCap = pendingExpense
+      ? form.cap
+      : rate && isFreshRate(rateReceivedAt, now)
+        ? expenseCeiling(form.amount, rate.sell)
+        : "";
+  } catch {
+    /* The amount may be incomplete while the user types. */
+  }
+  const expenseIban = pendingExpense ? form.iban : managerIban;
   const eligibleSeats =
     data?.seats.filter((s) => s.owner === account || s.delegate === account) ??
     [];
@@ -190,7 +223,10 @@ export default function BuildingApp() {
       return;
     if (results[0].status === "fulfilled") setData(results[0].value);
     else setError(String(results[0].reason?.message ?? results[0].reason));
-    if (results[1].status === "fulfilled") setRate(results[1].value);
+    if (results[1].status === "fulfilled") {
+      setRate(results[1].value);
+      setRateReceivedAt(Date.now());
+    }
     if (results[2].status === "fulfilled") setBalance(results[2].value);
     if (results[3].status === "fulfilled") {
       setDuesLedger(results[3].value);
@@ -226,6 +262,26 @@ export default function BuildingApp() {
     const id = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(id);
   }, []);
+
+  // Only the explicitly selected solo demo receives an example payout account.
+  useEffect(() => {
+    if (
+      demoActive &&
+      actor?.kind === "demo" &&
+      data?.config.demo &&
+      !managerIban
+    ) {
+      save(managerIbanKey(treasury, data.config.manager), DEMO_MANAGER_IBAN);
+      setProfileRevision((value) => value + 1);
+    }
+  }, [
+    demoActive,
+    actor?.kind,
+    data?.config.manager,
+    data?.config.demo,
+    managerIban,
+    treasury,
+  ]);
   useEffect(() => {
     const timer = setInterval(async () => {
       if (working.current || advancing.current || document.hidden) return;
@@ -286,7 +342,14 @@ export default function BuildingApp() {
       setSuccess(t("success"));
       await refresh();
     } catch (e: any) {
-      setError(e?.message ?? String(e));
+      setError(
+        e?.name === "NotAllowedError" ||
+          /notallowederror|cancelled|canceled|timed out or was not allowed/i.test(
+            e?.message ?? "",
+          )
+          ? t("passkeyCancelled")
+          : (e?.message ?? String(e)),
+      );
     } finally {
       working.current = false;
       setBusy("");
@@ -317,12 +380,63 @@ export default function BuildingApp() {
     setError("");
     setModal(modal);
   }
-  async function makeAccount(create: boolean) {
+  function openExpense() {
+    const intent = load<{ details: string } | null>(
+      `v3:intent:expense:${treasury}:${account}`,
+      null,
+    );
+    if (intent) {
+      const [recipient, description, amount, cap] = JSON.parse(
+        intent.details,
+      ) as string[];
+      open("expense", {
+        description,
+        amount,
+        cap,
+        iban: load(metadataKey(treasury, recipient), ""),
+        pending: "true",
+      });
+    } else open("expense", { amount: "", description: "" });
+  }
+  function selectBuilding(id: string) {
+    setNormalBuilding(id);
+    save("v3:building", id);
+    setDemoActive(false);
+    save("v3:demo-active", false);
+    history.replaceState(null, "", buildingLink(location.origin, id));
+    setModal(null);
+    setPage("overview");
+    setError("");
+    setSuccess("");
+  }
+  function saveManagerIban(iban: string) {
+    if (!isManager || !data)
+      throw new Error("Only the current manager can save this account.");
+    save(managerIbanKey(treasury, data.config.manager), normalizeIban(iban));
+    setProfileRevision((value) => value + 1);
+  }
+  async function refreshRate() {
+    try {
+      const latest = await rates();
+      setRate(latest);
+      setRateReceivedAt(Date.now());
+    } catch {
+      setRateReceivedAt(0);
+      setError(t("rateUnavailable"));
+    }
+  }
+  async function makeAccount(create: boolean, name?: string) {
+    const label = create ? displayName(name ?? "") : undefined;
     const kit = await import("@duly/accounts");
     const result = create
-      ? await kit.createAccount(form.label || "Duly")
+      ? await kit.createAccount(label!)
       : await kit.connectAccount();
     if (!result) throw new Error("Passkey account is unavailable.");
+    if (label)
+      save(
+        `v3:profile:${result.address}`,
+        "label" in result ? result.label : label,
+      );
     setIdentity({ kind: "passkey", address: result.address });
     setDemoActive(false);
     save("v3:demo-active", false);
@@ -341,15 +455,21 @@ export default function BuildingApp() {
     setSuccess(t("copied"));
   }
   async function createExpense() {
-    const iban = normalizeIban(form.iban),
+    if (!isManager)
+      throw new Error("Only the current manager can create an expense.");
+    if (!pendingExpense && !isFreshRate(rateReceivedAt, Date.now()))
+      throw new Error(t("rateUnavailable"));
+    const iban = normalizeIban(expenseIban),
       recipient = await recipientId(iban);
     const amount = toUnits(form.amount, 2),
-      cap = toUnits(form.cap);
+      cap = toUnits(autoCap);
     if (amount <= 0n || cap <= 0n) throw new Error("Enter positive amounts.");
-    const fields = [recipient, form.description, form.amount, form.cap],
+    const fields = [recipient, form.description, form.amount, autoCap],
       key = `expense:${treasury}:${account}`;
     save(metadataKey(treasury, recipient), iban);
     const id = intentFor(key, fields);
+    // Freeze the displayed ceiling before signing. A retry must not reprice it.
+    setForm((f) => ({ ...f, iban, cap: autoCap, pending: "true" }));
     const receipt = await invoke(
       actor!,
       treasury,
@@ -892,7 +1012,13 @@ export default function BuildingApp() {
       </aside>
       <div className="workspace">
         <header className="topbar">
-          <div className="community-name">
+          <button
+            className="community-name v3-building-switch"
+            aria-label={t("switchBuilding")}
+            title={t("switchBuilding")}
+            disabled={!!busy}
+            onClick={() => open("open")}
+          >
             <div className="community-avatar">
               <Building2 size={20} />
             </div>
@@ -904,7 +1030,8 @@ export default function BuildingApp() {
                   : "Stellar"}
               </p>
             </div>
-          </div>
+            <ChevronDown size={15} aria-hidden="true" />
+          </button>
           <div className="topbar-actions">
             <ThemeToggle t={oldT} />
             <div className="language-switch" aria-label={oldT.language}>
@@ -968,16 +1095,7 @@ export default function BuildingApp() {
                 <button
                   className="button"
                   disabled={!!busy}
-                  onClick={() =>
-                    open("expense", {
-                      amount: "100",
-                      cap: rate
-                        ? String(Math.ceil((100 / rate.sell) * 1.1 * 100) / 100)
-                        : "3",
-                      description: "",
-                      iban: demoActive ? "TR330006100519786457841326" : "",
-                    })
-                  }
+                  onClick={openExpense}
                 >
                   <Plus size={17} />
                   {t("createExpense")}
@@ -1091,23 +1209,40 @@ export default function BuildingApp() {
                       <span className="v3-card-icon">
                         <Sparkles size={22} />
                       </span>
-                      <h2>{actor ? t("overviewSub") : t("welcome")}</h2>
-                      <p>{actor ? t("noticeText") : t("welcomeText")}</p>
+                      <h2>{actor ? t("overviewSub") : t("switchBuilding")}</h2>
+                      <p>
+                        {actor
+                          ? t(
+                              data.config.demo
+                                ? "demoExpenseNotice"
+                                : "noticeText",
+                            )
+                          : t("joinBuildingHelp")}
+                      </p>
                       <button
                         className="button full"
                         disabled={!!busy}
-                        onClick={() => (actor ? setPage("dues") : open("demo"))}
+                        onClick={() => (actor ? setPage("dues") : open("open"))}
                       >
-                        {actor ? t("dues") : t("startDemo")}
+                        {actor ? t("dues") : t("scanQr")}
                         <ArrowRight size={16} />
                       </button>
                       {!actor && (
-                        <button
-                          className="text-button"
-                          onClick={() => open("account")}
-                        >
-                          {t("createAccount")}
-                        </button>
+                        <>
+                          <button
+                            className="text-button"
+                            onClick={() => open("account")}
+                          >
+                            {t("createAccount")}
+                          </button>
+                          <button
+                            className="text-button"
+                            onClick={() => open("demo")}
+                          >
+                            <Sparkles size={15} />
+                            {t("startDemo")}
+                          </button>
+                        </>
                       )}
                     </section>
                   </div>
@@ -1138,8 +1273,12 @@ export default function BuildingApp() {
                   <section className="v3-rules card">
                     <ShieldCheck size={21} />
                     <div>
-                      <h2>{t("notice")}</h2>
-                      <p>{t("noticeText")}</p>
+                      <h2>{t(data.config.demo ? "demo" : "notice")}</h2>
+                      <p>
+                        {t(
+                          data.config.demo ? "demoExpenseNotice" : "noticeText",
+                        )}
+                      </p>
                       <p>{t("autoExplain")}</p>
                     </div>
                   </section>
@@ -1169,7 +1308,11 @@ export default function BuildingApp() {
                     <Clock3 size={21} />
                     <div>
                       <h2>{data.config.demo ? t("demo") : t("notice")}</h2>
-                      <p>{t("noticeText")}</p>
+                      <p>
+                        {t(
+                          data.config.demo ? "demoExpenseNotice" : "noticeText",
+                        )}
+                      </p>
                       <p>{t("autoExplain")}</p>
                     </div>
                   </section>
@@ -1426,12 +1569,10 @@ export default function BuildingApp() {
                   <div className="v3-actions v3-building-tools">
                     <button
                       className="button secondary"
-                      onClick={() =>
-                        void copy(`${location.origin}/?building=${treasury}`)
-                      }
+                      onClick={() => open("share")}
                     >
-                      <Copy size={16} />
-                      {t("sharedLink")}
+                      <QrCode size={16} />
+                      {t("shareBuilding")}
                     </button>
                     <button
                       className="text-button"
@@ -1576,6 +1717,8 @@ export default function BuildingApp() {
                 demo: "demo",
                 setup: "createBuilding",
                 open: "switchBuilding",
+                share: "shareBuilding",
+                "manager-bank": "managerBank",
                 expense: "createExpense",
                 decision: "newDecision",
                 transfer: "transfer",
@@ -1603,6 +1746,7 @@ export default function BuildingApp() {
           {modal === "account" &&
             (actor ? (
               <div className="v3-account">
+                {accountName && <h3>{accountName}</h3>}
                 <p>{t("signedBy")}</p>
                 <p className="mono">{actor.address}</p>
                 <div className="v3-actions">
@@ -1622,6 +1766,16 @@ export default function BuildingApp() {
                     {t("exit")}
                   </button>
                 </div>
+                {isManager && (
+                  <button
+                    className="button secondary full"
+                    disabled={!!busy}
+                    onClick={() => open("manager-bank")}
+                  >
+                    <Landmark size={17} />
+                    {t("managerBank")}
+                  </button>
+                )}
                 <button
                   className="button full"
                   disabled={!!busy}
@@ -1642,55 +1796,29 @@ export default function BuildingApp() {
                 )}
               </div>
             ) : (
-              <div className="v3-account">
-                <span className="v3-passkey-icon">
-                  <Fingerprint size={36} />
-                </span>
-                <p>{t("passkeyText")}</p>
-                <label>
-                  {t("accountLabel")}
-                  <input
-                    autoComplete="nickname"
-                    {...textField("label")}
-                    placeholder="Duly"
-                  />
-                </label>
-                <button
-                  className="button full"
-                  disabled={!!busy}
-                  onClick={() => void run(() => makeAccount(true))}
-                >
-                  {t("createAccount")}
-                </button>
-                <button
-                  className="button secondary full"
-                  disabled={!!busy}
-                  onClick={() => void run(() => makeAccount(false))}
-                >
-                  {t("signIn")}
-                </button>
-                <button
-                  className="text-button"
-                  disabled={!!busy}
-                  onClick={() => {
-                    setModal(null);
-                    void run(async () => {
-                      const signer = await connectWallet();
-                      setIdentity({
-                        kind: "wallet",
-                        address: signer.publicKey(),
-                        signer,
-                      });
-                      setDemoActive(false);
-                      save("v3:demo-active", false);
+              <AccountAccess
+                lang={lang}
+                busy={!!busy}
+                pendingName={
+                  load<{ label?: string } | null>("v3:account-creation", null)
+                    ?.label
+                }
+                onCreate={(name) => void run(() => makeAccount(true, name))}
+                onSignIn={() => void run(() => makeAccount(false))}
+                onWallet={() => {
+                  setModal(null);
+                  void run(async () => {
+                    const signer = await connectWallet();
+                    setIdentity({
+                      kind: "wallet",
+                      address: signer.publicKey(),
+                      signer,
                     });
-                  }}
-                >
-                  <Wallet size={16} />
-                  {t("existingWallet")}
-                </button>
-                <p className="v3-help">{t("passkeyLimit")}</p>
-              </div>
+                    setDemoActive(false);
+                    save("v3:demo-active", false);
+                  });
+                }}
+              />
             ))}
           {modal === "demo" && (
             <div className="v3-account">
@@ -1711,6 +1839,11 @@ export default function BuildingApp() {
                     setDemo(created);
                     setDemoActive(true);
                     save("v3:demo-active", true);
+                    history.replaceState(
+                      null,
+                      "",
+                      new URL("/", location.origin).href,
+                    );
                     setPage("overview");
                   })
                 }
@@ -1721,49 +1854,75 @@ export default function BuildingApp() {
             </div>
           )}
           {modal === "open" && (
-            <form
-              onSubmit={(e) =>
-                submit(e, async () => {
-                  const id = form.address.trim();
-                  await buildingSnapshot(id);
-                  setNormalBuilding(id);
-                  save("v3:building", id);
-                  setDemoActive(false);
-                  save("v3:demo-active", false);
-                })
-              }
-            >
-              <label>
-                {t("buildingAddress")}
-                <input required {...textField("address")} placeholder="C…" />
-              </label>
-              <button className="button full" disabled={!!busy}>
-                {t("switchBuilding")}
-              </button>
-            </form>
+            <JoinBuilding lang={lang} onJoin={selectBuilding} />
+          )}
+          {modal === "share" && (
+            <ShareBuilding
+              lang={lang}
+              building={treasury}
+              name={data?.config.name ?? "Duly"}
+            />
+          )}
+          {modal === "manager-bank" && (
+            <ManagerBankForm
+              lang={lang}
+              initialIban={managerIban}
+              onSave={(iban) => {
+                saveManagerIban(iban);
+                setModal(null);
+              }}
+            />
           )}
           {modal === "setup" && (
             <form
               onSubmit={(e) =>
                 submit(e, async () => {
+                  let iban: string;
+                  try {
+                    iban = normalizeIban(form.iban);
+                  } catch {
+                    throw new Error(t("invalidIban"));
+                  }
                   const result = await createBuilding(
                     actor!,
                     form.name,
                     form.owners.split(/\s+/).filter(Boolean),
                     toUnits(form.amount, 2),
                   );
+                  save(managerIbanKey(result.value, actor!.address), iban);
                   setNormalBuilding(result.value);
                   save("v3:building", result.value);
+                  history.replaceState(
+                    null,
+                    "",
+                    buildingLink(location.origin, result.value),
+                  );
                   setDemoActive(false);
                   save("v3:demo-active", false);
                   setPage("building");
                 })
               }
             >
+              <p className="v3-help">{t("createBuildingHelp")}</p>
               <label>
                 {t("buildingName")}
                 <input required maxLength={80} {...textField("name")} />
               </label>
+              <label>
+                {t("managerIban")}
+                <input
+                  required
+                  autoComplete="off"
+                  spellCheck={false}
+                  maxLength={34}
+                  {...textField("iban")}
+                  placeholder="TR00 0000 0000 0000 0000 0000 00"
+                  aria-describedby="setup-iban-help"
+                />
+              </label>
+              <p id="setup-iban-help" className="v3-help">
+                {t("managerIbanHelp")} {t("managerIbanStorage")}
+              </p>
               <label>
                 {t("duesAmount")}
                 <input
@@ -1790,50 +1949,149 @@ export default function BuildingApp() {
               </button>
             </form>
           )}
-          {modal === "expense" && (
-            <form onSubmit={(e) => submit(e, createExpense)}>
+          {modal === "expense" && !expenseIban && !pendingExpense && (
+            <div className="v3-account">
+              <p className="payment-notice">{t("managerIbanMissing")}</p>
+              <ManagerBankForm lang={lang} onSave={saveManagerIban} />
+            </div>
+          )}
+          {modal === "expense" && (!!expenseIban || pendingExpense) && (
+            <form
+              className="v3-expense-form"
+              onSubmit={(e) => submit(e, createExpense)}
+            >
+              {pendingExpense && (
+                <p className="payment-notice">{t("savedExpense")}</p>
+              )}
               <label>
                 {t("description")}
-                <input required maxLength={120} {...textField("description")} />
-              </label>
-              <label>
-                {t("iban")}
                 <input
+                  autoFocus
                   required
-                  autoComplete="off"
-                  maxLength={34}
-                  {...textField("iban")}
-                  placeholder="TR…"
+                  maxLength={120}
+                  disabled={!!busy || pendingExpense}
+                  {...textField("description")}
                 />
               </label>
-              <div className="v3-form-row">
-                <label>
-                  {t("amountTry")}
-                  <input
-                    required
-                    type="number"
-                    min="1"
-                    step=".01"
-                    {...textField("amount")}
-                  />
-                </label>
-                <label>
-                  {t("usdcCap")}
-                  <input
-                    required
-                    type="number"
-                    min="0.0000001"
-                    step=".0000001"
-                    {...textField("cap")}
-                  />
-                </label>
+              <label>
+                {t("amountTry")}
+                <input
+                  required
+                  type="number"
+                  inputMode="decimal"
+                  min="1"
+                  step=".01"
+                  placeholder="0,00"
+                  disabled={!!busy || pendingExpense}
+                  {...textField("amount")}
+                />
+              </label>
+              <div className="v3-recipient-summary">
+                <Landmark size={22} aria-hidden="true" />
+                <div>
+                  <strong>
+                    {pendingExpense ? t("iban") : t("paidToManager")}
+                  </strong>
+                  <p className="mono">
+                    {expenseIban ? formatIban(expenseIban) : "—"}
+                  </p>
+                </div>
+                {!pendingExpense && (
+                  <button
+                    type="button"
+                    className="text-button"
+                    disabled={!!busy}
+                    onClick={() =>
+                      setForm((f) => ({
+                        ...f,
+                        editIban: f.editIban === "true" ? "false" : "true",
+                        newIban: managerIban,
+                      }))
+                    }
+                  >
+                    {t("edit")}
+                  </button>
+                )}
               </div>
-              <p className="v3-help">{t("quoteHelp")}</p>
-              <p className="v3-help">{t("ibanPrivacy")}</p>
-              <p className="payment-notice">{t("noticeText")}</p>
-              <button className="button full" disabled={!!busy}>
-                {t("submit")}
+              {form.editIban === "true" && !pendingExpense && (
+                <div className="v3-inline-bank">
+                  <label>
+                    {t("managerIban")}
+                    <input
+                      autoComplete="off"
+                      maxLength={34}
+                      {...textField("newIban")}
+                      placeholder="TR…"
+                    />
+                  </label>
+                  <p className="v3-help">{t("managerIbanStorage")}</p>
+                  <button
+                    type="button"
+                    className="button secondary full"
+                    disabled={!!busy}
+                    onClick={() => {
+                      try {
+                        saveManagerIban(normalizeIban(form.newIban));
+                        setForm((f) => ({ ...f, editIban: "false" }));
+                        setError("");
+                      } catch {
+                        setError(t("invalidIban"));
+                      }
+                    }}
+                  >
+                    {t("saveManagerIban")}
+                  </button>
+                </div>
+              )}
+              <div
+                className="v3-cap-summary"
+                aria-live="polite"
+                aria-atomic="true"
+              >
+                <span>{t("automaticCap")}</span>
+                <output aria-label={t("automaticCap")}>
+                  {autoCap
+                    ? `${Number(autoCap).toLocaleString(lang === "tr" ? "tr-TR" : "en-GB", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USDC`
+                    : "—"}
+                </output>
+                <p>
+                  {t("automaticCapHelp")} {t("fixedTryAmount")}
+                </p>
+                {!autoCap && (
+                  <p>
+                    {rate && isFreshRate(rateReceivedAt, now)
+                      ? t("enterExpenseAmount")
+                      : t("rateUnavailable")}
+                  </p>
+                )}
+                {!pendingExpense && !isFreshRate(rateReceivedAt, now) && (
+                  <button
+                    type="button"
+                    className="text-button"
+                    disabled={!!busy}
+                    onClick={() => void refreshRate()}
+                  >
+                    <RefreshCw size={15} />
+                    {t("refreshRate")}
+                  </button>
+                )}
+              </div>
+              <p className="payment-notice">
+                {t(data?.config.demo ? "demoExpenseNotice" : "expenseNotice")}
+              </p>
+              <button
+                className="button full"
+                disabled={
+                  !!busy || !autoCap || !expenseIban || form.editIban === "true"
+                }
+              >
+                {t(pendingExpense ? "resumeExpense" : "submit")}
               </button>
+              <details className="v3-access-alternative">
+                <summary>{t("details")}</summary>
+                <p className="v3-help">{t("ibanPrivacy")}</p>
+                <p className="v3-help">{t("quoteHelp")}</p>
+              </details>
             </form>
           )}
           {modal === "pay" && (

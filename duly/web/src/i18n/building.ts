@@ -135,14 +135,106 @@ const copy = {
     "Cihazınızın yüz, parmak izi veya ekran kilidiyle onaylayın. Kurtarma kelimelerini Duly’ye yazmazsınız; testnet işlem ücretini Duly karşılar.",
     "Approve with your device’s face, fingerprint or screen lock. No recovery phrase is entered into Duly; Duly sponsors testnet fees.",
   ],
-  accountLabel: ["Hesap adı", "Account name"],
+  accountLabel: ["Görünen adınız", "Your display name"],
+  accountChoice: ["Hesap seçimi", "Account options"],
+  newAccount: ["Yeni hesap", "New account"],
+  existingAccount: ["Zaten hesabım var", "I have an account"],
+  accountSteps: ["Hesap oluşturma adımları", "Account creation steps"],
+  yourName: ["Adınız", "Your name"],
+  secureAccount: ["Cihazla doğrulama", "Device verification"],
+  nameTitle: ["Sizi nasıl tanıyalım?", "What should we call you?"],
+  nameHelp: [
+    "Önce hesabınıza bir ad verin. Sonraki adımda cihazınızın ekran kilidiyle hesabı oluşturacaksınız.",
+    "First, give your account a name. In the next step, create it with your device’s screen lock.",
+  ],
+  namePlaceholder: ["Örn. Deniz Yılmaz", "e.g. Alex Morgan"],
+  nameRequired: [
+    "Lütfen 2–40 karakterlik bir ad girin.",
+    "Please enter a name with 2–40 characters.",
+  ],
+  continue: ["Devam et", "Continue"],
+  back: ["Geri", "Back"],
+  edit: ["Düzenle", "Edit"],
+  welcomeBack: ["Tekrar hoş geldiniz.", "Welcome back."],
+  signInHelp: [
+    "Hesap adınızı yeniden yazmanıza gerek yok. Cihazınıza kayıtlı Duly passkey’ini seçin.",
+    "No need to enter your name again. Choose the Duly passkey saved on your device.",
+  ],
+  otherSignIn: ["Diğer giriş yöntemleri", "Other sign-in methods"],
+  passkeyCancelled: [
+    "Cihaz onayı tamamlanmadı. Adınız korunuyor; hazır olduğunuzda yeniden deneyin.",
+    "Device verification was not completed. Your name is preserved; try again when ready.",
+  ],
+  accountCreationPending: [
+    "Hesabınızın kurulumu başlamış. Aynı ad ve passkey ile kurulumu tamamlayın.",
+    "Account setup has started. Complete it with the same name and passkey.",
+  ],
   existingWallet: ["Mevcut cüzdanı bağla", "Connect existing wallet"],
   passkeyLimit: [
     "Passkey bu alan adına bağlıdır. Cihazınızın passkey eşitlemesini koruyun. Kurtarma veya ek cihaz kurulumu bu MVP’de yer almıyor.",
     "Your passkey is tied to this domain. Keep your device’s passkey sync available. Recovery and additional-device setup are outside this MVP.",
   ],
-  createBuilding: ["Bina kur", "Create building"],
-  switchBuilding: ["Bina aç", "Open building"],
+  createBuilding: ["Yeni bina oluştur", "Create a new building"],
+  switchBuilding: ["Mevcut binaya katıl", "Join an existing building"],
+  createBuildingHelp: [
+    "Yönetici olarak yeni bir bina kaydı oluşturun. Binanız zaten kayıtlıysa yöneticinizin QR koduyla katılın.",
+    "Set up a new building as its manager. If your building is already registered, join with your manager’s QR code.",
+  ],
+  joinBuildingHelp: [
+    "Yöneticinizin paylaştığı bina QR kodunu okutun veya QR görselini seçin. Bina adresi aramanız gerekmez.",
+    "Scan your manager’s building QR code or choose its image. There is no need to find a building address.",
+  ],
+  scanQr: ["Kamerayla QR okut", "Scan QR with camera"],
+  uploadQr: ["QR görseli seç", "Choose QR image"],
+  stopCamera: ["Kamerayı kapat", "Stop camera"],
+  cameraHint: [
+    "Bina QR kodunu kameraya gösterin.",
+    "Point the camera at the building’s QR code.",
+  ],
+  cameraUnavailable: [
+    "Kamera açılamadı. Kamera iznini kontrol edin; QR görseli seçebilir veya bina bağlantısını yapıştırabilirsiniz.",
+    "Could not open the camera. Check camera permission, choose a QR image or paste the building link.",
+  ],
+  qrUnreadable: [
+    "Görselde okunabilir bir QR kod bulunamadı. Daha net bir görsel veya bina bağlantısını deneyin.",
+    "No readable QR code was found. Try a clearer image or the building link.",
+  ],
+  invalidBuildingLink: [
+    "Bu geçerli bir Duly bina bağlantısı değil. Yöneticinizin paylaştığı QR kodu veya bağlantıyı kullanın.",
+    "This is not a valid Duly building link. Use the QR code or link shared by your manager.",
+  ],
+  buildingUnavailable: [
+    "Bina doğrulanamadı. Bağlantıyı ve internet erişimini kontrol edip yeniden deneyin.",
+    "Could not verify this building. Check the link and your connection, then retry.",
+  ],
+  pasteBuildingLink: ["Bağlantı ile katıl", "Join with a link"],
+  buildingLink: ["Bina davet bağlantısı", "Building invitation link"],
+  findBuilding: ["Binayı bul", "Find building"],
+  checkingBuilding: ["Bina doğrulanıyor…", "Verifying building…"],
+  buildingFound: ["Bulunan bina", "Building found"],
+  goToBuilding: ["Bu binaya git", "Go to this building"],
+  joinRights: [
+    "QR kod binayı görüntülemenizi sağlar. Oy hakkı için daire sahibinin sizi sahip veya temsilci olarak tanımlaması gerekir.",
+    "The QR code lets you view the building. Voting requires an apartment owner to assign ownership or delegation to you.",
+  ],
+  shareBuilding: ["Bina QR kodu", "Building QR code"],
+  shareQrHelp: [
+    "Komşularınız bu kodu telefon kamerasıyla okutarak binanıza ulaşabilir.",
+    "Neighbours can scan this code with their phone camera to reach your building.",
+  ],
+  buildingQr: [
+    "Bu binaya erişim sağlayan QR kod",
+    "QR code linking to this building",
+  ],
+  loadingQr: ["QR kod hazırlanıyor…", "Preparing QR code…"],
+  qrUnavailable: [
+    "QR kod hazırlanamadı. Aşağıdaki bağlantıyı paylaşabilirsiniz.",
+    "Could not prepare the QR code. You can share the link below.",
+  ],
+  copyLinkManually: [
+    "Bağlantı kopyalanamadı. Yukarıdaki bağlantıyı seçip kopyalayın.",
+    "Could not copy the link. Select and copy the link above.",
+  ],
   buildingAddress: ["Bina adresi", "Building address"],
   buildingName: ["Bina adı", "Building name"],
   owners: ["Daire sahiplerinin adresleri", "Apartment owner addresses"],
@@ -173,15 +265,61 @@ const copy = {
   unapproved: ["Henüz onaylanmadı", "Not approved yet"],
   createExpense: ["Gider oluştur", "Create expense"],
   expenseTitle: [
-    "İş, dairelerde değil; giderde.",
-    "Decisions around the expense.",
+    "Giderleri birlikte takip edin.",
+    "Keep track of expenses together.",
   ],
   expenseSub: [
-    "Yönetici gideri duyurur. Alıcı Duly kullanmaz; ödeme doğrudan IBAN’ına yönlendirilir.",
-    "The manager announces an expense. The recipient receives a bank payment without using Duly.",
+    "Yönetici gideri duyurur. Onaylanan tutar, yöneticinin kayıtlı IBAN’ına gönderilir.",
+    "The manager announces an expense. The approved amount is sent to the manager’s saved IBAN.",
   ],
   description: ["Açıklama", "Description"],
   iban: ["Alıcı IBAN’ı", "Recipient IBAN"],
+  managerIban: ["Yönetici IBAN’ı", "Manager’s IBAN"],
+  managerBank: ["Yönetici ödeme hesabı", "Manager’s payment account"],
+  managerIbanHelp: [
+    "Gider ödemeleri bu IBAN’a gönderilir. Bir kez kaydedin; her giderde yeniden girmeniz gerekmez.",
+    "Expense payments go to this IBAN. Save it once so you do not need to re-enter it for each expense.",
+  ],
+  managerIbanStorage: [
+    "Bu bina ve yönetici için bu tarayıcıda saklanır. Başka bir cihazda yeniden girmeniz gerekir. Değişiklikler yalnızca yeni giderlere uygulanır.",
+    "Saved in this browser for this building and manager. Enter it again on another device. Changes apply only to new expenses.",
+  ],
+  saveManagerIban: ["Yönetici IBAN’ını kaydet", "Save manager’s IBAN"],
+  invalidIban: [
+    "Kontrol basamakları doğru, geçerli bir Türkiye IBAN’ı girin.",
+    "Enter a valid Turkish IBAN with a correct checksum.",
+  ],
+  paidToManager: [
+    "Yöneticinin kayıtlı hesabına",
+    "To the manager’s saved account",
+  ],
+  managerIbanMissing: [
+    "İlk giderden önce yönetici IBAN’ını kaydedin.",
+    "Save the manager’s IBAN before your first expense.",
+  ],
+  automaticCap: ["Otomatik harcama üst sınırı", "Automatic spending limit"],
+  automaticCapHelp: [
+    "Banka kuruna %10 pay eklenir. Kullanılmayan pay kasada kalır.",
+    "Includes 10% headroom above the bank rate. Unused headroom stays in the treasury.",
+  ],
+  fixedTryAmount: [
+    "Alıcının alacağı TL tutarı değişmez.",
+    "The recipient’s TRY amount stays fixed.",
+  ],
+  rateUnavailable: [
+    "Güncel banka kuru alınamadı. Üst sınırı hesaplamak için kuru yenileyin.",
+    "The current bank rate is unavailable. Refresh it to calculate the spending limit.",
+  ],
+  refreshRate: ["Kuru yenile", "Refresh rate"],
+  enterExpenseAmount: [
+    "Üst sınırı görmek için TL tutarını girin.",
+    "Enter the TRY amount to see the spending limit.",
+  ],
+  savedExpense: [
+    "Gönderimi başlamış gider korunuyor. Aynı alıcı, tutar ve üst sınırla kaldığı yerden sürdürün.",
+    "An expense submission is saved. Resume it with the same recipient, amount and spending limit.",
+  ],
+  resumeExpense: ["Gideri kaldığı yerden sürdür", "Resume saved expense"],
   amountTry: ["Alıcının alacağı tutar (TL)", "Recipient receives (TRY)"],
   usdcCap: ["En fazla harcanabilecek USDC", "Maximum USDC to spend"],
   quoteHelp: [
@@ -193,6 +331,14 @@ const copy = {
     "The expense exposes an IBAN hash. Automatic payment instructions are stored encrypted and can be decrypted by the payment service. No plain-text IBAN is published on-chain.",
   ],
   notice: ["3 gün itiraz süresi", "3-day objection window"],
+  expenseNotice: [
+    "Yeni alıcı veya bütçe dışı giderde 3 gün itiraz süresi vardır. İtiraz gelirse çoğunluk onayı gerekir.",
+    "New recipients or over-budget expenses have a 3-day objection window. An objection requires majority approval.",
+  ],
+  demoExpenseNotice: [
+    "Demoda itiraz süresi 20 saniyedir. İtiraz gelmezse kayıtlı ödeme otomatik işlenir.",
+    "The demo objection window is 20 seconds. Without an objection, the saved payment is processed automatically.",
+  ],
   noticeText: [
     "Yeni alıcı ve bütçe dışı giderler de 3 gün itiraz gelmezse ödenebilir. Bir dairenin itirazı otomatik yolu durdurur; ödeme için daire çoğunluğu gerekir.",
     "New recipients and over-budget expenses become payable after 3 days without objection. One apartment’s objection stops this path; a majority is then required.",
@@ -227,8 +373,8 @@ const copy = {
   bankRef: ["Banka referansı", "Bank reference"],
   emptyExpenses: ["Henüz gider yok.", "No expenses yet."],
   emptyExpensesText: [
-    "Bir IBAN, TL tutarı ve kısa açıklama yeterli.",
-    "An IBAN, a TRY amount and a short description are enough.",
+    "TL tutarı ve kısa açıklama yeterli. Ödeme, yöneticinin kayıtlı hesabına gider.",
+    "Just a TRY amount and a short description. Payment goes to the manager’s saved account.",
   ],
   duesTitle: ["Aidat ödemek bu kadar.", "Dues, made simple."],
   duesSub: [

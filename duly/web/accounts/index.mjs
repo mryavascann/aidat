@@ -40,6 +40,11 @@ function account() {
 }
 
 export async function createAccount(label) {
+  label = typeof label === "string" ? label.trim().replace(/\s+/g, " ") : "";
+  if (label.length < 2 || label.length > 40)
+    throw new Error(
+      "Enter a display name with 2–40 characters before creating a passkey.",
+    );
   if (!window.PublicKeyCredential)
     throw new Error("This browser does not support passkeys.");
   const client = account();
@@ -49,6 +54,7 @@ export async function createAccount(label) {
       autoSubmit: false,
     });
     pending = {
+      label,
       contractId: created.contractId,
       credentialId: created.credentialId,
       payload: created.relayerPayload,
@@ -90,6 +96,7 @@ export async function createAccount(label) {
   localStorage.removeItem("duly:v3:account-creation");
   return {
     address: pending.contractId,
+    label: pending.label ?? label,
     credentialId: pending.credentialId,
     hash: result.hash,
   };
