@@ -39,6 +39,13 @@ External wallets connect through Stellar Wallets Kit (Freighter, xBull, Albedo).
 
 [Dark mode preview](duly/docs/screenshots/overview-dark.png) · [Mobile dark mode](duly/docs/screenshots/mobile-dark.png)
 
+The frontend uses a forest palette, self-hosted Manrope/DM Sans/DM Mono, and a
+responsive jade-glass image generated with Higgsfield (7–30 KB per screen).
+The user's 10k Websites design guidance is adapted to the existing MVP, with
+brief motion and full reduced-motion support. See the
+[design package](duly/docs/planning/frontend-design-package.md) for the visual
+direction, asset provenance and checks.
+
 ## Problem and solution
 
 A community fund is difficult to inspect when its money and records sit with one manager. Duly holds the fund in a contract, publishes its balance and records members' decisions. A proposal fixes the recipient and amount; payment requires the configured quorum. The anchor supplies a TRY entry and exit for the demonstration.

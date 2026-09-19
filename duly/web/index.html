@@ -10,10 +10,10 @@
         try { saved = JSON.parse(localStorage.getItem("duly:theme") ?? "null"); } catch {}
         const theme = saved === "dark" || saved === "light" ? saved : matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
         document.documentElement.dataset.theme = theme;
-        document.querySelector('meta[name="theme-color"]').content = theme === "dark" ? "#101a16" : "#f7f7f2";
+        document.querySelector('meta[name="theme-color"]').content = theme === "dark" ? "#101a16" : "#f4f6f2";
       })();
     </script>
-    <meta name="description" content="Duly — a shared treasury for communities. Collect dues, approve expenses together, and follow every payment." />
+    <meta name="description" content="Duly. A shared balance, a shared say. Collect dues, approve expenses together, and follow every payment." />
     <link rel="icon" type="image/svg+xml" href="/duly.svg" />
     <title>Duly · Community treasury</title>
   </head>

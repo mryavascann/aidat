@@ -16,14 +16,48 @@ export function Dialog({
   const ref = useRef<HTMLDialogElement>(null);
   useEffect(() => {
     const element = ref.current!;
+    const trigger = document.activeElement;
     element.showModal();
-    return () => element.close();
+    return () => {
+      element.close();
+      if (trigger instanceof HTMLElement && trigger.isConnected)
+        trigger.focus({ preventScroll: true });
+    };
   }, []);
   return (
     <dialog
       ref={ref}
       className="dialog"
       aria-labelledby="dialog-title"
+      tabIndex={-1}
+      onKeyDown={(event) => {
+        if (event.key !== "Tab") return;
+        const dialog = event.currentTarget;
+        const controls = Array.from(
+          dialog.querySelectorAll<HTMLElement>(
+            "button, input, select, textarea, a[href], summary, [tabindex]",
+          ),
+        ).filter(
+          (control) =>
+            control.tabIndex >= 0 &&
+            !control.matches(":disabled, [hidden]") &&
+            control.getClientRects().length > 0 &&
+            getComputedStyle(control).visibility !== "hidden",
+        );
+        const first = controls[0];
+        const last = controls.at(-1);
+        if (!first || !last) {
+          event.preventDefault();
+          dialog.focus();
+        } else if (
+          !controls.includes(document.activeElement as HTMLElement) ||
+          (event.shiftKey && document.activeElement === first) ||
+          (!event.shiftKey && document.activeElement === last)
+        ) {
+          event.preventDefault();
+          (event.shiftKey ? last : first).focus();
+        }
+      }}
       onCancel={(e) => {
         e.preventDefault();
         if (!busy) onClose();

@@ -18,7 +18,7 @@ function applyTheme(theme: Theme) {
   document.documentElement.dataset.theme = theme;
   document
     .querySelector('meta[name="theme-color"]')
-    ?.setAttribute("content", theme === "dark" ? "#101a16" : "#f7f7f2");
+    ?.setAttribute("content", theme === "dark" ? "#101a16" : "#f4f6f2");
 }
 
 export function ThemeToggle({ t }: { t: Messages }) {

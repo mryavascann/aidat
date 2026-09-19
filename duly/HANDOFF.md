@@ -18,7 +18,7 @@ This document is project context. The current user's request and session instruc
 
 Duly is a shared treasury for communities. Members contribute through a TRY anchor, see the same balance, and approve fixed expenses. The treasury holds Circle USDC shares in a DeFindex vault and automatically redeems the amount needed for approved payments.
 
-The user's September 19 MVP decision is **collect contributions → approve together → follow the payment**. Dark mode is the final usability addition in this iteration. Keep future work focused on delivery and validation of this journey; earlier suggestions for periodic billing, extra administration panels or other product modules are deferred. The user explicitly authorized committing and pushing the current implementation to `codex/treasury-foundation`.
+The user's September 19 MVP decision is **collect contributions → approve together → follow the payment**. Dark mode and the subsequently requested 10k Websites/Higgsfield frontend refinement support this same journey. Keep future work focused on delivery and validation; earlier suggestions for periodic billing, extra administration panels or other product modules are deferred. The user explicitly authorized committing and pushing the implementation to `codex/treasury-foundation`.
 
 - Rust/Soroban SDK **27.0.6**, target `wasm32v1-none`; Node SDK **17.1.0**.
 - React, TypeScript and Vite; Stellar Wallets Kit **2.6.0** (Freighter, xBull, Albedo).
@@ -50,6 +50,14 @@ Pending bank orders and signed envelopes survive reloads; Web Locks prevent simu
 Wallets Kit has a static API. Close the app's native dialog before opening the kit chooser, otherwise the browser's modal layer makes the chooser inert. The chooser has been tested; an installed external wallet's live signing still needs a manual check.
 
 Light/dark mode follows the device until explicitly selected in the top bar. The saved `duly:theme` preference is applied in `web/index.html` before React starts; `ThemeToggle.tsx` handles live changes. CSS tokens and the wallet chooser share that selection.
+
+The user-supplied 10k Websites ZIP was reviewed and its visual principles applied
+to the existing app. `docs/planning/frontend-design-package.md` records the
+scope adaptation and Higgsfield image provenance. `BalanceScene.tsx` is purely
+decorative; only compressed responsive WebP files ship in `web/public/images/`.
+Raw generations and the supplied skill stay outside the deployment and Git.
+Typography, both themes, mobile controls and all four views share the updated
+visual system. Financial handlers and recovery logic were not changed.
 
 ## Repository map
 

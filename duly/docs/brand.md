@@ -17,22 +17,34 @@ without a yield strategy, so never display an invented APY.
 
 ## Visual system
 
-- Background: warm paper `#F7F7F2`; surfaces: `#FFFFFF`; text: ink `#192E2B`.
-- Primary action: deep teal `#176B58`; subtle teal surface: `#EAF3EE`.
-- Secondary text: `#566963`; borders: `#DCE4DF`.
-- Pending: dark amber `#8B5400` on `#FFF3D6`; failure: `#A32938` on `#FFF0F1`.
-- Typography: self-hosted DM Sans with Turkish glyphs and tabular money numerals.
-  Body copy 12–14px, captions at least 10px, headings 24–36px; preserve
-  WCAG AA text contrast on white and sage surfaces.
-- Layout: 232px desktop navigation, 32px content gutters and a 1200px content maximum.
-  On mobile the navigation becomes a compact bar with labeled controls, 16px gutters.
-  Spacing scale: 4, 8, 12, 16, 24, 32, 48px. Card radius: 16px.
+- Background: pearl `#F4F6F2`; surfaces: `#FCFDFB`; text: forest `#19392F`.
+- Primary action: deep teal `#176B58`; subtle green surface: `#E6F0E6`.
+- Secondary text: `#566B60`; separators: `#DCE5DC`; input borders: `#768C7C`.
+- Pending: amber `#775714` on `#F7EFDD`; failure: `#96533E` on `#FFF4F0`.
+- Typography: self-hosted Manrope for headings and balances, DM Sans for body
+  copy, DM Mono for short labels and references. All support Turkish glyphs.
+  Body copy 12–14px, captions at least 10px, headings 24–42px; money uses tabular
+  numerals. Preserve WCAG AA text contrast in both themes.
+- Layout: 232px desktop navigation and 38px main gutters, narrowing at tablet
+  sizes. On mobile the navigation becomes a labeled bottom bar, with 16–20px
+  gutters and space for the device's safe area. The overview uses a signature
+  balance panel, one next action, a flat metric strip, and a compact journey rail.
+  Spacing scale: 4, 8, 12, 16, 24, 32, 48px. Main card radius: 20px.
 - Wordmark: lowercase `duly` with a small geometric green D mark; create it in SVG.
-  Use a pale sage `#EDF3E7` balance panel with strong ink text and a dark teal action.
-  Reserve warm lime `#DDECAC` for progress and small accents. Numbers carry the
-  composition; keep form fields and secondary cards visually quiet.
+  The balance panel stays deep forest `#0C302A` in both themes, with white figures
+  over jade glass arches generated with Higgsfield. The sculpture represents a
+  shared fund, never an actual product or financial result. A gradient keeps text
+  readable; the solid panel remains usable when the decorative image fails.
+  Numbers carry the composition; form fields and secondary panels stay quiet.
 - Borders define groups; shadows are reserved for dialogs. No decorative charts,
-  fabricated activity, gradients or cryptocurrency imagery.
+  fabricated activity or cryptocurrency imagery. The generated scene is the one
+  signature visual; avoid adding generic illustrations to every card.
+
+The [frontend design package](planning/frontend-design-package.md) records the
+adaptation of the user-supplied 10k Websites skill, approved MVP boundary,
+authored copy, Higgsfield provenance and verification. Its cinematic marketing
+site workflow informs the existing React application rather than introducing a
+separate site, pinned video experience or hosting dependency.
 
 ## Theme
 
@@ -50,8 +62,8 @@ themes. Theme choice needs no settings page or new product navigation.
 ## Information and interactions
 
 Show the fund balance and an account-aware next action first: resume an unfinished
-payment, review approvals, contribute or withdraw. Follow with a three-part
-collection/decision/receipt explanation, expenses and the chronological ledger.
+payment, review approvals, contribute or withdraw. Follow with the three real
+summary metrics, the collection/decision/receipt rail, expenses and the ledger.
 Keep bank deposit/withdrawal actions in their own tab, followed by scoped payment
 history. Payment dialogs show three evidence-based stages and preserve receipts.
 Amounts display TRY first and the exact USDC amount second.

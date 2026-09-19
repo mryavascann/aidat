@@ -1,4 +1,9 @@
-import { ArrowDownLeft, CheckCheck, ReceiptText } from "lucide-react";
+import {
+  ArrowDownLeft,
+  ArrowUpRight,
+  CheckCheck,
+  ReceiptText,
+} from "lucide-react";
 import type { Messages } from "../../i18n/en";
 
 export function CommunityJourney({
@@ -38,12 +43,19 @@ export function CommunityJourney({
         <button key={title} onClick={action}>
           <div className="journey-icon">
             <Icon size={20} />
-            <span>0{index + 1}</span>
           </div>
           <div>
-            <strong>{title}</strong>
+            <strong>
+              <span className="journey-index">0{index + 1}</span>
+              {title}
+            </strong>
             <p>{body}</p>
           </div>
+          <ArrowUpRight
+            className="journey-arrow"
+            size={16}
+            aria-hidden="true"
+          />
         </button>
       ))}
     </section>

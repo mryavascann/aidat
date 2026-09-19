@@ -42,6 +42,7 @@ import { PaymentHistory } from "./features/banking/PaymentHistory";
 import { bankHistory } from "./features/banking/model";
 import { NextActionCard } from "./features/overview/NextActionCard";
 import { CommunityJourney } from "./features/overview/CommunityJourney";
+import { BalanceScene } from "./features/overview/BalanceScene";
 import {
   activity,
   addr,
@@ -772,6 +773,7 @@ export default function App() {
                 <>
                   <div className="hero-grid">
                     <section className="balance-card">
+                      <BalanceScene />
                       <div className="balance-top">
                         <span>
                           <span className="tiny-logo">d.</span>
@@ -788,26 +790,6 @@ export default function App() {
                       <div className="balance-sub">
                         <strong>{usdc(data.total)} USDC</strong>
                         <span>{rate ? t.estimate : t.unavailableRate}</span>
-                      </div>
-                      <div className="balance-art" aria-hidden="true">
-                        <svg viewBox="0 0 170 170">
-                          <path
-                            d="M40 25h45a60 60 0 010 120H40V25z"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="22"
-                          />
-                          <path
-                            d="M68 54h18a31 31 0 010 62H68V54z"
-                            fill="currentColor"
-                          />
-                          <circle
-                            cx="139"
-                            cy="32"
-                            r="17"
-                            fill="var(--art-accent, #C5D99B)"
-                          />
-                        </svg>
                       </div>
                       <div className="balance-footer">
                         <div>
@@ -858,12 +840,6 @@ export default function App() {
                       onWallet={() => setModal("wallet")}
                     />
                   </div>
-                  <CommunityJourney
-                    t={t}
-                    onBank={() => setPage("banking")}
-                    onExpenses={() => setPage("expenses")}
-                    onProofs={() => setModal("proofs")}
-                  />
                   <div className="stats-grid">
                     <div className="stat-card">
                       <div>
@@ -898,6 +874,12 @@ export default function App() {
                       </span>
                     </div>
                   </div>
+                  <CommunityJourney
+                    t={t}
+                    onBank={() => setPage("banking")}
+                    onExpenses={() => setPage("expenses")}
+                    onProofs={() => setModal("proofs")}
+                  />
                   <div className="details-grid">
                     <section className="card expenses-card">
                       <div className="section-heading">

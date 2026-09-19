@@ -27,7 +27,7 @@ try {
   await page.screenshot({ path: "test-results/desktop.png", fullPage: true });
   await page.getByRole("button", { name: "EN", exact: true }).click();
   await page
-    .getByRole("heading", { name: "Your community, in balance." })
+    .getByRole("heading", { name: "A shared balance. A shared say." })
     .waitFor();
   await page.screenshot({
     path: "test-results/desktop-en.png",
@@ -54,6 +54,33 @@ try {
   await page.getByRole("button", { name: t.startDemo, exact: true }).click();
   await page.getByRole("dialog").waitFor();
   await page.screenshot({ path: "test-results/demo-dialog.png" });
+  const dialog = page.getByRole("dialog");
+  for (const key of [
+    "Tab",
+    "Tab",
+    "Tab",
+    "Shift+Tab",
+    "Shift+Tab",
+    "Shift+Tab",
+  ]) {
+    await page.keyboard.press(key);
+    assert(
+      await dialog.evaluate((element) =>
+        element.contains(document.activeElement),
+      ),
+      "Keyboard focus must stay inside the modal",
+    );
+  }
+  await page.keyboard.press("Escape");
+  assert.equal(await dialog.isVisible(), false);
+  assert(
+    await page
+      .getByRole("button", { name: t.startDemo, exact: true })
+      .evaluate((element) => element === document.activeElement),
+    "Closing the modal restores the trigger's focus",
+  );
+  await page.keyboard.press("Enter");
+  await dialog.waitFor();
   if (process.env.DULY_LIVE_E2E === "1" || process.argv.includes("--live")) {
     page.setDefaultTimeout(240000);
     console.log("Creating independent browser demo on testnet…");
