@@ -6,6 +6,10 @@ Initial publication: September 19, 2026 from `codex/treasury-foundation` at `922
 Vercel project: `duly` in `sametgoc81tr-4111s-projects`.
 Initial deployment: `dpl_JE7y6zaZ4qRPotbgBgGoGqoVntA5`.
 [Build and deployment](https://vercel.com/sametgoc81tr-4111s-projects/duly/JE7y6zaZ4qRPotbgBgGoGqoVntA5).
+The bank-payment fix at `ff60508` is published as
+[`dpl_DFjMGyzt6Dg7nhVNu7MTjbJDQRNe`](https://vercel.com/sametgoc81tr-4111s-projects/duly/DFjMGyzt6Dg7nhVNu7MTjbJDQRNe).
+The production alias returns HTTP 200 and its JavaScript bundle matches the
+locally tested build (SHA-256 `4508b00dd9763cbdde3b87d1e0d95572d3657490e953e9d7cda529bba94d39e9`).
 The repository is public; the current
 [implementation branch](https://github.com/mryavascann/aidat/tree/codex/treasury-foundation)
 contains the application and deployment configuration.
