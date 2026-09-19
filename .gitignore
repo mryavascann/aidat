@@ -1,0 +1,17 @@
+# Secrets and deploy state: never commit
+.aidat-*-key
+.aidat-contract-id
+.env
+.env.*
+!.env.example
+
+# Build output and dependencies
+target/
+node_modules/
+dist/
+
+# Local tool settings and OS noise
+.claude/settings.local.json
+.DS_Store
+Thumbs.db
+*.log
