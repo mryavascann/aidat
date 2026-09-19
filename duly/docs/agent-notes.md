@@ -1,6 +1,6 @@
 # Duly — current state
 
-Updated September 19, 2026. The active product is **V3 building governance**, published on `main`; V3 base `f3a5498`, with the friend’s `6bad646` pitch update merged before the dues work. Run Git status/log for the current revision and push status. Previous V2 notes are preserved in `archive/agent-notes-v2.md`; do not treat their old scope as current.
+Updated September 20, 2026. The active product is **V3 building governance**, published on `main`; current UX source `c285dec`, V3 base `f3a5498`, with the friend’s `6bad646` pitch update merged before the dues work. Run Git status/log for the current revision and push status. Previous V2 notes are preserved in `archive/agent-notes-v2.md`; do not treat their old scope as current.
 
 ## UX revision — September 20, 2026
 
@@ -8,8 +8,9 @@ The current request is to clarify building access, use QR codes, route new
 expenses to a saved manager IBAN, calculate the USDC ceiling automatically, and
 fix the name/passkey sequence. The follow-up request explicitly authorizes
 committing and pushing these changes to `main` and publishing them on Vercel.
-Publication is in progress; the deployment record below will identify the verified
-release. The supplied older Aidat handoff is background, not the active V3
+Published source `c285dec` to `main` and Vercel deployment
+`dpl_HJ391WDReMfHucWLBTF2bs2R6Na6` to **https://duly-sepia.vercel.app**.
+The supplied older Aidat handoff is background, not the active V3
 specification or the source of this publishing authorization.
 
 - `BuildingAccess.tsx`: separate **Create a new building** and **Join an existing
@@ -64,6 +65,13 @@ the contract receipt, and successful disbursement transaction
 `c71dd293f5ab4820a357f7834e34fad454d3c5769ed16c79de27bedfc77e9697`.
 Public evidence: `deployments/building-ux-testnet-v3.json`. No real money moved.
 
+Publication checks passed: actual Vercel build, candidate bank config and dues
+ledger, canonical HTML and all 17 JavaScript/CSS assets matching the local build,
+private/source paths returning 404, and unauthenticated keeper returning 401.
+The public HTTPS browser passed the name-first/passkey review and QR-image →
+verified building → navigation checks without console warnings/errors. See
+`deployment.md` for the candidate URL and release record. No server keys changed.
+
 ## User decisions
 
 - Brand Duly; repository keeps the historical `mryavascann/aidat` URL and is public.
@@ -73,7 +81,7 @@ Public evidence: `deployments/building-ux-testnet-v3.json`. No real money moved.
 - **New recipient or over-budget expense: three days without objection**, with majority available earlier. Any objection requires majority. Routine approved-recipient spending inside the TRY and USDC budget has no additional wait.
 - **30-day periods from setup** for both budgets and monthly dues, not calendar months. Changing limits never resets spent amounts.
 - Passkey smart accounts and a one-person jury demo. Demo votes/accounts must be labelled as simulated; do not weaken normal contract timers.
-- Latest request: pull the friend’s contribution, make direct USDC easy for jurors, add monthly debt tracking, then push **main**. Existing authorization covers commit, push and Vercel publication. The user did not authorize mainnet payments or contacting external people.
+- Latest request: improve building QR access, manager IBAN, automatic expense caps and name/passkey UX, then push **main** and publish on Vercel. This follows the completed friend’s contribution merge and dues work. Existing authorization covers commit, push and Vercel publication. The user did not authorize mainnet payments or contacting external people.
 
 ## Implementation
 

@@ -2,7 +2,7 @@
 
 Production testnet demo: **https://duly-sepia.vercel.app**. Implementation branch: [`main`](https://github.com/mryavascann/aidat/tree/main).
 
-Vercel project `duly`, scope `sametgoc81tr-4111s-projects`. Current dues build: [`dpl_HU1WEbg9b7yWWmqqqVZob4jid2u5`](https://vercel.com/sametgoc81tr-4111s-projects/duly/HU1WEbg9b7yWWmqqqVZob4jid2u5), September 19, 2026. Candidate URL: `https://duly-6dqn8vi8s-sametgoc81tr-4111s-projects.vercel.app`. It replaces V3 build `dpl_D2NeST2o6Zs32brDM4eXkeicZvVK` without changing contract addresses or server keys. Previous V2 publication details remain in `archive/deployment-v2.md`.
+Vercel project `duly`, scope `sametgoc81tr-4111s-projects`. Current UX build: [`dpl_HJ391WDReMfHucWLBTF2bs2R6Na6`](https://vercel.com/sametgoc81tr-4111s-projects/duly/HJ391WDReMfHucWLBTF2bs2R6Na6), September 20, 2026, from source commit [`c285dec`](https://github.com/mryavascann/aidat/commit/c285dec). Candidate URL: `https://duly-7gia6faez-sametgoc81tr-4111s-projects.vercel.app`. It replaces dues build `dpl_HU1WEbg9b7yWWmqqqVZob4jid2u5` without changing contract addresses or server keys. Previous V2 publication details remain in `archive/deployment-v2.md`.
 
 This deployment uses Stellar testnet and the simulated workshop bank. Publishing does not make these real funds or real bank transfers. Passkeys and browser storage are origin-bound: localhost, a candidate domain and the production domain have separate credentials and saved sessions.
 
@@ -17,7 +17,7 @@ Run from the repository root. `vercel.json` sets:
 - Explicit public manifest inclusion for server tracing; runtime code imports the manifest directly.
 - Once-daily keeper: `/api/settle`, 09:00 UTC (`0 9 * * *`).
 
-The source upload allowlist includes 56 files: app, server adapters, passkey package, public manifest, shared browser-safe modules and build configuration. It excludes CLI keys, private state, test fixtures, Rust sources/WASM, design ZIP, raw artwork and local server. Only compiled frontend files are served as static resources; source and private-path probes must return 404.
+The source upload allowlist includes 61 files: app, server adapters, passkey package, public manifest, shared browser-safe modules and build configuration. It excludes CLI keys, private state, test fixtures, Rust sources/WASM, design ZIP, raw artwork and local server. Only compiled frontend files are served as static resources; source and private-path probes must return 404.
 
 V3 requires two **server-only Production secrets** in Vercel:
 
@@ -47,6 +47,14 @@ The queue stores encrypted instructions and the exact bank flow in separate Stel
 `/api/settle` rejects missing/wrong bearer credentials. `/api/bank` public keeper output reveals only public expense status, amount and receipt; it exposes no raw IBAN or decryptable saved bank flow. Receipt status distinguishes USDC disbursement from final simulated bank settlement.
 
 ## Verification
+
+### Current UX release — September 20, 2026
+
+Source commit `c285dec` is on `main`. The actual Vercel install and TypeScript/Vite build passed, and the protected candidate returned the expected bank identity/testnet network and the normal building's empty dues ledger. After promotion, the public canonical domain served identical HTML and all 17 JavaScript/CSS assets to the locally tested build, including both lazy QR scanner chunks. Bank configuration remained correct, private/source probes returned 404, and unauthenticated `/api/settle` returned 401.
+
+On the public HTTPS site, a blank name stayed on the first step, a normalized name appeared before the explicit passkey action, and a QR image decoded to a verified building preview before navigation. The browser reported no warnings/errors during these checks. Local verification covered 31 web tests, mobile/desktop UX checks and a 100 simulated TRY expense using the saved manager IBAN and automatic 2.27 USDC cap; public testnet evidence is in `deployments/building-ux-testnet-v3.json`. Physical camera and biometric signing remain untested for this revision. No Vercel secrets were changed.
+
+### Earlier V3 and dues verification
 
 The cloud build completed with the actual install commands. Candidate `/api/bank` returned the expected bank public address and testnet network, and authenticated `/api/settle` returned its queue successfully. The final candidate was promoted to the public canonical domain. Its JavaScript/CSS exactly match the locally tested build; private/source paths return 404 and unauthenticated settlement returns 401. On the actual HTTPS origin, 32 page scenarios and 16 dialog accessibility/focus scenarios passed; passkey account creation, normal building creation, bank-funded dues and vote changes also passed. Public proof verification checks local/deployed WASM, nine successful chain receipts, immutable factory, clock configuration, smart-account votes, bank payment and reserve backing:
 
