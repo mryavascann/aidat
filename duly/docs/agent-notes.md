@@ -1,8 +1,13 @@
 # Duly — current state
 
-Updated September 20, 2026. The active product is **V3 building governance**, published on `main`; current UX source `c285dec`, V3 base `f3a5498`, with the friend’s `6bad646` pitch update merged before the dues work. Run Git status/log for the current revision and push status. Previous V2 notes are preserved in `archive/agent-notes-v2.md`; do not treat their old scope as current.
+Updated September 20, 2026. The active product is **V3 building governance**, published on `main`; current UX source `b519217`, V3 base `f3a5498`, with the friend’s `6bad646` pitch update merged before the dues work. Run Git status/log for the current revision and push status. Previous V2 notes are preserved in `archive/agent-notes-v2.md`; do not treat their old scope as current.
 
 ## Demo, passkey and error follow-up — September 20, 2026
+
+Published source `b519217` to `main` and Vercel deployment
+`dpl_DMhRECzPfQoZQ2MvgBXcaX5eNTox` to **https://duly-sepia.vercel.app**.
+Canonical HTML and all 17 JS/CSS assets match the tested local build; candidate
+API and public HTTPS account-screen checks passed. Upload allowlist: 63 files.
 
 - All current testnet manager/setup/expense screens default to the clearly labelled
   sample IBAN when no preference exists. Existing saved recipients stay intact;
@@ -32,7 +37,9 @@ Updated September 20, 2026. The active product is **V3 building governance**, pu
   prefilled IBAN, blocking an unaffordable amount, TR → EN success-message change,
   and mobile layout. A fresh demo deposit is retained while the external anchor
   reports `pending_anchor`; it is not evidence of a completed transfer.
-  Test state stays in the browser at localhost:5175; never clear it.
+  The final UI was verified to show a saved/pending notice for that same order,
+  not an error or a completed payment. Test state stays in the browser at
+  localhost:5175; never clear it.
 - A funded solo demo completed a new 100 TRY expense to the sample IBAN with
   the 2.27 USDC automatic cap: **FAST-NVXJ9O5Y48**, contract status **Settled**.
   Recipient and bank-reference hashes were verified against the chain. Evidence:

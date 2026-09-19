@@ -2,7 +2,7 @@
 
 Production testnet demo: **https://duly-sepia.vercel.app**. Implementation branch: [`main`](https://github.com/mryavascann/aidat/tree/main).
 
-Vercel project `duly`, scope `sametgoc81tr-4111s-projects`. Current UX build: [`dpl_HJ391WDReMfHucWLBTF2bs2R6Na6`](https://vercel.com/sametgoc81tr-4111s-projects/duly/HJ391WDReMfHucWLBTF2bs2R6Na6), September 20, 2026, from source commit [`c285dec`](https://github.com/mryavascann/aidat/commit/c285dec). Candidate URL: `https://duly-7gia6faez-sametgoc81tr-4111s-projects.vercel.app`. It replaces dues build `dpl_HU1WEbg9b7yWWmqqqVZob4jid2u5` without changing contract addresses or server keys. Previous V2 publication details remain in `archive/deployment-v2.md`.
+Vercel project `duly`, scope `sametgoc81tr-4111s-projects`. Current demo/error UX build: [`dpl_DMhRECzPfQoZQ2MvgBXcaX5eNTox`](https://vercel.com/sametgoc81tr-4111s-projects/duly/DMhRECzPfQoZQ2MvgBXcaX5eNTox), September 20, 2026, from source commit [`b519217`](https://github.com/mryavascann/aidat/commit/b519217). Candidate URL: `https://duly-8gn1ta8wp-sametgoc81tr-4111s-projects.vercel.app`. It replaces UX build `dpl_HJ391WDReMfHucWLBTF2bs2R6Na6` without changing contract addresses or server keys. Previous V2 publication details remain in `archive/deployment-v2.md`.
 
 This deployment uses Stellar testnet and the simulated workshop bank. Publishing does not make these real funds or real bank transfers. Passkeys and browser storage are origin-bound: localhost, a candidate domain and the production domain have separate credentials and saved sessions.
 
@@ -17,7 +17,7 @@ Run from the repository root. `vercel.json` sets:
 - Explicit public manifest inclusion for server tracing; runtime code imports the manifest directly.
 - Once-daily keeper: `/api/settle`, 09:00 UTC (`0 9 * * *`).
 
-The source upload allowlist includes 61 files: app, server adapters, passkey package, public manifest, shared browser-safe modules and build configuration. It excludes CLI keys, private state, test fixtures, Rust sources/WASM, design ZIP, raw artwork and local server. Only compiled frontend files are served as static resources; source and private-path probes must return 404.
+The source upload allowlist includes 63 files: app, server adapters, passkey package, public manifest, shared browser-safe modules and build configuration. It excludes CLI keys, private state, test fixtures, Rust sources/WASM, design ZIP, raw artwork and local server. Only compiled frontend files are served as static resources; source and private-path probes must return 404.
 
 V3 requires two **server-only Production secrets** in Vercel:
 
@@ -48,7 +48,13 @@ The queue stores encrypted instructions and the exact bank flow in separate Stel
 
 ## Verification
 
-### Current UX release — September 20, 2026
+### Current demo/error UX release — September 20, 2026
+
+Source `b519217` is on `main`; the actual Vercel build passed. The candidate bank identity remained unchanged. Advancing the reported existing expense returned a structured `needs-review` / `QUOTE_EXPIRED` result, not a raw contract error; its quote had already expired and no replacement order was created. The canonical domain's HTML and all 17 JS/CSS assets match the tested local build. Source/private paths return 404 and unauthenticated `/api/settle` returns 401. The public HTTPS account screen shows the passkey-free demo entry and the updated device flow.
+
+37 web tests and the TypeScript/Vite build passed. A sample-IBAN expense completed 100 simulated TRY with 2.0601077 USDC actually spent under a 2.27 USDC cap, receipt **FAST-NVXJ9O5Y48**. On-chain recipient and bank-reference hashes match. Evidence: `deployments/building-demo-ux-testnet-v3.json`. The fresh empty-treasury case blocked an unaffordable expense and started test funding from the same dialog. Its external anchor deposit remains `pending_anchor`; the tested UI shows a saved/pending notice rather than claiming completion. Physical Windows Hello was not tested. No Vercel secrets or contract bytecode changed.
+
+### Previous UX release — September 20, 2026
 
 Source commit `c285dec` is on `main`. The actual Vercel install and TypeScript/Vite build passed, and the protected candidate returned the expected bank identity/testnet network and the normal building's empty dues ledger. After promotion, the public canonical domain served identical HTML and all 17 JavaScript/CSS assets to the locally tested build, including both lazy QR scanner chunks. Bank configuration remained correct, private/source probes returned 404, and unauthenticated `/api/settle` returned 401.
 
