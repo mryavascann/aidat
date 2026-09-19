@@ -80,4 +80,4 @@ These handbook-listed skill files were reviewed while preparing this submission 
 - [Bank adapter](../web/server/bank.mjs), [journal](../web/server/journal.mjs), [keeper](../web/server/settle.mjs), [fee sponsor](../web/server/relay.mjs)
 - [Dues adapter](../web/server/dues.mjs), [calculation](../web/src/lib/dues.ts), [manager view](../web/src/features/dues/DuesOverview.tsx)
 
-Real-money use needs a regulated bank/anchor partner, owner identity checks, refund and reconciliation procedures, fee funding, wallet recovery and independent security review. No real-user traction, guaranteed yield or mainnet readiness is claimed.
+Real-money use needs a regulated bank/anchor partner, owner identity checks, refund and reconciliation procedures, fee funding, wallet recovery and independent security review. An [informal nine-person survey](user-research.md) provides early problem feedback. Active use, paid adoption, guaranteed yield and mainnet readiness are not claimed.

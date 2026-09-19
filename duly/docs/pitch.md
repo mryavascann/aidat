@@ -14,7 +14,7 @@ Residents pay dues. The manager sees which apartments still owe money. For an ex
 
 ## 3. PMF (0:50–1:15)
 
-Our first users are managers of small apartment buildings. Today, payment records and decisions can be hard to follow. We bring them together. Our next step is to test this with real building managers.
+We surveyed nine people. None could see their building's balance. Seven said they would use Duly. They also raised concerns about regulation and manager support. Next, we will test real usage in a building.
 
 ## 4. Technical Workflow (1:15–1:45)
 
@@ -41,8 +41,8 @@ The verified receipt records 100.00 simulated TRY, a 2.27 USDC ceiling and 2.060
 - **Does real bank money move?** No. The workshop anchor simulates bank settlement and performs actual Stellar Testnet transfers.
 - **Can a manager bypass the budget?** The chosen policy permits a new recipient or budget exception after three days without objection, or majority approval earlier. Residents must monitor notices. This is not an absolute loss cap.
 - **Who receives the payment?** The current MVP pays the manager’s saved IBAN. It does not prove a later payment to a service provider.
-- **What traction exists?** Functional evidence exists. Real-user adoption, pilot commitments and pricing are not validated.
-- **What comes next?** Proposed manager interviews and a building pilot, a regulated TRY anchor partnership, independent security review and recovery work. Pilot evidence can support SCF/InstAward preparation.
+- **What traction exists?** Nine people took part in an informal survey. All nine reported no balance visibility. Seven said they would use the product and two said no. Actual use, pilot commitments and pricing are not validated. [Anonymous survey results](user-research.md).
+- **What comes next?** Follow-up manager interviews and an observed building pilot, a regulated TRY anchor partnership, independent security review and recovery work. Pilot evidence can support SCF/InstAward preparation.
 
 ## Submission details still to confirm
 

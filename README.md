@@ -19,6 +19,12 @@ The manager enters an expense in Turkish lira. Duly calculates the USDC ceiling,
 
 Our first intended customer is the volunteer manager of a small apartment building. Residents and tenants use the same shared record. Professional management companies are a later customer segment.
 
+## Early user feedback
+
+In an informal survey recorded on **19 September 2026**, **all 9 respondents said they could not see their building's treasury balance**. **Seven said they would use the proposed product; two said no.** Five reported a dues or spending dispute in the past year, three did not, and one answer was missing or unclear. The notes also raised regulation and manager support as barriers.
+
+This feedback supports testing shared financial visibility in a building pilot. The small sample establishes an early problem signal; actual usage and willingness to pay still need validation. [Anonymous results and survey limitations](duly/docs/user-research.md).
+
 ## Try the complete flow
 
 1. Open the demo, switch to **EN**, and choose **Solo demo**. It creates a separate building with three simulated apartments.
@@ -71,7 +77,7 @@ Normal buildings use 3-day objections, 7-day ownership recovery and 30-day perio
 
 ## Beyond the hackathon
 
-Next steps are to validate the workflow with volunteer building managers, establish a regulated TRY anchor partnership, and complete security and wallet recovery work before handling real funds. A proposed subscription for management reports and multiple buildings needs pricing validation. User traction and paid adoption have not yet been established. SCF/InstAward preparation follows those milestones.
+Next steps are to follow the survey with observed use in a building pilot, establish a regulated TRY anchor partnership, and complete security and wallet recovery work before handling real funds. A proposed subscription for management reports and multiple buildings needs pricing validation. Active use and paid adoption have not yet been established. SCF/InstAward preparation follows those milestones.
 
 ## Run locally
 
