@@ -63,6 +63,27 @@ Now the resident proposes a maintenance expense. Their signature is the first ap
 
 This is a testnet demonstration: the bank leg is simulated and no yield strategy is active. Our next work is real community validation, stronger membership governance, and a production anchor partnership.”
 
+## Market path, business model and positioning
+
+Material for the deck and for Q&A. These are plans and hypotheses, not validated results; say so when asked.
+
+**Adoption path** after the first communities we onboard:
+
+- **Next: volunteer managers of small buildings (5–30 flats).** They want to escape "you took the money" accusations, and they are the ones who bring the product into the building. Requires a real TRY anchor partner.
+- **Scale: professional site management companies.** One agreement covers hundreds of flats and comes with a real budget. Only after a licensed TRY ramp and compliance processes are in place.
+
+**Business model (proposed tiers):**
+
+| Tier | For | What they pay for |
+|---|---|---|
+| Free | Small communities, up to a member or volume limit | Treasury, approvals and transparent history: the base that lets Duly spread |
+| Pro (monthly fee per flat or member) | Managers and management companies | Monthly dues and arrears tracking, reminders, reports for the owners' meeting and the auditor, export, multi-building dashboard |
+| Partner revenue | The TRY anchor partner | Every building deposits lira every month, giving the anchor predictable volume; in return, a revenue share |
+
+The Pro features are not built yet; they are the paid roadmap. Pricing is to be set against the per-flat fees of existing dues apps. No share of reserve yield is offered: the vault has no active strategy, and a yield promise adds regulatory risk.
+
+**Positioning:** "Dues apps show the money; Duly protects it. Crypto treasuries protect the money; Duly makes it usable for everyone."
+
 ## Q&A facts
 
 - **Can one administrator take the fund?** A payout requires the configured member-signature quorum, but the administrator can enroll accounts they control. Stronger membership governance is future work.
@@ -72,6 +93,11 @@ This is a testnet demonstration: the bank leg is simulated and no yield strategy
 - **Does real money move through a bank?** No. The workshop anchor simulates bank settlement and performs actual testnet Stellar transfers.
 - **Is mainnet a configuration switch?** No. Production requires account security, governance, audited contracts, a production anchor and operational work.
 - **What traction exists?** Functional tests exist. Real-user validation has not been recorded.
+- **Who is your customer?** Whoever runs the building's money decides; every resident is a user. Next come volunteer managers of small buildings, and at scale professional site management companies, once a licensed TRY ramp is in place.
+- **How will you make money?** Free for small communities, a Pro plan per flat or member for managers and management companies, and a revenue share with the TRY anchor partner for the recurring volume we bring. Not validated yet.
+- **How are you different from dues apps, or from Safe and Squads?** "Dues apps show the money; Duly protects it. Crypto treasuries protect the money; Duly makes it usable for everyone." Dues apps digitise the records while the money stays in an account one person controls. Crypto treasuries enforce rules but expect wallets and crypto; Duly takes lira in and out through an anchor, speaks Turkish, and Stellar's low fees keep small dues economical.
+- **Why would an anchor partner work with you?** Buildings deposit lira every month, which is predictable recurring volume for the anchor; we ask for a revenue share in return.
+- **Will you share the reserve's yield?** Not now. The vault has no active strategy, and promising yield adds regulatory risk.
 
 ## Submission work remaining
 
