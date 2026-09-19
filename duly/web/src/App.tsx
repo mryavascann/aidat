@@ -30,7 +30,7 @@ import {
   ReceiptText,
   Globe2,
 } from "lucide-react";
-import { Keypair, StrKey } from "@stellar/stellar-sdk";
+import { Keypair, StrKey } from "@duly/stellar-sdk";
 import QRCode from "qrcode";
 import deployment from "./deployment.json";
 import { en, type Messages } from "./i18n/en";

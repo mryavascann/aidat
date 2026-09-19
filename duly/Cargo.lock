@@ -627,6 +627,20 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f678cf4a922c215c63e0de95eb1ff08a958a81d47e485cf9da1e27bf6305cfa5"
 
 [[package]]
+name = "duly-building"
+version = "0.3.0"
+dependencies = [
+ "soroban-sdk",
+]
+
+[[package]]
+name = "duly-factory"
+version = "0.3.0"
+dependencies = [
+ "soroban-sdk",
+]
+
+[[package]]
 name = "duly-treasury"
 version = "0.1.0"
 dependencies = [

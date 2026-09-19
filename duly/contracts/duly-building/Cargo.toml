@@ -1,0 +1,19 @@
+[package]
+name = "duly-building"
+version = "0.3.0"
+edition = "2021"
+publish = false
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[features]
+# A different, visibly labelled WASM for the single-person jury rehearsal.
+# Production timers cannot be shortened by an administrator.
+demo = []
+
+[dependencies]
+soroban-sdk = { workspace = true }
+
+[dev-dependencies]
+soroban-sdk = { workspace = true, features = ["testutils"] }

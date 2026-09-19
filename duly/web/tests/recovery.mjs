@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { readFile, mkdir } from "node:fs/promises";
 import { chromium } from "playwright";
 import AxeBuilder from "@axe-core/playwright";
-import { Keypair, Networks, WebAuth } from "@stellar/stellar-sdk";
+import { Keypair, Networks, WebAuth } from "@duly/stellar-sdk";
 import { en as t } from "../src/i18n/en.ts";
 import { ANCHOR, USDC_ISSUER } from "../../scripts/lib/config.mjs";
 

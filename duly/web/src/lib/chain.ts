@@ -1,5 +1,6 @@
 import {
   Account,
+  Asset,
   Address,
   Contract,
   Horizon,
@@ -10,15 +11,15 @@ import {
   rpc,
   scValToNative,
   xdr,
-} from "@stellar/stellar-sdk";
+} from "@duly/stellar-sdk";
 import {
   NETWORK,
   RPC_URL,
   HORIZON_URL,
   ANCHOR,
   USDC_ISSUER,
-  USDC,
 } from "../../../scripts/lib/config.mjs";
+const USDC = new Asset("USDC", USDC_ISSUER);
 import { load, save } from "./storage";
 import type { Signer } from "./wallet";
 import deployment from "../deployment.json";

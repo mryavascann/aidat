@@ -1,7 +1,11 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": "vite",
-  "installCommand": "npm ci --prefix duly/web",
+  "installCommand": "npm ci --prefix duly && npm ci --prefix duly/web",
   "buildCommand": "npm --prefix duly run web:build",
-  "outputDirectory": "duly/web/dist"
+  "outputDirectory": "duly/web/dist",
+  "functions": {
+    "api/*.mjs": { "maxDuration": 120, "includeFiles": "duly/web/src/building-deployment.json" }
+  },
+  "crons": [{"path":"/api/settle","schedule":"0 9 * * *"}]
 }

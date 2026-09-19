@@ -1,4 +1,4 @@
-import { Keypair, StrKey } from "@stellar/stellar-sdk";
+import { Keypair, StrKey } from "@duly/stellar-sdk";
 import { Buffer } from "buffer";
 import { AnchorClient, STELLAR_USDC } from "../../../scripts/lib/anchor.mjs";
 import { TOKEN } from "../../../scripts/lib/config.mjs";

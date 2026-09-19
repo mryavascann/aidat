@@ -1,0 +1,52 @@
+{
+  "version": 3,
+  "priorWasmHashes": [
+    "901c273ddc80300878b06064def059e45e73f41ae6c6fbc3a6fbde332cc044ee",
+    "67ee22cf3e46cfa00bb236bce11de6599092a0cd101747271c2fd61124cbec2c"
+  ],
+  "priorFactories": [
+    "CAGZ4D6LC5IZKUYAWXHSTABW2N3WHIFH2DT7VS7HRK3ODYKDO4CBTD4N"
+  ],
+  "network": "testnet",
+  "treasury": "CBIGWOYBTFHV32OZWTZSYKP2TLDPHJIDJJSG5XAGG22K6VRSSP2MLIMM",
+  "factory": "CBODQGDCBJ2HXLSKMLJ33STVNF37QRIK7L2PVATMUSMWREMMSKUA2NA2",
+  "wasmHash": "479daf3bd8ede6ce55e58587cd676278f684f486cd7b1e56b71bd61da5d2944d",
+  "demoWasmHash": "d4175ad58d126a402d3278025e019bee40b25265a1308837085556b0da094cc3",
+  "factoryWasmHash": "12ec81d316ec436d9e63e187ec37a58d03b67809e03c125f811d850e816806ea",
+  "bank": "GBV3EGX4UHTA2TNWYTXM3RWNPUJ2BWRRHFPIDSSHG6TGCRRULAJT5OSX",
+  "token": "CBIELTK6YBZJU5UP2WWQEUCYKLPU6AUNZ2BQ4WWFEIE3USCIHMXQDAMA",
+  "vault": "CBYR7JQC7XBG4TJIRVLZDTJZQE6UBGUZ7C5I4J64NPVNZ64YKBTLNUTG",
+  "accountWasmHash": "1b5f4534a76322da2ad7c745f6900857a6802b0ca79850c35a03561df997785a",
+  "webauthnVerifier": "CC7EKIHQP3TN4CARQDND6CEOY2UXLWWC2X5GHTD5NLAT7BG5GPZIOM3F",
+  "verifierHash": "e63a030d0f1a1481e36059a4837c433083b33e704c1f9625b7314795b6d72b76",
+  "createdAt": "2026-09-19T19:19:53.843Z",
+  "config": {
+    "bank": "GBV3EGX4UHTA2TNWYTXM3RWNPUJ2BWRRHFPIDSSHG6TGCRRULAJT5OSX",
+    "budget": {
+      "limit_try": "0",
+      "limit_usdc": "0"
+    },
+    "demo": false,
+    "dues_try": "20000",
+    "manager": "GBPVNX347EBSWHEZXO53QB4RPZFN56Y3VNP2AWRCOLU45ZKPOEUPSIVP",
+    "name": "Duly Apartmanı",
+    "objection_ledgers": 51840,
+    "objection_seconds": "259200",
+    "period_ledgers": 518400,
+    "period_seconds": "2592000",
+    "recovery_ledgers": 120960,
+    "recovery_seconds": "604800",
+    "seat_count": 3,
+    "start_ledger": 4764401,
+    "start_time": "1789845592",
+    "token": "CBIELTK6YBZJU5UP2WWQEUCYKLPU6AUNZ2BQ4WWFEIE3USCIHMXQDAMA",
+    "vault": "CBYR7JQC7XBG4TJIRVLZDTJZQE6UBGUZ7C5I4J64NPVNZ64YKBTLNUTG"
+  },
+  "receipts": {
+    "upload:wasmHash": "7d73c84f675c9147308dd9b457160c0d1a56d4721d7c7984ec6ee39b805aa664",
+    "upload:demoWasmHash": "3dd1fd3bd357606931722cd9cd3fbb41a994b7ce9caa700b1ab433efe09c1e20",
+    "upload:factoryWasmHash": "af7ce586b00396f71b8043cb72b89c043c144738e543e1ed210a8ef217ac10f0",
+    "factory": "639dab380ffabb080fee46c5ed069353d97234c7375560692497afef0e20a344",
+    "building": "971f9275501639a4d50fd52991f899242b9470571a074e94b10ca14a5c0ca860"
+  }
+}

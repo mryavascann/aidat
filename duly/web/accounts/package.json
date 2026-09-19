@@ -1,0 +1,11 @@
+{
+  "name": "@duly/accounts",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": "./index.mjs",
+  "dependencies": {
+    "smart-account-kit": "0.8.0",
+    "@stellar/stellar-sdk": "16.3.0"
+  }
+}

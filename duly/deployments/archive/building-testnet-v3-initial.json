@@ -1,0 +1,45 @@
+{
+  "version": 3,
+  "network": "testnet",
+  "treasury": "CCJR77K4CPMD2IDI3YSYTRJHCYX2ZVPHVXUI2IQ3MJKUSRE5I5M2NJVU",
+  "factory": "CAGZ4D6LC5IZKUYAWXHSTABW2N3WHIFH2DT7VS7HRK3ODYKDO4CBTD4N",
+  "wasmHash": "901c273ddc80300878b06064def059e45e73f41ae6c6fbc3a6fbde332cc044ee",
+  "demoWasmHash": "67ee22cf3e46cfa00bb236bce11de6599092a0cd101747271c2fd61124cbec2c",
+  "factoryWasmHash": "12ec81d316ec436d9e63e187ec37a58d03b67809e03c125f811d850e816806ea",
+  "bank": "GBV3EGX4UHTA2TNWYTXM3RWNPUJ2BWRRHFPIDSSHG6TGCRRULAJT5OSX",
+  "token": "CBIELTK6YBZJU5UP2WWQEUCYKLPU6AUNZ2BQ4WWFEIE3USCIHMXQDAMA",
+  "vault": "CBYR7JQC7XBG4TJIRVLZDTJZQE6UBGUZ7C5I4J64NPVNZ64YKBTLNUTG",
+  "accountWasmHash": "1b5f4534a76322da2ad7c745f6900857a6802b0ca79850c35a03561df997785a",
+  "webauthnVerifier": "CC7EKIHQP3TN4CARQDND6CEOY2UXLWWC2X5GHTD5NLAT7BG5GPZIOM3F",
+  "verifierHash": "e63a030d0f1a1481e36059a4837c433083b33e704c1f9625b7314795b6d72b76",
+  "createdAt": "2026-09-19T18:43:39.232Z",
+  "config": {
+    "bank": "GBV3EGX4UHTA2TNWYTXM3RWNPUJ2BWRRHFPIDSSHG6TGCRRULAJT5OSX",
+    "budget": {
+      "limit_try": "0",
+      "limit_usdc": "0"
+    },
+    "demo": false,
+    "dues_try": "20000",
+    "manager": "GBPVNX347EBSWHEZXO53QB4RPZFN56Y3VNP2AWRCOLU45ZKPOEUPSIVP",
+    "name": "Duly Apartmanı",
+    "objection_ledgers": 51840,
+    "objection_seconds": "259200",
+    "period_ledgers": 518400,
+    "period_seconds": "2592000",
+    "recovery_ledgers": 120960,
+    "recovery_seconds": "604800",
+    "seat_count": 3,
+    "start_ledger": 4763966,
+    "start_time": "1789843417",
+    "token": "CBIELTK6YBZJU5UP2WWQEUCYKLPU6AUNZ2BQ4WWFEIE3USCIHMXQDAMA",
+    "vault": "CBYR7JQC7XBG4TJIRVLZDTJZQE6UBGUZ7C5I4J64NPVNZ64YKBTLNUTG"
+  },
+  "receipts": {
+    "upload:wasmHash": "88e0eba66a0941a759c9bdf5f3af0760c68e9a9e53d06e9f44d60bf08258a042",
+    "upload:demoWasmHash": "16649142a1d86575696b2e626e2013a5962303324c45a19a012b9c6582e21a51",
+    "upload:factoryWasmHash": "ed8934caccadbdc5cc41d01a7c562696defc2982e382b9f16488c7de629ee476",
+    "factory": "b4a8af5ab8cbbd4ba40c9efc10fa131e2a5bc89345a7e90c236ae42826a41628",
+    "building": "b0f823c628a4f840f99c4544f9f0690a2a7eb7b8c0a7cf70fead6b630dce0c52"
+  }
+}

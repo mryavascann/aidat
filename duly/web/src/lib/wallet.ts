@@ -1,4 +1,4 @@
-import { Keypair, TransactionBuilder } from "@stellar/stellar-sdk";
+import { Keypair, TransactionBuilder } from "@duly/stellar-sdk";
 import { NETWORK } from "../../../scripts/lib/config.mjs";
 export interface Signer {
   publicKey(): string;

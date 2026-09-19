@@ -1,0 +1,45 @@
+{
+  "version": 3,
+  "network": "testnet",
+  "productionUrl": "https://duly-sepia.vercel.app",
+  "recordedAt": "2026-09-19T19:49:40.768Z",
+  "solo": {
+    "treasury": "CCCIYRPSCGGPG5GYKATYGMJ6NJTGKZBHBK7HHOFBYJYJM2KBWXTWB7KJ",
+    "receipts": [
+      {
+        "kind": "withdraw",
+        "phase": "complete",
+        "amountTry": "100.00",
+        "amountUsdc": "2.0601077",
+        "receipt": "4b13269cc39c17b90195b2ef970467890440e9b79e0641153e1e8459edb51219",
+        "bankReference": "FAST-J83IBKWCYF"
+      },
+      {
+        "kind": "deposit",
+        "phase": "complete",
+        "amountTry": "200.00",
+        "amountUsdc": "4.0792181",
+        "receipt": "ecdf9941e2ca3451981120993451f3e45c369e6c72339c3b1f498be0d0a5df71"
+      }
+    ]
+  },
+  "passkey": {
+    "account": "CBNZIRAQ4UT7SP55CF6EEMZAKIIVKX5REVXWFENFLVEYS53N6PCRIRKI",
+    "treasury": "CDINGMCVUCCO2KWNBWHMBIYJUJJK63ZRRIACQVIVZZ5QBMOOWX6M7ULX",
+    "virtualAuthenticator": true,
+    "normalTimings": true
+  },
+  "closedBrowserQueue": {
+    "treasury": "CCCIYRPSCGGPG5GYKATYGMJ6NJTGKZBHBK7HHOFBYJYJM2KBWXTWB7KJ",
+    "expense": 2,
+    "amountTry": "50.00",
+    "amountUsdc": "1.0300539",
+    "receipt": "d36b09f896ce8dc3232262ea874c93538f834b49051e55e63aa988f91c48be94",
+    "bankReference": "FAST-ECU8EIOYRL",
+    "proposalHash": "33d1d6c96ee537c03937cf587c59bbc6645ee94ca548618f3f56f22e2f1af2d8",
+    "automatic": true,
+    "replaySafe": true,
+    "remoteKeeper": true
+  },
+  "note": "All three flows use the final V3 WASM and the actual public HTTPS deployment. The closed-browser payment completed in one authenticated Vercel keeper request. Bank and FAST receipts are simulated; WebAuthn used a virtual authenticator."
+}
