@@ -1,6 +1,31 @@
 # Duly — current state
 
-Updated September 20, 2026. The active product is **V3 building governance**, published on `main`; current UX source `b519217`, V3 base `f3a5498`, with the friend’s `6bad646` pitch update merged before the dues work. Run Git status/log for the current revision and push status. Previous V2 notes are preserved in `archive/agent-notes-v2.md`; do not treat their old scope as current.
+Updated September 20, 2026. The active product is **V3 building governance**, published on `main`; current UX source `73d4825`, payment-flow source `b519217`, V3 base `f3a5498`. Run Git status/log for the current revision and push status. Previous V2 notes are preserved in `archive/agent-notes-v2.md`; do not treat their old scope as current.
+
+## Prominent solo demo and jury README — September 20, 2026
+
+Source `73d4825` is on `main` and Vercel deployment
+`dpl_EQy6MQgvZwC6ab7EFmYgUPcTuCRr` is promoted to **https://duly-sepia.vercel.app**.
+
+- Moved the footer's solo-demo entry beside the theme toggle. It uses a filled,
+  labelled play button; on narrow screens the pair occupies a dedicated row.
+  Account access remains available. The existing demo dialog and active-demo
+  exit behavior are retained.
+- Rewrote the README around the problem, live demo, actual product screenshot,
+  68-second silent interface tour, completed payment evidence, architecture,
+  short setup, tests and honest scope. The recording views existing testnet
+  data and does not claim a new transfer was performed during the tour.
+- Team names, roles and the selected hackathon track remain unconfirmed. An
+  asynchronous question was sent; the README uses actual GitHub contributor
+  and contact links without inventing names or a track selection.
+- 37 web regression tests and the TypeScript/Vite build passed. The 32-page
+  TR/EN, light/dark, desktop/mobile suite passed locally and on production.
+  Another 24 header scenarios covered widths 320–1440, opening the demo,
+  focus restoration and overflow; eight header accessibility audits passed.
+- Canonical HTML, 17 JS/CSS files and the MP4 match the local build. The bank
+  identity remains unchanged; private/source paths return 404 and an
+  unauthenticated keeper request returns 401. The upload allowlist contains
+  64 files including the public video. No contract or server key changed.
 
 ## Demo, passkey and error follow-up — September 20, 2026
 

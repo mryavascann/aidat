@@ -2,7 +2,7 @@
 
 Production testnet demo: **https://duly-sepia.vercel.app**. Implementation branch: [`main`](https://github.com/mryavascann/aidat/tree/main).
 
-Vercel project `duly`, scope `sametgoc81tr-4111s-projects`. Current demo/error UX build: [`dpl_DMhRECzPfQoZQ2MvgBXcaX5eNTox`](https://vercel.com/sametgoc81tr-4111s-projects/duly/DMhRECzPfQoZQ2MvgBXcaX5eNTox), September 20, 2026, from source commit [`b519217`](https://github.com/mryavascann/aidat/commit/b519217). Candidate URL: `https://duly-8gn1ta8wp-sametgoc81tr-4111s-projects.vercel.app`. It replaces UX build `dpl_HJ391WDReMfHucWLBTF2bs2R6Na6` without changing contract addresses or server keys. Previous V2 publication details remain in `archive/deployment-v2.md`.
+Vercel project `duly`, scope `sametgoc81tr-4111s-projects`. Current demo-entry build: [`dpl_EQy6MQgvZwC6ab7EFmYgUPcTuCRr`](https://vercel.com/sametgoc81tr-4111s-projects/duly/EQy6MQgvZwC6ab7EFmYgUPcTuCRr), September 20, 2026, from source commit [`73d4825`](https://github.com/mryavascann/aidat/commit/73d4825). Candidate URL: `https://duly-g98magz2m-sametgoc81tr-4111s-projects.vercel.app`. It replaces `dpl_DMhRECzPfQoZQ2MvgBXcaX5eNTox` without changing contract addresses or server keys. Previous V2 publication details remain in `archive/deployment-v2.md`.
 
 This deployment uses Stellar testnet and the simulated workshop bank. Publishing does not make these real funds or real bank transfers. Passkeys and browser storage are origin-bound: localhost, a candidate domain and the production domain have separate credentials and saved sessions.
 
@@ -17,7 +17,7 @@ Run from the repository root. `vercel.json` sets:
 - Explicit public manifest inclusion for server tracing; runtime code imports the manifest directly.
 - Once-daily keeper: `/api/settle`, 09:00 UTC (`0 9 * * *`).
 
-The source upload allowlist includes 63 files: app, server adapters, passkey package, public manifest, shared browser-safe modules and build configuration. It excludes CLI keys, private state, test fixtures, Rust sources/WASM, design ZIP, raw artwork and local server. Only compiled frontend files are served as static resources; source and private-path probes must return 404.
+The source upload allowlist includes 64 files: app, server adapters, passkey package, public manifest, shared browser-safe modules, the product-tour MP4 and build configuration. It excludes CLI keys, private state, test fixtures, Rust sources/WASM, design ZIP, raw artwork and local server. Only compiled frontend files and intended public assets are served as static resources; source and private-path probes must return 404.
 
 V3 requires two **server-only Production secrets** in Vercel:
 
@@ -48,7 +48,27 @@ The queue stores encrypted instructions and the exact bank flow in separate Stel
 
 ## Verification
 
-### Current demo/error UX release — September 20, 2026
+### Current demo-entry release — September 20, 2026
+
+Source `73d4825` makes Solo demo prominent beside the theme toggle and adds a
+68-second silent product tour at `/walkthrough.mp4`. The README's screenshot
+and video use actual testnet data; the tour is a view of an existing completed
+expense, not a freshly completed bank transfer.
+
+37 web tests, formatting and the TypeScript/Vite build passed. The 32-page
+TR/EN, desktop/mobile, light/dark browser suite passed locally and on the
+canonical HTTPS domain. 24 additional header scenarios at 320–1440 pixels
+checked layout, dialog opening and keyboard focus restoration; eight header
+accessibility audits passed.
+
+The actual Vercel build completed and the protected candidate returned the
+expected bank identity. After promotion, canonical HTML, all 17 JS/CSS files
+and the MP4 matched the tested local build. The video is served as `video/mp4`.
+Source/private probes returned 404; unauthenticated `/api/settle` returned 401.
+The upload allowlist contains 64 files. No contract, bank key or hosting
+configuration changed.
+
+### Previous demo/error UX release — September 20, 2026
 
 Source `b519217` is on `main`; the actual Vercel build passed. The candidate bank identity remained unchanged. Advancing the reported existing expense returned a structured `needs-review` / `QUOTE_EXPIRED` result, not a raw contract error; its quote had already expired and no replacement order was created. The canonical domain's HTML and all 17 JS/CSS assets match the tested local build. Source/private paths return 404 and unauthenticated `/api/settle` returns 401. The public HTTPS account screen shows the passkey-free demo entry and the updated device flow.
 
