@@ -2,7 +2,7 @@
 
 Production testnet demo: **https://duly-sepia.vercel.app**. Implementation branch: [`main`](https://github.com/mryavascann/aidat/tree/main).
 
-Vercel project `duly`, scope `sametgoc81tr-4111s-projects`. Current wallet-balance build: [`dpl_7uMfcBCD1YU2dpexx1y71AuJ2Qww`](https://vercel.com/sametgoc81tr-4111s-projects/duly/7uMfcBCD1YU2dpexx1y71AuJ2Qww), September 20, 2026, from source commit [`8658c34`](https://github.com/mryavascann/aidat/commit/8658c34). Candidate URL: `https://duly-m326y16b3-sametgoc81tr-4111s-projects.vercel.app`. It replaces `dpl_5MuM4gAiGGnsY3CrMcUNsXUuAH8C` without changing contract addresses or server keys. Previous V2 publication details remain in `archive/deployment-v2.md`.
+Vercel project `duly`, scope `sametgoc81tr-4111s-projects`. Current outgoing-cancellation and majority build: [`dpl_5kh8xSSUrSsEDR1cPBcRVF2AuNEe`](https://vercel.com/sametgoc81tr-4111s-projects/duly/5kh8xSSUrSsEDR1cPBcRVF2AuNEe), September 20, 2026, from source commit [`2574710`](https://github.com/mryavascann/aidat/commit/2574710). Candidate URL: `https://duly-nexpo177d-sametgoc81tr-4111s-projects.vercel.app`. It replaces `dpl_7uMfcBCD1YU2dpexx1y71AuJ2Qww` without changing contract addresses or server keys. Previous V2 publication details remain in `archive/deployment-v2.md`.
 
 This deployment uses Stellar testnet and the simulated workshop bank. Publishing does not make these real funds or real bank transfers. Passkeys and browser storage are origin-bound: localhost, a candidate domain and the production domain have separate credentials and saved sessions.
 
@@ -17,7 +17,7 @@ Run from the repository root. `vercel.json` sets:
 - Explicit public manifest inclusion for server tracing; runtime code imports the manifest directly.
 - Once-daily keeper: `/api/settle`, 09:00 UTC (`0 9 * * *`).
 
-The source upload allowlist includes 66 files: app, server adapters, passkey package, public manifest, shared browser-safe modules, the product-tour MP4 and build configuration. It excludes CLI keys, private state, test fixtures, Rust sources/WASM, design ZIP, raw artwork and local server. Only compiled frontend files and intended public assets are served as static resources; source and private-path probes must return 404.
+The source upload allowlist includes 67 files: app, server adapters, passkey package, public manifest, shared browser-safe modules, the product-tour MP4 and build configuration. It excludes CLI keys, private state, test fixtures, Rust sources/WASM, design ZIP, raw artwork and local server. Only compiled frontend files and intended public assets are served as static resources; source and private-path probes must return 404.
 
 V3 requires two **server-only Production secrets** in Vercel:
 
@@ -48,7 +48,40 @@ The queue stores encrypted instructions and the exact bank flow in separate Stel
 
 ## Verification
 
-### Current account balance and demo funding release — September 20, 2026
+### Current outgoing cancellation and majority release — September 20, 2026
+
+Source `2574710` keeps cancellation and close controls available while the
+outgoing bank-payment dialog is busy. Pending expenses can be cancelled by
+their manager; an already-disbursed transfer retains its reference and only
+the waiting screen stops. The current request still saves its receipt and
+holds the payment lock until it resolves. Late responses cannot revive a
+chain-confirmed cancellation. Cancelled saved withdrawals exit before anchor
+work. No transfer reversal or refund is implemented.
+
+The existing contracts already require strict majority for voting. The UI
+now displays the required approval count and marks majority as reached; the
+solo simulator stops at that threshold. Three apartments need two approvals.
+Contract tests also prove two approvals beat one opposing vote.
+
+55 web tests, 19 normal and 19 demo contract tests, formatting and build passed.
+The 32-page browser suite passed locally and on the canonical HTTPS domain.
+Eight incoming-cancellation and eight outgoing-dialog accessibility scenarios
+passed locally. A real isolated testnet proposal reached two approvals without
+the third vote, then was cancelled while a controlled bank response was held.
+The treasury kept its 5 USDC and the cancellation survived the late response
+and reload. Two Disbursed fixtures verified stop/close without sending a
+cancellation transaction. Public evidence:
+`deployments/building-cancellation-testnet-v3.json`.
+
+The Vercel build passed and the protected candidate retained the expected
+testnet bank identity. After promotion, canonical HTML, all 17 JS/CSS files
+and the video matched the local build. Private/source probes returned 404;
+unauthenticated settlement returned 401. The canonical bank API returned
+`cancelled` for all three saved-withdrawal actions against the cancelled
+test expense. No bank order or transfer was created by these cancellation
+checks. The 67-file upload excludes private fixture state.
+
+### Previous account balance and demo funding release — September 20, 2026
 
 Source `8658c34` shows the active account's USDC balance and the three demo
 wallet balances in My account. New demos prepare each wallet with 20 test USDC

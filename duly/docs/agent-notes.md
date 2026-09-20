@@ -1,6 +1,6 @@
 # Duly — current state
 
-Updated September 20, 2026. The active product is **V3 building governance**, published on `main`; current wallet funding source `8658c34`, bank cancellation source `475d913`, V3 base `f3a5498`. Run Git status/log for the current revision and push status. Previous V2 notes are preserved in `archive/agent-notes-v2.md`; do not treat their old scope as current.
+Updated September 20, 2026. The active product is **V3 building governance**, published on `main`; outgoing cancellation and majority UX source `2574710`, wallet funding source `8658c34`, incoming bank cancellation source `475d913`, V3 base `f3a5498`. Run Git status/log for the current revision and push status. Previous V2 notes are preserved in `archive/agent-notes-v2.md`; do not treat their old scope as current.
 
 ## Outgoing-payment cancellation and majority UX — September 20, 2026
 
@@ -30,6 +30,15 @@ The explicit `web` script `test:expense-cancel` runs locally and reuses the
 private `test-results/demo-wallets/state.json` created by `test:demo-wallets`.
 Its private transaction journal and browser state remain ignored; never publish
 those files. Public test receipts are safe to share.
+
+Source `2574710` is on `main`; Vercel deployment
+`dpl_5kh8xSSUrSsEDR1cPBcRVF2AuNEe` is promoted to
+**https://duly-sepia.vercel.app**. The live 32-page browser suite passed.
+Canonical HTML, 17 JS/CSS assets and video match the local build. Bank identity
+is unchanged, private/source paths return 404, and unauthorized settlement
+returns 401. All three saved-withdrawal actions on the canonical bank API
+refused to advance the cancelled test expense. The 67-file upload excludes
+private test state. No contract, bank key or hosting configuration changed.
 
 ## Account balances and three funded demo wallets — September 20, 2026
 
