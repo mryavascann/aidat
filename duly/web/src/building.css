@@ -4,6 +4,21 @@
   align-items: center;
   gap: 10px;
 }
+.v3-bank-cancel .v3-help {
+  margin: 10px 0 0;
+}
+.v3-history .v3-actions {
+  margin-block: 14px;
+}
+.v3-history .v3-actions .button {
+  white-space: normal;
+}
+.v3-app .progress-bar {
+  flex-wrap: wrap;
+}
+.v3-app .progress-bar .text-button {
+  margin-left: auto;
+}
 .v3-app .v3-demo-launch {
   min-height: 46px;
   font-size: 13px;

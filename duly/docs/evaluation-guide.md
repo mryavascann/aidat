@@ -28,6 +28,21 @@ The [latest demo receipt](../deployments/building-demo-ux-testnet-v3.json) belon
 
 Registered expenses advance while the app is open, with a daily Vercel keeper as fallback. This deployment does not guarantee execution at the exact deadline. Expired bank quotes pause for review.
 
+## Pending bank dues
+
+**Cancel dues** stops an unsigned contribution workflow in this browser and
+unlocks the payment form. The original bank reference, sealed route and receipts
+stay in payment history. A late bank response preserves the stop request; it
+cannot trigger a treasury contribution. **Check bank status** only reads the
+original order. **Resume these dues** explicitly continues that same record.
+
+This does not reverse a bank transfer. The workshop anchor has no supported
+cancellation endpoint in its [API guide](https://tr-mock-anchor.fly.dev/guide).
+Once treasury signing has started, Duly keeps the contribution available for
+reconciliation instead of claiming it was cancelled. Bank waits return control
+to the user rather than holding the form in a long polling loop. Stop state is
+browser-local; it is not a cross-device bank instruction.
+
 ## Account and demo boundaries
 
 Smart Account Kit 0.8.0 uses Stellar SDK 16.3.0 with pinned OpenZeppelin account WASM and a WebAuthn verifier. Chain and bank workflows use SDK 17.1.0 through a serialized boundary. Passkey tests use a virtual CTAP2 authenticator with real WebAuthn and real testnet signatures. They are not physical Windows Hello or biometric-device tests.
@@ -51,6 +66,8 @@ npm --prefix web run build
 node scripts/verify-building.mjs building-production-testnet-v3.json
 node scripts/verify-dues.mjs
 npm --prefix web run test:browser
+# Controlled bank fixtures; no funds move in this regression test.
+DULY_URL=http://localhost:5174 npm --prefix web run test:bank-cancel
 ```
 
 These integration tests use actual testnet transactions and keep private recovery state locally:

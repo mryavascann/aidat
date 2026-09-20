@@ -352,6 +352,48 @@ const copy = {
     "Ödemeniz kaydedildi. Banka teyidi henüz gelmedi; aynı ödeme kaydından devam edebilirsiniz.",
     "Your payment is saved. Bank confirmation has not arrived yet; you can resume the same payment.",
   ],
+  cancelBankDuesHelp: [
+    "Duly’deki aidat işlemini durdurur ve formu açar. Bankaya gönderilmiş transferi geri almaz; işlem kaydı saklanır.",
+    "Stops this dues workflow in Duly and unlocks the form. It does not reverse a transfer sent to the bank; the payment record is kept.",
+  ],
+  cancelDues: ["Aidat işlemini iptal et", "Cancel dues"],
+  duesStoppedLabel: ["Aidat işlemi iptal edildi", "Dues workflow stopped"],
+  duesStopped: [
+    "Aidat işlemi iptal edildi. Yeni ödeme yöntemini seçebilirsiniz. Bankadaki işlemin kaydı geçmişte saklandı.",
+    "The dues workflow was stopped. You can choose another payment method. The bank payment record is saved in history.",
+  ],
+  stoppedBankDuesHelp: [
+    "Bu kayıt artık aidat formunu kilitlemez ve siz sürdürmeden kasaya aidat aktarılmaz. Bankadaki transfer iptal edilmiş sayılmaz; aynı kayıttan sonucunu kontrol edin.",
+    "This record no longer locks the dues form, and no dues are contributed unless you resume it. The bank transfer is not marked cancelled; check its outcome using this same record.",
+  ],
+  resumeStoppedDues: ["Aynı aidat işlemini sürdür", "Resume these dues"],
+  checkBankStatus: ["Banka durumunu kontrol et", "Check bank status"],
+  bankStatusChecked: ["Banka durumu güncellendi.", "Bank status updated."],
+  bankStatusUnknown: [
+    "Bankanın son durumu henüz kontrol edilmedi.",
+    "The latest bank status has not been checked yet.",
+  ],
+  bankDepositConfirmed: [
+    "Banka transferi teyit edildi. Aidat işlemini sürdürerek kasaya aktarabilirsiniz.",
+    "Bank transfer confirmed. Resume the dues workflow to contribute to the treasury.",
+  ],
+  bankDepositRefunded: [
+    "Banka işlemi iade edilmiş görünüyor.",
+    "The bank reports this payment as refunded.",
+  ],
+  bankTransferReceipt: ["Banka transfer kaydı", "Bank transfer receipt"],
+  duesTransferPending: [
+    "Banka teyidi alındı; aidatın kasaya aktarımı kontrol edilmeli. Aynı işlem kaydından sürdürün.",
+    "The bank transfer is confirmed; the treasury contribution needs confirmation. Resume this same payment record.",
+  ],
+  duesAlreadySubmitted: [
+    "Aidat imzalanmış veya gönderilmiş. İptal yerine mevcut işlem kaydından sonucunu kontrol edin.",
+    "These dues have been signed or submitted. Check the existing payment instead of cancelling it.",
+  ],
+  otherDuesPending: [
+    "Önce devam eden aidat işlemini tamamlayın veya iptal edin.",
+    "Complete or stop the current dues workflow first.",
+  ],
   awaitingFunds: ["Kasa bakiyesi bekleniyor", "Waiting for treasury funds"],
   paymentNeedsReview: ["Ödeme kontrol edilmeli", "Payment needs review"],
   quoteExpired: [

@@ -25,6 +25,13 @@ import {
 import { load, save } from "./storage";
 import { canRefreshDuesQuote, duesRequest } from "./dues";
 import { localSigner, type Signer } from "./wallet";
+import {
+  bankRecord,
+  hasContributionIntent,
+  saveBank,
+  type BankRecord,
+} from "./bank-records";
+export { bankRecords, type BankRecord } from "./bank-records";
 export { deployment, addr, bytes, num, str, u32, delay };
 export { toUnits, fromUnits } from "../../../scripts/lib/amounts.mjs";
 import { toUnits } from "../../../scripts/lib/amounts.mjs";
@@ -391,40 +398,6 @@ export async function simulateVotes(
   }
 }
 
-export type BankRecord = {
-  reason?: string | null;
-  availableUsdc?: string | null;
-  requiredUsdc?: string | null;
-  queued?: boolean;
-  saved: string;
-  phase: string;
-  kind: "deposit" | "withdraw" | "usdc";
-  key: string;
-  treasury: string;
-  account?: string;
-  seat?: number;
-  id?: number;
-  amountTry?: string;
-  amountUsdc?: string;
-  anchorId?: string;
-  receipt?: string;
-  bankReference?: string;
-  iban?: string;
-  reference?: string;
-  expiresAt?: string;
-};
-export function bankRecords(treasury: string, account: string): BankRecord[] {
-  return load<BankRecord[]>("v3:bank", []).filter(
-    (r) =>
-      r.treasury === treasury &&
-      (r.kind === "withdraw" || r.account === account),
-  );
-}
-function saveBank(record: BankRecord) {
-  const rows = load<BankRecord[]>("v3:bank", []);
-  save("v3:bank", [record, ...rows.filter((r) => r.key !== record.key)]);
-  return record;
-}
 export async function bankRequest(body: unknown) {
   const response = await fetch("/api/bank", {
     method: "POST",
@@ -461,12 +434,19 @@ export async function startDeposit(
   });
 }
 export async function resumeBank(record: BankRecord, action = "resume") {
+  record = bankRecord(record.key) ?? record;
+  if (record.stoppedAt || record.phase === "cancelled") return record;
   const response = await bankRequest(
     record.queued
       ? { action: "tick", treasury: record.treasury, id: record.id }
       : { saved: record.saved, action },
   );
   return saveBank({ ...record, ...response });
+}
+export async function checkDepositStatus(record: BankRecord) {
+  if (record.kind !== "deposit") throw new Error("permissionDenied");
+  const response = await bankRequest({ action: "status", saved: record.saved });
+  return saveBank({ ...(bankRecord(record.key) ?? record), ...response });
 }
 export async function registerPayment(
   treasury: string,
@@ -481,26 +461,45 @@ export async function finishDeposit(
   identity: Identity,
   progress: (s: string) => void,
 ) {
-  let next = record;
-  if (next.phase === "complete") return next;
-  if (next.phase === "recording-dues") return finishDuesRecord(next, progress);
-  for (let i = 0; i < 35 && next.phase !== "contribute"; i++) {
-    progress(next.phase);
-    next = await resumeBank(next);
-    if (next.phase !== "contribute") await delay(1500);
-  }
-  if (next.phase !== "contribute") return next;
+  let next = bankRecord(record.key) ?? record;
+  if (next.stoppedAt || next.phase === "complete") return next;
   if (next.account !== identity.address)
     throw new Error("Reconnect the account that started this payment.");
+  if (next.phase === "recording-dues") return finishDuesRecord(next, progress);
+  for (
+    let i = 0;
+    i < 4 && !["contribute", "contributing"].includes(next.phase);
+    i++
+  ) {
+    progress(next.phase);
+    next = await resumeBank(next);
+    // The bank owns this wait. Return control instead of locking the form in
+    // a long polling loop. A stop during the request preserves its response.
+    if (next.stoppedAt || next.phase === "processing") return next;
+  }
+  next = bankRecord(next.key) ?? next;
+  if (next.stoppedAt || !["contribute", "contributing"].includes(next.phase))
+    return next;
+  next = saveBank({ ...next, phase: "contributing" });
   progress("contribute");
-  const receipt = await invoke(
-    identity,
-    next.treasury,
-    "contribute",
-    [addr(identity.address), u32(next.seat!), num(toUnits(next.amountUsdc!))],
-    `deposit:${next.key}`,
-  );
-  next = saveBank({ ...next, phase: "recording-dues", receipt: receipt.hash });
+  try {
+    const receipt = await invoke(
+      identity,
+      next.treasury,
+      "contribute",
+      [addr(identity.address), u32(next.seat!), num(toUnits(next.amountUsdc!))],
+      `deposit:${next.key}`,
+    );
+    next = saveBank({
+      ...next,
+      phase: "recording-dues",
+      receipt: receipt.hash,
+    });
+  } catch (error) {
+    if (!hasContributionIntent(next))
+      saveBank({ ...next, phase: "contribute" });
+    throw error;
+  }
   return finishDuesRecord(next, progress);
 }
 async function finishDuesRecord(
@@ -632,7 +631,11 @@ export async function payExpense(
         ? "execute"
         : "resume";
     record = await resumeBank(record, action);
-    if (["awaiting-funds", "needs-review"].includes(record.phase))
+    if (
+      ["awaiting-funds", "needs-review", "processing", "cancelled"].includes(
+        record.phase,
+      )
+    )
       return record;
     if (record.phase !== "complete") await delay(1500);
   }

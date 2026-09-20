@@ -80,7 +80,7 @@ npm --prefix web run serve
 Open **http://localhost:5174**. Testnet and workshop-anchor access are required.
 
 ```sh
-npm --prefix web test                 # 37 web regression tests
+npm --prefix web test                 # 47 web regression tests
 npm --prefix web run test:browser     # TR/EN, desktop/mobile, light/dark
 cargo test --workspace                # Rust contract tests
 ```

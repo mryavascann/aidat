@@ -413,13 +413,32 @@ export async function resumeDeposit(flow) {
   };
 }
 
-function queueView(value) {
+export async function inspectDeposit(flow) {
+  if (flow.kind !== "deposit") throw new Error("Unsupported bank reference.");
+  await building(flow.treasury);
+  // Checking a stopped payment must not simulate a transfer, sign an envelope,
+  // submit USDC, or contribute dues. The original order remains recoverable.
+  const anchor = await new AnchorClient(derivedKey(flow.scope)).discover();
+  const transaction = await anchor.transaction(flow.order.id);
+  return {
+    bankStatus: transaction.status,
+    statusCheckedAt: new Date().toISOString(),
+    ...(transaction.stellar_transaction_id
+      ? { settlementHash: transaction.stellar_transaction_id }
+      : {}),
+  };
+}
+
+export function queueView(value) {
   const r = value.record ?? {};
   // Public keepers may advance a registered expense, but never receive the
   // decrypted IBAN or a token that can expose its private banking instructions.
   return {
     saved: "",
-    phase: r.phase ?? value.phase ?? "scheduled",
+    phase:
+      value.phase === "cancelled"
+        ? "cancelled"
+        : (r.phase ?? value.phase ?? "scheduled"),
     reason: null,
     availableUsdc: null,
     requiredUsdc: null,
@@ -533,6 +552,26 @@ export async function advanceExpense(request) {
   return queueView(journal.value);
 }
 
+export async function dispatchSavedPayment(
+  flow,
+  action,
+  operations = { resumeDeposit, resumeWithdrawal, inspectDeposit },
+) {
+  if (flow.version !== 3) throw new Error("Unsupported bank reference.");
+  if (flow.kind === "deposit" && action === "status")
+    return operations.inspectDeposit(flow);
+  if (flow.kind === "deposit" && action === "resume")
+    return operations.resumeDeposit(flow);
+  if (
+    flow.kind === "withdraw" &&
+    ["resume", "attest", "execute"].includes(action)
+  )
+    return operations.resumeWithdrawal(flow, action);
+  // An unsupported action (especially "cancel") must never fall through to
+  // simulating or sending a transfer.
+  throw new Error("Unsupported bank action.");
+}
+
 export default async function handler(req, res) {
   try {
     const request = await body(req);
@@ -544,11 +583,7 @@ export default async function handler(req, res) {
     else if (request.action === "tick") result = await advanceExpense(request);
     else if (request.saved) {
       const flow = unseal(request.saved);
-      if (flow.version !== 3) throw new Error("Unsupported bank reference.");
-      result =
-        flow.kind === "withdraw"
-          ? await resumeWithdrawal(flow, request.action)
-          : await resumeDeposit(flow);
+      result = await dispatchSavedPayment(flow, request.action);
     } else if (request.action === "deposit") result = await deposit(request);
     else throw new Error("A saved bank reference is required.");
     reply(res, result);

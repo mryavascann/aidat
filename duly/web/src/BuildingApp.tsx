@@ -56,12 +56,19 @@ import {
 import { buildingLink } from "./lib/building-access";
 import { actionErrorMessage } from "./lib/action-errors";
 import {
+  blocksNewContribution,
+  canStopDeposit,
+  reactivateDeposit,
+  stopDeposit,
+} from "./lib/bank-records";
+import {
   accountBalance,
   addr,
   bankRecords,
   bool,
   buildingSnapshot,
   completeIntent,
+  checkDepositStatus,
   createBuilding,
   demoIdentity,
   deployment,
@@ -328,7 +335,11 @@ export default function BuildingApp() {
     };
   }, []);
 
-  async function run(action: () => Promise<unknown>, close = true) {
+  async function run(
+    action: () => Promise<unknown>,
+    close = true,
+    successKey?: BuildingKey,
+  ) {
     if (working.current) return;
     working.current = true;
     setBusy("processing");
@@ -343,7 +354,15 @@ export default function BuildingApp() {
         typeof result === "object" &&
         "phase" in result &&
         result.phase !== "complete";
-      setSuccess(pending ? "paymentPending" : "success");
+      const stopped =
+        result &&
+        typeof result === "object" &&
+        "stoppedAt" in result &&
+        result.stoppedAt;
+      setSuccess(
+        successKey ??
+          (stopped ? "duesStopped" : pending ? "paymentPending" : "success"),
+      );
       await refresh();
     } catch (e: any) {
       setError(
@@ -372,6 +391,7 @@ export default function BuildingApp() {
       recording: "bankConfirming",
       "transfer-ready": "depositSending",
       contribute: "contributionSigning",
+      contributing: "contributionSigning",
       "recording-dues": "indexingDues",
       "demo-usdc": "fundingDemoUsdc",
       scheduled: "scheduled",
@@ -636,9 +656,54 @@ export default function BuildingApp() {
     );
     completeIntent(key);
   }
-  const pendingContribution = records.find(
-    (r) => ["deposit", "usdc"].includes(r.kind) && r.phase !== "complete",
-  );
+  const pendingContribution = records.find(blocksNewContribution);
+  function cancelBankDues(record: BankRecord) {
+    try {
+      stopDeposit(record, account);
+      setRecords(bankRecords(treasury, account));
+      setDues({
+        seat: String(record.seat ?? 1),
+        currency: "USDC",
+        amount: "5",
+      });
+      setError("");
+      setSuccess("duesStopped");
+    } catch (error: any) {
+      setError(error.message ?? String(error));
+    }
+  }
+  function bankStatusLabel(record: BankRecord): BuildingKey {
+    if (["contributing", "recording-dues"].includes(record.phase))
+      return "duesTransferPending";
+    if (["contribute", "transfer-ready"].includes(record.phase))
+      return "bankDepositConfirmed";
+    if (record.bankStatus === "completed") return "bankDepositConfirmed";
+    if (record.bankStatus === "refunded") return "bankDepositRefunded";
+    if (
+      ["error", "expired", "no_market", "too_small", "too_large"].includes(
+        record.bankStatus ?? "",
+      )
+    )
+      return "paymentNeedsReview";
+    if (record.bankStatus?.startsWith("pending_")) return "bankConfirming";
+    return "bankStatusUnknown";
+  }
+  function renderBankCancel(record: BankRecord | undefined) {
+    if (!record || !canStopDeposit(record)) return null;
+    return (
+      <div className="v3-bank-cancel">
+        <button
+          type="button"
+          className="button secondary full"
+          onClick={() => cancelBankDues(record)}
+        >
+          <X size={16} />
+          {t("cancelDues")}
+        </button>
+        <p className="v3-help">{t("cancelBankDuesHelp")}</p>
+      </div>
+    );
+  }
   useEffect(() => {
     if (pendingContribution)
       setDues({
@@ -1231,6 +1296,14 @@ export default function BuildingApp() {
             <div className="progress-bar" role="status">
               <LoaderCircle className="spin" size={17} />
               {t(busy)} {busyDetail}
+              {pendingContribution && canStopDeposit(pendingContribution) && (
+                <button
+                  className="text-button"
+                  onClick={() => cancelBankDues(pendingContribution)}
+                >
+                  {t("cancelDues")}
+                </button>
+              )}
             </div>
           )}
           {!!success && !busy && (
@@ -1547,6 +1620,7 @@ export default function BuildingApp() {
                                 : t("directUsdc")}
                           <ArrowRight size={16} />
                         </button>
+                        {renderBankCancel(pendingContribution)}
                       </form>
                     </section>
                     <section>
@@ -1564,9 +1638,11 @@ export default function BuildingApp() {
                                   : `${r.amountTry} TL`}
                               </strong>
                               <span className="v3-tag">
-                                {r.phase === "complete"
-                                  ? t("complete")
-                                  : t("Pending")}
+                                {r.stoppedAt
+                                  ? t("duesStoppedLabel")
+                                  : r.phase === "complete"
+                                    ? t("complete")
+                                    : t("Pending")}
                               </span>
                             </header>
                             <p>
@@ -1604,26 +1680,81 @@ export default function BuildingApp() {
                                   {t("reconcileDues")}
                                 </button>
                               )}
+                            {r.stoppedAt && (
+                              <p className="payment-notice">
+                                {t("stoppedBankDuesHelp")}
+                              </p>
+                            )}
+                            {r.kind === "deposit" && r.phase !== "complete" && (
+                              <p className="v3-help">{t(bankStatusLabel(r))}</p>
+                            )}
                             {r.phase !== "complete" && actor && (
-                              <button
-                                className="button small secondary"
-                                disabled={!!busy}
-                                onClick={() =>
-                                  void run(
-                                    () =>
-                                      r.kind === "usdc"
-                                        ? finishDirectDues(r, actor, progress)
-                                        : finishDeposit(r, actor, progress),
-                                    false,
-                                  )
-                                }
-                              >
-                                {t("resume")}
-                              </button>
+                              <div className="v3-actions">
+                                <button
+                                  className="button small secondary"
+                                  disabled={!!busy}
+                                  onClick={() =>
+                                    void run(
+                                      () =>
+                                        r.kind === "usdc"
+                                          ? finishDirectDues(r, actor, progress)
+                                          : finishDeposit(
+                                              r.stoppedAt
+                                                ? reactivateDeposit(r, account)
+                                                : r,
+                                              actor,
+                                              progress,
+                                            ),
+                                      false,
+                                    )
+                                  }
+                                >
+                                  {t(
+                                    r.stoppedAt
+                                      ? "resumeStoppedDues"
+                                      : "resume",
+                                  )}
+                                </button>
+                                {canStopDeposit(r) && (
+                                  <button
+                                    type="button"
+                                    className="button small secondary"
+                                    onClick={() => cancelBankDues(r)}
+                                  >
+                                    <X size={15} />
+                                    {t("cancelDues")}
+                                  </button>
+                                )}
+                                {r.stoppedAt && (
+                                  <button
+                                    type="button"
+                                    className="button small secondary"
+                                    disabled={!!busy}
+                                    onClick={() =>
+                                      void run(
+                                        () => checkDepositStatus(r),
+                                        false,
+                                        "bankStatusChecked",
+                                      )
+                                    }
+                                  >
+                                    {t("checkBankStatus")}
+                                  </button>
+                                )}
+                              </div>
                             )}
                             <details>
                               <summary>{t("details")}</summary>
                               <p className="mono">{r.anchorId}</p>
+                              {r.settlementHash && (
+                                <a
+                                  href={txUrl(r.settlementHash)}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                >
+                                  {t("bankTransferReceipt")} ↗
+                                </a>
+                              )}
                               {r.receipt && (
                                 <a
                                   href={txUrl(r.receipt)}
@@ -2223,6 +2354,7 @@ export default function BuildingApp() {
                             : t("demoFundExpense")}
                         </button>
                         <p className="v3-help">{t("demoFundExpenseHelp")}</p>
+                        {renderBankCancel(pendingContribution)}
                       </>
                     ) : (
                       <button
