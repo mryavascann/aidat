@@ -12,12 +12,16 @@ const copy = {
   ],
   demoUsdc: ["Test USDC yükle", "Get test USDC"],
   demoUsdcHelp: [
-    "Tek kişilik demo için bir kez ücretsiz test bakiyesi yüklenir. Bu yükleme aidat sayılmaz.",
-    "Load free test funds once for this solo demo. Funding the wallet does not count as paying dues.",
+    "Üç demo cüzdanı 20’şer test USDC ile hazırlanır. Bu yükleme aidat sayılmaz; harcanan bakiye kendiliğinden yenilenmez.",
+    "Each of the three demo wallets starts with 20 test USDC. Funding is not a dues payment; spent funds are not automatically replenished.",
   ],
   fundingDemoUsdc: [
-    "Demo cüzdanına test USDC yükleniyor…",
-    "Funding the demo wallet with test USDC…",
+    "Demo cüzdanlarına test USDC yükleniyor…",
+    "Funding the demo wallets with test USDC…",
+  ],
+  demoFundingUnavailable: [
+    "Test USDC şu an hazırlanamadı. Aynı düğmeyle yeniden deneyin; kayıtlı işlem korunur.",
+    "Test USDC could not be prepared right now. Retry with the same button; your saved transaction is retained.",
   ],
   indexingDues: [
     "Ödeme doğrulandı; aidat kaydı tamamlanıyor…",
@@ -94,8 +98,8 @@ const copy = {
   demo: ["Tek kişilik demo", "Solo demo"],
   startDemo: ["Demoyu başlat", "Start demo"],
   demoText: [
-    "Size özel 3 daireli bir test binası açılır. Diğer dairelerin oylarını tek tıkla simüle edebilirsiniz. Test anahtarları yalnızca bu tarayıcıda tutulur.",
-    "A private test building with 3 apartments. Simulate the other apartments’ votes with one click. Test keys stay in this browser.",
+    "Size özel 3 daireli bir test binası açılır. Her cüzdan 20 test USDC ile hazırlanır. Diğer dairelerin oylarını tek tıkla simüle edebilirsiniz. Test anahtarları yalnızca bu tarayıcıda tutulur.",
+    "A private test building with 3 apartments. Each wallet starts with 20 test USDC. Simulate the other apartments’ votes with one click. Test keys stay in this browser.",
   ],
   demoBanner: [
     "Tek kişilik demo · İtiraz 20 sn, devir itirazı 60 sn, bütçe dönemi 10 dk. Diğer 2 daire simüledir.",
@@ -557,6 +561,13 @@ const copy = {
   ],
   amount: ["Tutar", "Amount"],
   walletBalance: ["Hesap bakiyesi", "Account balance"],
+  demoWallets: ["Demo cüzdanları", "Demo wallets"],
+  balanceLoading: ["Bakiye yükleniyor…", "Loading balance…"],
+  balanceUnavailable: ["Bakiye okunamadı", "Balance unavailable"],
+  testBalanceHelp: [
+    "Stellar Testnet · Yalnızca test bakiyesi",
+    "Stellar Testnet · Test funds only",
+  ],
   history: [
     "Bu tarayıcıdaki ödeme kayıtları",
     "Payments saved in this browser",

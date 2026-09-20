@@ -1,6 +1,7 @@
 import {
   useCallback,
   useEffect,
+  useMemo,
   useRef,
   useState,
   type FormEvent,
@@ -150,6 +151,13 @@ export default function BuildingApp() {
   const treasury =
     demoActive && demo?.treasury ? demo.treasury : normalBuilding;
   const account = actor?.address ?? "";
+  const demoAccounts = useMemo(
+    () =>
+      demoActive && demo?.ready
+        ? demo.secrets.map((_, i) => demoIdentity(demo, i).address)
+        : [],
+    [demoActive, demo],
+  );
   const contextRef = useRef("");
   contextRef.current = `${treasury}:${account}`;
   const [data, setData] = useState<BuildingData | null>(null);
@@ -157,6 +165,8 @@ export default function BuildingApp() {
     null,
   );
   const [balance, setBalance] = useState<bigint | null>(null);
+  const [balanceError, setBalanceError] = useState(false);
+  const [demoBalances, setDemoBalances] = useState<(bigint | null)[]>([]);
   const [rateReceivedAt, setRateReceivedAt] = useState(0);
   const [, setProfileRevision] = useState(0);
   const [busy, setBusy] = useState<BuildingKey | "">(""),
@@ -233,6 +243,7 @@ export default function BuildingApp() {
       rates(),
       account ? accountBalance(account) : Promise.resolve(null),
       loadDues(treasury),
+      Promise.allSettled(demoAccounts.map(accountBalance)),
     ]);
     if (
       current !== generation.current ||
@@ -245,7 +256,14 @@ export default function BuildingApp() {
       setRate(results[1].value);
       setRateReceivedAt(Date.now());
     }
-    if (results[2].status === "fulfilled") setBalance(results[2].value);
+    setBalanceError(results[2].status === "rejected");
+    setBalance(results[2].status === "fulfilled" ? results[2].value : null);
+    if (results[4].status === "fulfilled")
+      setDemoBalances(
+        results[4].value.map((r) =>
+          r.status === "fulfilled" ? r.value : null,
+        ),
+      );
     if (results[3].status === "fulfilled") {
       setDuesLedger(results[3].value);
       setDuesError("");
@@ -254,7 +272,7 @@ export default function BuildingApp() {
       setDuesError(String(results[3].reason));
     }
     setRecords(bankRecords(treasury, account));
-  }, [treasury, account]);
+  }, [treasury, account, demoAccounts]);
   useEffect(() => {
     document.documentElement.lang = lang;
     save("language", lang);
@@ -262,6 +280,8 @@ export default function BuildingApp() {
   useEffect(() => {
     setData(null);
     setBalance(null);
+    setBalanceError(false);
+    setDemoBalances([]);
     setDuesLedger(null);
     setDuesError("");
     void refresh();
@@ -269,6 +289,9 @@ export default function BuildingApp() {
       generation.current++;
     };
   }, [refresh]);
+  useEffect(() => {
+    if (modal === "account") void refresh();
+  }, [modal, refresh]);
   useEffect(() => {
     const id = setInterval(() => {
       setNow(Date.now());
@@ -380,6 +403,11 @@ export default function BuildingApp() {
     }
   }
   const progress = (phase: string) => {
+    if (phase.startsWith("demo-usdc:")) {
+      setBusy("fundingDemoUsdc");
+      setBusyDetail(`(${phase.split(":")[1]}/3)`);
+      return;
+    }
     const labels: Record<string, BuildingKey> = {
       quote: "quoting",
       quoted: "bankAuthorizing",
@@ -1964,6 +1992,25 @@ export default function BuildingApp() {
             (actor ? (
               <div className="v3-account">
                 {accountName && <h3>{accountName}</h3>}
+                <section
+                  className="v3-wallet-balance"
+                  aria-label={t("walletBalance")}
+                >
+                  <span>
+                    <Wallet size={18} />
+                    {t("walletBalance")}
+                  </span>
+                  <strong>
+                    {balance !== null
+                      ? usd(balance)
+                      : t(
+                          balanceError
+                            ? "balanceUnavailable"
+                            : "balanceLoading",
+                        )}
+                  </strong>
+                  <small>{t("testBalanceHelp")}</small>
+                </section>
                 <p>{t("signedBy")}</p>
                 <p className="mono">{actor.address}</p>
                 <div className="v3-actions">
@@ -1983,6 +2030,46 @@ export default function BuildingApp() {
                     {t("exit")}
                   </button>
                 </div>
+                {demoAccounts.length > 0 && (
+                  <section
+                    className="v3-demo-wallets"
+                    aria-label={t("demoWallets")}
+                  >
+                    <h3>{t("demoWallets")}</h3>
+                    <ul>
+                      {demoAccounts.map((address, index) => (
+                        <li key={address}>
+                          <div>
+                            <span>
+                              {t("apartment")} {index + 1}
+                              {index === 0 ? ` · ${t("manager")}` : ""}
+                            </span>
+                            <small className="mono">{short(address)}</small>
+                          </div>
+                          <strong>
+                            {demoBalances[index] != null
+                              ? usd(demoBalances[index]!)
+                              : "— USDC"}
+                          </strong>
+                        </li>
+                      ))}
+                    </ul>
+                    <button
+                      className="button secondary full"
+                      disabled={!!busy}
+                      onClick={() =>
+                        void run(
+                          () => fundDemoUsdc(treasury, account, progress),
+                          false,
+                        )
+                      }
+                    >
+                      <Sparkles size={16} />
+                      {t("demoUsdc")}
+                    </button>
+                    <p className="v3-help">{t("demoUsdcHelp")}</p>
+                  </section>
+                )}
                 {isManager && (
                   <button
                     className="button secondary full"
@@ -2053,12 +2140,15 @@ export default function BuildingApp() {
                   void run(async () => {
                     const created = await startBuildingDemo((stage) => {
                       setBusy(
-                        stage.startsWith("demo-fund")
-                          ? "fundDemo"
-                          : "deployDemo",
+                        stage.startsWith("demo-usdc")
+                          ? "fundingDemoUsdc"
+                          : stage.startsWith("demo-fund")
+                            ? "fundDemo"
+                            : "deployDemo",
                       );
                       setBusyDetail(
-                        stage.startsWith("demo-fund")
+                        stage.startsWith("demo-fund") ||
+                          stage.startsWith("demo-usdc")
                           ? `(${stage.split(":")[1]}/3)`
                           : "",
                       );

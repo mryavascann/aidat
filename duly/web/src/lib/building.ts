@@ -1,5 +1,6 @@
 import {
   Address,
+  Asset,
   Contract,
   Keypair,
   StrKey,
@@ -15,6 +16,9 @@ import {
   delay,
   hex,
   horizon,
+  Operation,
+  send,
+  USDC,
   num,
   read,
   server,
@@ -26,6 +30,11 @@ import { load, save } from "./storage";
 import { canRefreshDuesQuote, duesRequest } from "./dues";
 import { localSigner, type Signer } from "./wallet";
 import {
+  demoFundingAmount,
+  demoFundingPlan,
+  type DemoFundingPlan,
+} from "./demo-funding";
+import {
   bankRecord,
   hasContributionIntent,
   saveBank,
@@ -34,7 +43,7 @@ import {
 export { bankRecords, type BankRecord } from "./bank-records";
 export { deployment, addr, bytes, num, str, u32, delay };
 export { toUnits, fromUnits } from "../../../scripts/lib/amounts.mjs";
-import { toUnits } from "../../../scripts/lib/amounts.mjs";
+import { fromUnits, toUnits } from "../../../scripts/lib/amounts.mjs";
 export type Identity = {
   kind: "passkey" | "wallet" | "demo";
   address: string;
@@ -362,6 +371,7 @@ export async function startBuildingDemo(progress: (value: string) => void) {
     demo.treasury = receipt.value;
     save("v3:demo", demo);
   }
+  await fundDemoWallets(demo, progress);
   demo.ready = true;
   save("v3:demo", demo);
   return demo;
@@ -591,19 +601,51 @@ export async function fundDemoUsdc(
   account: string,
   progress: (s: string) => void,
 ) {
-  progress("demo-usdc");
-  for (let attempt = 0; attempt < 35; attempt++) {
-    const result = await duesRequest({
-      action: "demo-funds",
-      treasury,
-      account,
-    });
-    if (result.phase === "complete") return result;
-    await delay(1500);
+  const demo = getBuildingDemo();
+  if (
+    !demo?.ready ||
+    demo.treasury !== treasury ||
+    demoIdentity(demo).address !== account
+  )
+    throw new Error("permissionDenied");
+  await verifyBuilding(treasury);
+  return fundDemoWallets(demo, progress);
+}
+
+async function fundDemoWallets(demo: Demo, progress: (s: string) => void) {
+  if (demo.secrets.length !== 3) throw new Error("permissionDenied");
+  for (let index = 0; index < 3; index++) {
+    progress(`demo-usdc:${index + 1}`);
+    const signer = localSigner(demo.secrets[index]);
+    const address = signer.publicKey();
+    const planKey = `v3:demo-usdc-plan:${address}`;
+    let plan = load<DemoFundingPlan | null>(planKey, null);
+    if (!plan) {
+      const amount = demoFundingAmount(await accountBalance(address));
+      if (!amount) continue;
+      const paths = await horizon
+        .strictReceivePaths([Asset.native()], USDC, fromUnits(amount))
+        .call();
+      plan = demoFundingPlan(amount, paths.records, USDC.getIssuer()!);
+      save(planKey, plan);
+    }
+    // A fixed per-wallet intent preserves the exact signed envelope on retry.
+    // This only uses disposable demo XLM and never records a dues contribution.
+    await send(
+      signer,
+      Operation.pathPaymentStrictReceive({
+        sendAsset: Asset.native(),
+        sendMax: plan.sendMax,
+        destination: address,
+        destAsset: USDC,
+        destAmount: plan.amount,
+        path: [],
+      }),
+      "v3:demo-usdc",
+      { classic: true },
+    );
   }
-  throw new Error(
-    "Demo funding is pending. Use the same button to resume; no second deposit will be opened.",
-  );
+  return { phase: "complete" };
 }
 export async function payExpense(
   treasury: string,

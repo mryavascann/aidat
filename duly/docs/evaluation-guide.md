@@ -47,7 +47,7 @@ browser-local; it is not a cross-device bank instruction.
 
 Smart Account Kit 0.8.0 uses Stellar SDK 16.3.0 with pinned OpenZeppelin account WASM and a WebAuthn verifier. Chain and bank workflows use SDK 17.1.0 through a serialized boundary. Passkey tests use a virtual CTAP2 authenticator with real WebAuthn and real testnet signatures. They are not physical Windows Hello or biometric-device tests.
 
-The solo demo holds disposable test keys in browser storage and simulates three apartment seats. QR viewing grants no ownership or voting rights. The manager's saved IBAN preference is scoped to this browser, building and manager; other devices start with the labelled sample unless configured. Changing it affects new expenses only.
+The solo demo holds disposable test keys in browser storage and simulates three apartment seats. Each wallet starts with 20 test USDC, prepared from Friendbot XLM through a bounded testnet path payment; available market liquidity is required. My account reads wallet balances from the configured token contract. QR viewing grants no ownership or voting rights. The manager's saved IBAN preference is scoped to this browser, building and manager; other devices start with the labelled sample unless configured. Changing it affects new expenses only.
 
 Normal contracts use 3-day objections, 7-day recovery and 30-day periods. Demo WASM uses 20 seconds, 60 seconds and 10 minutes. Both elapsed-time and ledger boundaries must pass. No manager can shorten a deployed building's timers.
 
@@ -77,6 +77,7 @@ npm --prefix web run test:live
 npm --prefix web run test:dues
 DULY_URL=http://localhost:5174 npm --prefix web run test:passkey
 npm --prefix web run test:queue
+npm --prefix web run test:demo-wallets
 ```
 
 Do not delete `.duly-*-key`, `.duly-state.json`, browser keys or saved payment intents while testing. They are ignored by Git and excluded from deployment. Use localhost or HTTPS for passkeys.

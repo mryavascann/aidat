@@ -22,8 +22,8 @@ Our first intended users are volunteer managers and residents of small apartment
 
 ## Try it in two minutes
 
-1. Open the demo and choose **EN → Solo demo**, beside the theme toggle. No passkey is needed; three apartment accounts are simulated.
-2. In **Pay dues**, choose **Get test USDC**, then contribute **5 test USDC**. Wallet funding alone does not pay dues.
+1. Open the demo and choose **EN → Solo demo**, beside the theme toggle. No passkey is needed; each of the three demo wallets starts with **20 test USDC**. See their balances in **My account**.
+2. In **Pay dues**, contribute **5 test USDC**. Wallet funding alone does not pay dues. Existing demos can prepare their wallets with **Get test USDC**.
 3. In **Expenses**, create a **100 TRY** expense. The labelled sample IBAN is prefilled; the automatic USDC ceiling includes 10% headroom.
 4. Follow approval and settlement. The solo demo uses a **20-second** objection window. Bank confirmation can remain pending; the completed example below is available immediately.
 
@@ -80,7 +80,7 @@ npm --prefix web run serve
 Open **http://localhost:5174**. Testnet and workshop-anchor access are required.
 
 ```sh
-npm --prefix web test                 # 47 web regression tests
+npm --prefix web test                 # 51 web regression tests
 npm --prefix web run test:browser     # TR/EN, desktop/mobile, light/dark
 cargo test --workspace                # Rust contract tests
 ```

@@ -1,0 +1,49 @@
+{
+  "network": "Stellar Testnet",
+  "treasury": "CB4A76Y3XNFYXP5KQVXGMOLXHOD4WRMIGQWFPFQX36PBWAOKM4ROZ747",
+  "token": "CBIELTK6YBZJU5UP2WWQEUCYKLPU6AUNZ2BQ4WWFEIE3USCIHMXQDAMA",
+  "initialUsdcPerWallet": "20",
+  "fundedAt": "2026-09-20T05:25:12.840Z",
+  "wallets": [
+    {
+      "seat": 1,
+      "address": "GC5J5Q4XZM7BCCNQPII73MDCEQBZLZR3MXGJZOPR453MUGLLDCDKD2XE",
+      "balanceUsdc": "20.0000000",
+      "transaction": "740286915b500384285a663de22650f86fc8409d7b404c8115a66d9b7df16e8f"
+    },
+    {
+      "seat": 2,
+      "address": "GBUWYF45KIJTGZ6RNGAWEIDGOWXRTZQ4XCJZHELXJQOJEAP7WOMB3IRB",
+      "balanceUsdc": "20.0000000",
+      "transaction": "3099cc9ee8e1843d8d23e9529d52a400b480810bfda341cdaf8bfeb04c8683d9"
+    },
+    {
+      "seat": 3,
+      "address": "GD75GH5NRK2DSONSE67U27BVXOIN5G6FI4FOAYGZXCZBWJVI64N67ZXT",
+      "balanceUsdc": "20.0000000",
+      "transaction": "05e7c93db90aed820f795a402bd7bfba658544dde4574286647583439e8ad926"
+    }
+  ],
+  "duesContributed": false,
+  "localVerification": {
+    "url": "http://localhost:5182",
+    "treasury": "CB3ZKNE3F7D2TGDDYAAQPDAGYOJZJZFN5KASKRM3D3DFLKMIDLZN3I6W",
+    "owners": [
+      "GBI6CQSPT22QQLKKEWSZ4WOOZ66C7NSYEF5SU3LCZWVPOVRMNQ45FXKA",
+      "GB6CIB7B4EFU3F36PUTZLIUMUCDBTWUIMZTLLIL67C43W47BPA43N5SF",
+      "GCXXPBJXKO7XSWAM4DWTJV3A5FNN2WYFISSBBIBU5GFFWMKJFSVESNHE"
+    ],
+    "fundingHashes": [
+      "c3e0563ae75601deee299e4e5456fc5fc4b496b6b95ee6410405669b0b251f1b",
+      "00135cc0cb2ad5477944454d25ae79c24ba0e94591e4ddddd5c6b4982f0085c3",
+      "a7673a390c732a959cefbff6b39c1cd3ca7057e129c8962973d3d47da4906e57"
+    ],
+    "balancesUsdc": [
+      "15",
+      "20",
+      "20"
+    ],
+    "contributedUsdc": "5",
+    "bankTransfersOpened": 0
+  }
+}
