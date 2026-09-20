@@ -4,6 +4,14 @@
   align-items: center;
   gap: 10px;
 }
+.v3-vote-count {
+  display: grid;
+  gap: 5px;
+}
+.v3-vote-count small {
+  color: var(--muted);
+  font-size: 11px;
+}
 .v3-wallet-balance {
   display: grid;
   gap: 12px;

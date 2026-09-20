@@ -2,6 +2,35 @@
 
 Updated September 20, 2026. The active product is **V3 building governance**, published on `main`; current wallet funding source `8658c34`, bank cancellation source `475d913`, V3 base `f3a5498`. Run Git status/log for the current revision and push status. Previous V2 notes are preserved in `archive/agent-notes-v2.md`; do not treat their old scope as current.
 
+## Outgoing-payment cancellation and majority UX — September 20, 2026
+
+The IBAN payment dialog keeps cancellation and close controls available while
+the bank request is in flight. A manager can cancel a still-Pending expense on
+chain. If disbursement won the race, or the user only closes the dialog, the
+waiting screen closes and the original payment remains tracked. No reversal
+or refund is claimed. Late responses retain receipts and cannot revive a
+chain-confirmed cancelled expense; saved cancelled withdrawals exit before
+anchor work. The active request keeps the payment lock until it resolves.
+
+Existing V3 contracts already use strict majority. The UI now shows the needed
+approval count and **Majority reached**; the solo simulator stops at that
+threshold. Three apartments need two approvals, including when the third
+votes no. No contract migration is needed.
+
+55 web tests, 19 normal and 19 demo contract tests, build and formatting passed.
+The existing 32-page browser suite, eight incoming-payment cancellation views
+and eight outgoing-payment dialog accessibility views passed. An isolated
+testnet building verified two approvals with no third vote, manager
+cancellation during a held bank response, unchanged 5-USDC treasury balance,
+late receipt preservation and reload persistence. Two controlled Disbursed
+scenarios verified stop/close without a cancellation transaction. Public proof:
+`deployments/building-cancellation-testnet-v3.json`. No bank order was created.
+
+The explicit `web` script `test:expense-cancel` runs locally and reuses the
+private `test-results/demo-wallets/state.json` created by `test:demo-wallets`.
+Its private transaction journal and browser state remain ignored; never publish
+those files. Public test receipts are safe to share.
+
 ## Account balances and three funded demo wallets — September 20, 2026
 
 Source `8658c34` shows the active account's USDC balance in **My account**,

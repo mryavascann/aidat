@@ -29,6 +29,7 @@ import {
 import { load, save } from "./storage";
 import { canRefreshDuesQuote, duesRequest } from "./dues";
 import { localSigner, type Signer } from "./wallet";
+import type { PaymentControl } from "./payment-control";
 import {
   demoFundingAmount,
   demoFundingPlan,
@@ -386,12 +387,19 @@ export async function simulateVotes(
   motion = true,
   support = true,
 ) {
+  const config = await read(demo.treasury!, "config");
   for (let index = 1; index < 3; index++) {
     const identity = demoIdentity(demo, index);
-    const current = await read(demo.treasury!, motion ? "motion" : "expense", [
-      u32(id),
+    const [current, tally] = await Promise.all([
+      read(demo.treasury!, motion ? "motion" : "expense", [u32(id)]),
+      read(demo.treasury!, motion ? "motion_tally" : "expense_tally", [
+        u32(id),
+      ]),
     ]);
     if (state(current.status) !== "Pending") return;
+    const recovery = motion && current.kind[0] === "Recovery";
+    const needed = Math.floor((config.seat_count - (recovery ? 1 : 0)) / 2) + 1;
+    if (tally[support ? 0 : 1] >= needed) return;
     if (
       motion &&
       current.kind[0] === "Recovery" &&
@@ -652,36 +660,98 @@ export async function payExpense(
   id: number,
   iban: string,
   progress: (s: string) => void,
-) {
-  const key = `expense:${treasury}:${id}`;
-  let record = load<BankRecord[]>("v3:bank", []).find((r) => r.key === key);
-  if (!record) {
-    progress("quote");
-    const result = await bankRequest({
-      action: "register",
-      treasury,
-      id,
-      iban,
-    });
-    record = saveBank({ ...result, kind: "withdraw", treasury, id, key });
-  }
-  for (let i = 0; i < 40 && record.phase !== "complete"; i++) {
-    progress(record.phase);
-    const action = ["quoted", "attesting"].includes(record.phase)
-      ? "attest"
-      : record.phase === "attested"
-        ? "execute"
-        : "resume";
-    record = await resumeBank(record, action);
-    if (
-      ["awaiting-funds", "needs-review", "processing", "cancelled"].includes(
-        record.phase,
+  control?: PaymentControl<ExpensePaymentResult>,
+): Promise<ExpensePaymentResult> {
+  try {
+    const key = `expense:${treasury}:${id}`;
+    let record = load<BankRecord[]>("v3:bank", []).find((r) => r.key === key);
+    if (!record) {
+      progress("quote");
+      const result = await bankRequest({
+        action: "register",
+        treasury,
+        id,
+        iban,
+      });
+      record = saveBank({ ...result, kind: "withdraw", treasury, id, key });
+    }
+    for (let i = 0; i < 4 && record.phase !== "complete"; i++) {
+      if (control?.stopped) return control.finish();
+      progress(record.phase);
+      const action = ["quoted", "attesting"].includes(record.phase)
+        ? "attest"
+        : record.phase === "attested"
+          ? "execute"
+          : "resume";
+      record = await resumeBank(record, action);
+      if (control?.stopped) return control.finish();
+      if (
+        ["awaiting-funds", "needs-review", "processing", "cancelled"].includes(
+          record.phase,
+        )
       )
-    )
-      return record;
-    if (record.phase !== "complete") await delay(1500);
+        return record;
+      if (record.phase !== "complete") await delay(1500);
+    }
+    if (control?.stopped) return control.finish();
+    return record;
+  } catch (error) {
+    if (control?.stopped) return control.finish();
+    throw error;
   }
-  return record;
+}
+
+export type ExpensePaymentResult = BankRecord & {
+  cancelResult?: "cancelled" | "tracking" | "complete";
+};
+
+export async function cancelExpensePayment(
+  treasury: string,
+  id: number,
+  manager?: Identity,
+): Promise<ExpensePaymentResult> {
+  const key = `expense:${treasury}:${id}`;
+  let expense = await read(treasury, "expense", [u32(id)]);
+  let cancellationReceipt: string | undefined;
+  if (manager && state(expense.status) === "Pending") {
+    try {
+      const receipt = await invoke(
+        manager,
+        treasury,
+        "cancel_expense",
+        [u32(id)],
+        `cancel:${treasury}:${id}`,
+      );
+      cancellationReceipt = receipt.hash;
+    } catch (error) {
+      // Execution and cancellation may reach the chain together. Its final
+      // state wins; never describe an already-disbursed transfer as cancelled.
+      expense = await read(treasury, "expense", [u32(id)]);
+      if (state(expense.status) === "Pending") throw error;
+    }
+    expense = await read(treasury, "expense", [u32(id)]);
+  }
+  const current = bankRecord(key) ?? {
+    key,
+    treasury,
+    id,
+    kind: "withdraw" as const,
+    phase: "scheduled",
+    queued: true,
+    saved: "",
+  };
+  if (state(expense.status) === "Cancelled") {
+    const record = saveBank({
+      ...current,
+      phase: "cancelled",
+      cancellationReceipt: cancellationReceipt ?? current.cancellationReceipt,
+    });
+    return { ...record, cancelResult: "cancelled" };
+  }
+  return {
+    ...current,
+    cancelResult: state(expense.status) === "Settled" ? "complete" : "tracking",
+  };
 }
 export async function accountBalance(address: string) {
   return read(deployment.token, "balance", [addr(address)]) as Promise<bigint>;

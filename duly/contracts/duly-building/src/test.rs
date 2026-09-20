@@ -268,6 +268,53 @@ fn objection_to_new_recipient_stops_automatic_payment_until_majority() {
 }
 
 #[test]
+fn two_yes_votes_execute_immediately_even_when_the_third_seat_votes_no() {
+    let f = Fixture::new();
+    f.fund();
+    let id = f.expense(20_000);
+    f.quote(id, 10_000_000);
+    f.c().vote_expense(&3, &f.owners[2], &id, &false);
+    f.c().vote_expense(&1, &f.owners[0], &id, &true);
+    assert_eq!(
+        f.c().try_execute_expense(&id),
+        Err(Ok(Error::MajorityRequired))
+    );
+    f.c().vote_expense(&2, &f.owners[1], &id, &true);
+    assert_eq!(f.c().expense_tally(&id), (2, 1));
+    f.c().execute_expense(&id);
+    assert_eq!(f.c().expense(&id).status, ExpenseStatus::Disbursed);
+}
+
+#[test]
+fn cancellation_prevents_a_prepared_expense_from_moving_treasury_funds() {
+    let f = Fixture::new();
+    f.fund();
+    let id = f.expense(20_000);
+    f.quote(id, 10_000_000);
+    f.c().vote_expense(&1, &f.owners[0], &id, &true);
+    f.c().vote_expense(&2, &f.owners[1], &id, &true);
+    let balance = f.c().balance();
+    f.c().cancel_expense(&id);
+    assert_eq!(f.c().expense(&id).status, ExpenseStatus::Cancelled);
+    assert_eq!(f.c().try_execute_expense(&id), Err(Ok(Error::NotPending)));
+    assert_eq!(f.c().balance(), balance);
+    assert_eq!(token::Client::new(&f.env, &f.token).balance(&f.bank), 0);
+}
+
+#[test]
+fn a_disbursed_expense_cannot_be_described_as_cancelled() {
+    let f = Fixture::new();
+    f.fund();
+    let id = f.expense(20_000);
+    f.quote(id, 10_000_000);
+    f.c().vote_expense(&1, &f.owners[0], &id, &true);
+    f.c().vote_expense(&2, &f.owners[1], &id, &true);
+    f.c().execute_expense(&id);
+    assert_eq!(f.c().try_cancel_expense(&id), Err(Ok(Error::NotPending)));
+    assert_eq!(f.c().expense(&id).status, ExpenseStatus::Disbursed);
+}
+
+#[test]
 fn budget_period_advances_only_after_thirty_days_and_ledgers() {
     let f = Fixture::new();
     f.fund();

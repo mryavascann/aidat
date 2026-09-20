@@ -57,6 +57,10 @@ import {
 import { buildingLink } from "./lib/building-access";
 import { actionErrorMessage } from "./lib/action-errors";
 import {
+  createPaymentControl,
+  type PaymentControl,
+} from "./lib/payment-control";
+import {
   blocksNewContribution,
   canStopDeposit,
   reactivateDeposit,
@@ -70,6 +74,7 @@ import {
   buildingSnapshot,
   completeIntent,
   checkDepositStatus,
+  cancelExpensePayment,
   createBuilding,
   demoIdentity,
   deployment,
@@ -99,6 +104,7 @@ import {
   type BuildingData,
   type Demo,
   type Expense,
+  type ExpensePaymentResult,
   type Identity,
   type Motion,
   type Seat,
@@ -189,6 +195,13 @@ export default function BuildingApp() {
   const advancing = useRef(false);
   const selectedExpense = useRef<Expense | null>(null),
     selectedSeat = useRef<Seat | null>(null);
+  const activeExpensePayment = useRef<{
+    control: PaymentControl<ExpensePaymentResult>;
+    treasury: string;
+    id: number;
+    manager?: Identity;
+  } | null>(null);
+  const [expenseStopRequested, setExpenseStopRequested] = useState(false);
   const expenseDraft = useRef<Record<string, string> | null>(null);
   const isManager = !!actor && actor.address === data?.config.manager;
   const managerIban = data
@@ -369,9 +382,11 @@ export default function BuildingApp() {
     setBusyDetail("");
     setError("");
     setSuccess("");
+    const startedModal = modal;
     try {
       const result = await exclusive(action);
-      if (close) setModal(null);
+      if (close)
+        setModal((current) => (current === startedModal ? null : current));
       const pending =
         result &&
         typeof result === "object" &&
@@ -382,9 +397,23 @@ export default function BuildingApp() {
         typeof result === "object" &&
         "stoppedAt" in result &&
         result.stoppedAt;
+      const cancellation =
+        result && typeof result === "object" && "cancelResult" in result
+          ? result.cancelResult
+          : null;
       setSuccess(
         successKey ??
-          (stopped ? "duesStopped" : pending ? "paymentPending" : "success"),
+          (cancellation === "cancelled"
+            ? "expenseCancelled"
+            : cancellation === "tracking"
+              ? "paymentTrackingContinues"
+              : cancellation === "complete"
+                ? "paymentAlreadyCompleted"
+                : stopped
+                  ? "duesStopped"
+                  : pending
+                    ? "paymentPending"
+                    : "success"),
       );
       await refresh();
     } catch (e: any) {
@@ -403,6 +432,7 @@ export default function BuildingApp() {
     }
   }
   const progress = (phase: string) => {
+    if (activeExpensePayment.current?.control.stopped) return;
     if (phase.startsWith("demo-usdc:")) {
       setBusy("fundingDemoUsdc");
       setBusyDetail(`(${phase.split(":")[1]}/3)`);
@@ -780,6 +810,46 @@ export default function BuildingApp() {
     return finishDeposit(record, actor, progress);
   }
 
+  async function completeExpensePayment() {
+    const control = createPaymentControl<ExpensePaymentResult>();
+    activeExpensePayment.current = {
+      control,
+      treasury,
+      id: selectedExpense.current!.id,
+      manager: isManager ? actor! : undefined,
+    };
+    setExpenseStopRequested(false);
+    try {
+      const result = await payExpense(
+        treasury,
+        selectedExpense.current!.id,
+        form.iban,
+        progress,
+        control,
+      );
+      if (result.reason && !result.cancelResult) throw new Error(result.reason);
+      return result;
+    } finally {
+      activeExpensePayment.current = null;
+      setExpenseStopRequested(false);
+    }
+  }
+  function stopExpensePayment(cancel = true) {
+    const active = activeExpensePayment.current;
+    if (!active || active.control.stopped) return;
+    active.control.requestStop(() =>
+      cancelExpensePayment(
+        active.treasury,
+        active.id,
+        cancel ? active.manager : undefined,
+      ),
+    );
+    setExpenseStopRequested(true);
+    setBusy("checkingPaymentCancellation");
+    setBusyDetail("");
+    setModal(null);
+  }
+
   const remaining = (time: bigint, ledger: number) => {
     const seconds = Math.max(0, Number(time) - Math.floor(now / 1000));
     if (!seconds)
@@ -855,8 +925,11 @@ export default function BuildingApp() {
           <p className="payment-notice">{t("quoteExpired")}</p>
         )}
         <div className="v3-expense-info">
-          <span>
-            {e.tally[0]}/{data?.config.seat_count} {t("yes").toLowerCase()}
+          <span className="v3-vote-count">
+            {e.tally[0]}/{majority} {t("requiredApprovals")}
+            <small>
+              {data?.config.seat_count} {t("apartmentsTotal")}
+            </small>
           </span>
           <span>
             {t("usdcCap")}: {usd(e.max_usdc)}
@@ -864,9 +937,11 @@ export default function BuildingApp() {
           {e.status === "Pending" && (
             <span>
               <Clock3 size={14} />{" "}
-              {e.vetoed
-                ? `${majority} ${t("yes").toLowerCase()}`
-                : remaining(e.ready_time, e.ready_ledger)}
+              {e.tally[0] >= majority
+                ? t("majorityReached")
+                : e.vetoed
+                  ? `${majority} ${t("yes").toLowerCase()}`
+                  : remaining(e.ready_time, e.ready_ledger)}
             </span>
           )}
         </div>
@@ -921,14 +996,7 @@ export default function BuildingApp() {
               disabled={!!busy}
               onClick={() =>
                 void run(
-                  () =>
-                    invoke(
-                      actor!,
-                      treasury,
-                      "cancel_expense",
-                      [u32(e.id)],
-                      `cancel:${treasury}:${e.id}`,
-                    ),
+                  () => cancelExpensePayment(treasury, e.id, actor!),
                   false,
                 )
               }
@@ -985,6 +1053,16 @@ export default function BuildingApp() {
             {t("receipt")} ↗
           </a>
         )}
+        {record?.cancellationReceipt && (
+          <a
+            className="text-button"
+            href={txUrl(record.cancellationReceipt)}
+            target="_blank"
+            rel="noreferrer"
+          >
+            {t("cancellationReceipt")} ↗
+          </a>
+        )}
       </article>
     );
   }
@@ -1012,7 +1090,8 @@ export default function BuildingApp() {
                 : `${t("apartment")} ${value.seat} → ${short(value.buyer)}`}
         </p>
         <p className="muted">
-          {m.tally[0]}/{needed} {t("yes").toLowerCase()}
+          {m.tally[0]}/{needed} {t("requiredApprovals")}
+          {m.tally[0] >= needed && ` · ${t("majorityReached")}`}
           {kind === "Recovery" &&
             m.ready_time > 0n &&
             ` · ${remaining(m.ready_time, m.ready_ledger)}`}
@@ -1324,6 +1403,18 @@ export default function BuildingApp() {
             <div className="progress-bar" role="status">
               <LoaderCircle className="spin" size={17} />
               {t(busy)} {busyDetail}
+              {activeExpensePayment.current && !expenseStopRequested && (
+                <button
+                  className="text-button"
+                  onClick={() => stopExpensePayment()}
+                >
+                  {t(
+                    activeExpensePayment.current.manager
+                      ? "cancel"
+                      : "cancelWaiting",
+                  )}
+                </button>
+              )}
               {pendingContribution && canStopDeposit(pendingContribution) && (
                 <button
                   className="text-button"
@@ -1968,8 +2059,12 @@ export default function BuildingApp() {
             )[modal],
           )}
           closeLabel={t("close")}
-          busy={!!busy}
-          onClose={() => setModal(null)}
+          busy={!!busy && modal !== "pay"}
+          onClose={() => {
+            if (modal === "pay" && activeExpensePayment.current)
+              stopExpensePayment(false);
+            else setModal(null);
+          }}
         >
           {!!busy && (
             <p className="v3-modal-status" role="status">
@@ -2481,20 +2576,7 @@ export default function BuildingApp() {
             </form>
           )}
           {modal === "pay" && (
-            <form
-              onSubmit={(e) =>
-                submit(e, async () => {
-                  const result = await payExpense(
-                    treasury,
-                    selectedExpense.current!.id,
-                    form.iban,
-                    progress,
-                  );
-                  if (result.reason) throw new Error(result.reason);
-                  return result;
-                })
-              }
-            >
+            <form onSubmit={(e) => submit(e, completeExpensePayment)}>
               <p>
                 <strong>
                   {selectedExpense.current?.description} ·{" "}
@@ -2504,12 +2586,45 @@ export default function BuildingApp() {
               </p>
               <label>
                 {t("iban")}
-                <input required {...textField("iban")} autoComplete="off" />
+                <input
+                  required
+                  {...textField("iban")}
+                  autoComplete="off"
+                  disabled={!!busy}
+                />
               </label>
               <p className="v3-help">{t("sandbox")}</p>
               <button className="button full" disabled={!!busy}>
                 {t("pay")}
               </button>
+              <button
+                type="button"
+                className="button secondary full"
+                disabled={expenseStopRequested}
+                onClick={() => {
+                  if (activeExpensePayment.current) stopExpensePayment();
+                  else
+                    void run(() =>
+                      cancelExpensePayment(
+                        treasury,
+                        selectedExpense.current!.id,
+                        isManager ? actor! : undefined,
+                      ),
+                    );
+                }}
+              >
+                <X size={16} />
+                {t(
+                  isManager && selectedExpense.current?.status === "Pending"
+                    ? "cancel"
+                    : "cancelWaiting",
+                )}
+              </button>
+              <p className="v3-help">
+                {t(
+                  isManager ? "cancelExpensePaymentHelp" : "cancelWaitingHelp",
+                )}
+              </p>
             </form>
           )}
           {(modal === "transfer" || modal === "delegate") && (

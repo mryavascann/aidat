@@ -149,6 +149,32 @@ test("a cancelled expense stops its queue even when a prepared bank record remai
   assert.equal(view.saved, "");
 });
 
+test("a late withdrawal response cannot revive a chain-confirmed cancelled expense", () => {
+  const original = saveBank(deposit({ kind: "withdraw", phase: "attested" }));
+  saveBank({
+    ...original,
+    phase: "cancelled",
+    cancellationReceipt: "cancel-tx",
+  });
+  const late = saveBank({
+    ...original,
+    phase: "attested",
+    saved: "late-bank-reference",
+    receipt: "attestation-tx",
+  });
+  assert.equal(late.phase, "cancelled");
+  assert.equal(late.cancellationReceipt, "cancel-tx");
+  assert.equal(late.saved, "late-bank-reference");
+  assert.equal(late.receipt, "attestation-tx");
+  assert.equal(bankRecords("building", "resident").length, 1);
+});
+
+test("a confirmed cancellation receipt can enrich an already cancelled queue record", () => {
+  const original = saveBank(deposit({ kind: "withdraw", phase: "cancelled" }));
+  const confirmed = saveBank({ ...original, cancellationReceipt: "cancel-tx" });
+  assert.equal(confirmed.cancellationReceipt, "cancel-tx");
+});
+
 test("checking a stopped bank payment only dispatches a status read", async () => {
   const calls: string[] = [];
   const operations = {

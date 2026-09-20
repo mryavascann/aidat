@@ -25,6 +25,7 @@ export type BankRecord = {
   reference?: string;
   expiresAt?: string;
   stoppedAt?: string;
+  cancellationReceipt?: string;
 };
 
 export const bankRecord = (key: string) =>
@@ -45,6 +46,13 @@ export function saveBank(record: BankRecord, resume = false) {
   // stop request. Only an explicit resume under the payment lock clears it.
   const next = {
     ...record,
+    ...(prior?.kind === "withdraw" && prior.phase === "cancelled"
+      ? {
+          phase: "cancelled",
+          cancellationReceipt:
+            prior.cancellationReceipt ?? record.cancellationReceipt,
+        }
+      : {}),
     stoppedAt: resume ? undefined : (prior?.stoppedAt ?? record.stoppedAt),
   };
   save("v3:bank", [next, ...rows.filter((r) => r.key !== record.key)]);

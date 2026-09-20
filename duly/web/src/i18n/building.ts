@@ -527,9 +527,41 @@ const copy = {
   veto: ["İtiraz et", "Object"],
   pay: ["IBAN’a ödemeyi tamamla", "Complete IBAN payment"],
   cancel: ["İptal et", "Cancel"],
+  cancelWaiting: ["Beklemeyi iptal et", "Stop waiting"],
+  checkingPaymentCancellation: [
+    "İptal sonucu kontrol ediliyor…",
+    "Checking cancellation outcome…",
+  ],
+  cancelExpensePaymentHelp: [
+    "Para kasadan çıkmadıysa gider iptal edilir. Aktarım başladıysa bu ekranın beklemesi kapanır; ödeme takibi sürer ve transfer geri alınmaz.",
+    "If funds have not left the treasury, the expense is cancelled. If transfer has started, this waiting screen closes; payment tracking continues and the transfer is not reversed.",
+  ],
+  cancelWaitingHelp: [
+    "Bekleme ekranını kapatır. Bankaya gönderilmiş transferi geri almaz; sonucu gider kaydından takip edebilirsiniz.",
+    "Closes the waiting screen. It does not reverse a sent transfer; follow its outcome in the expense record.",
+  ],
+  expenseCancelled: [
+    "Gider iptal edildi. Bu gider için kasadan ödeme yapılmayacak.",
+    "Expense cancelled. No treasury payment will be made for this expense.",
+  ],
+  paymentTrackingContinues: [
+    "Bekleme kapatıldı; ödeme iptal edilmiş sayılmaz. Gönderilmiş aktarımın takibi aynı gider kaydından sürer.",
+    "Waiting stopped; the payment is not marked cancelled. Any sent transfer is still tracked under the same expense.",
+  ],
+  paymentAlreadyCompleted: [
+    "Banka ödemesi zaten tamamlanmış. Makbuz gider kaydında korunuyor.",
+    "The bank payment has already completed. Its receipt remains in the expense record.",
+  ],
+  cancellationReceipt: ["İptal makbuzu", "Cancellation receipt"],
+  requiredApprovals: ["gerekli onay", "required approvals"],
+  apartmentsTotal: [
+    "daire üzerinden salt çoğunluk",
+    "apartments · majority vote",
+  ],
+  majorityReached: ["Çoğunluk sağlandı", "Majority reached"],
   simulateVotes: [
-    "Diğer dairelerin onayını simüle et",
-    "Simulate the other apartments’ approval",
+    "Çoğunluk için gereken onayı simüle et",
+    "Simulate approvals needed for a majority",
   ],
   simulateVeto: [
     "Bir dairenin itirazını simüle et",

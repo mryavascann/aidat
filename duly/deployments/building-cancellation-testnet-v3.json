@@ -1,0 +1,24 @@
+{
+  "network": "Stellar Testnet",
+  "verifiedAt": "2026-09-20",
+  "treasury": "CB3ZKNE3F7D2TGDDYAAQPDAGYOJZJZFN5KASKRM3D3DFLKMIDLZN3I6W",
+  "expenseId": 1,
+  "proposalTransaction": "265807cec674b90985c4cc3c7e0fab347ac313659aea0e0e1b7c45cb841873dd",
+  "firstApprovalTransaction": "fd94fbc968bc2e955999d722df71268030122c7799ca48a60633386298805266",
+  "cancellationTransaction": "fbc223abad1d613a7fca6beea7062438d3e9dda44c66c455414c01e7b1d32b0a",
+  "finalExpenseStatus": "Cancelled",
+  "approvals": 2,
+  "apartments": 3,
+  "thirdApartmentVoted": false,
+  "treasuryUsdcBefore": "5",
+  "treasuryUsdcAfter": "5",
+  "bankTransfersCreated": 0,
+  "scope": "The proposal, votes and cancellation are real testnet transactions. Browser-controlled bank responses verify the cancellation race and stopping a Disbursed view; no bank order or bank transfer was created.",
+  "checks": [
+    "Majority indicator is reached with two approvals",
+    "Solo simulator stops before the third vote",
+    "Manager cancellation survives a late bank response and reload",
+    "Cancelled saved bank routes cannot attest, execute or resume",
+    "A disbursed fixture only stops waiting and retains the original payment"
+  ]
+}

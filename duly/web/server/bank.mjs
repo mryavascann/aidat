@@ -182,6 +182,8 @@ async function withdrawal(request) {
 
 async function resumeWithdrawal(flow, action) {
   const { expense } = await checkExpense(flow);
+  if (status(expense.status) === "Cancelled")
+    return { phase: "cancelled", saved: seal(flow) };
   if (
     flow.recipient !== hex(expense.recipient) ||
     (await recipientId(flow.iban)) !== flow.recipient
