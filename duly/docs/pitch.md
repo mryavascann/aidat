@@ -1,32 +1,42 @@
 # Duly - three-minute pitch and audience demo
 
-Six main slides, 220 spoken English words. Deliver the introduction in three minutes, then allow about two minutes for a prepared audience demo. The four appendix slides are for questions. Accounts, apartment assignments and test funds must be ready before the talk.
+Seven main slides, 149 spoken English words and a 45-second silent product video. The introduction takes three minutes including pauses and slide changes. A prepared audience session follows for about two minutes. Four appendix slides support jury questions.
 
-**[Live demo](https://duly-sepia.vercel.app)** · [Deployment manifest](../deployments/building-testnet-v3.json) · [Settled payment](../deployments/building-demo-ux-testnet-v3.json)
+**[English deck with embedded video](../../output/presentation/Duly-Pitch-EN-Problem-Solution-Growth-v7.pptx)** · [Standalone video](../../output/video/Duly-Product-Demo-EN-45s.mp4) · [English script and fallback lines](../../output/presentation/Duly-Speaker-Script-EN-v5.md) · [Turkish rehearsal plan and Q&A](../../output/presentation/Duly-Sunum-Plani-TR-v5.md)
 
-## 1. Cover (0:00-0:20)
+The problem and solution slides answer the same questions: how much remains, who controls spending, and where the payment goes. The acquisition slide presents a planned pilot approach, not existing customers or partnerships.
 
-This is Duly, a shared treasury for apartment buildings. Residents pay dues together. Duly helps them see the money and control how it is spent.
+## 1. Cover (0:00–0:10)
 
-## 2. The Solution (0:20-0:50)
+This is Duly, a shared treasury for apartment buildings.
 
-Residents pay dues. The manager sees which apartments still owe money. For an expense, the manager enters the amount in lira. Duly uses the saved manager IBAN and sets the USDC limit. Each apartment has one vote. Residents can approve spending or raise an objection.
+## 2. The Problem (0:10–0:35)
 
-## 3. PMF (0:50-1:20)
+Residents pay dues, but often depend on the manager for answers. How much is left? Who approved the repair? Where did the money go?
 
-Imagine a shared repair in your building. The manager proposes the expense. Each apartment has one vote. A majority can approve it early. Residents can also object. Everyone can follow the balance and the payment status.
+## 3. The Solution (0:35–1:00)
 
-## 4. Technical Workflow (1:20-1:50)
+Duly puts the balance and spending decisions in one shared treasury. Each apartment has one vote. Residents can approve or object. Stellar checks the rules before funds leave.
 
-Stellar enforces the spending rules. DeFindex holds the USDC reserve. The bank adapter connects this money to the lira payment flow. These parts work together in the product. Today, we use Stellar Testnet, and bank payments are simulated.
+## 4. Technical Workflow (1:00–1:15)
 
-## 5. Working MVP (1:50-2:20)
+The reserve connects to DeFindex. Bank payments use a TRY anchor. This is Testnet, with simulated bank settlement. Let’s see the product.
 
-This completed test payment is for one hundred lira. The limit was two point two seven USDC. It spent about two point zero six. The bank simulation confirmed the payment. The receipt and Stellar transaction are public.
+## 5. Product Demo Video (1:15–2:00)
 
-## 6. The Team & Live Demo (2:20-3:00)
+[Play the 45-second silent product demo. No additional speech is needed.]
 
-We built the app, the treasury rules and the payment flow. Now let’s run a building together. I will be the manager. You are the residents. Please pay your test dues. Then we will vote on a shared repair.
+## 6. User Acquisition Plan (2:00–2:35)
+
+We will reach volunteer managers through our network and local groups. Each manager invites residents by QR. We guide the first dues cycle, measure repeat use, and ask active managers for referrals. These are planned pilots.
+
+## 7. The Team & Live Demo (2:35–3:00)
+
+We built the app, treasury rules and payment flow. Now let’s run a building together. I will be the manager. You are the residents. Let’s pay test dues and vote.
+
+## Pilot acquisition plan
+
+Start with volunteer managers of small apartment buildings through direct outreach in the team’s network and local resident groups. Help a manager invite residents by building QR and complete a first test dues cycle and repair vote. Measure participation in the next dues cycle, then ask active managers to introduce another building. These are planned Testnet pilots. Real payments require an appropriate bank/anchor partner, legal review and independent security work.
 
 ## Live audience session (3:00-5:00)
 
@@ -55,9 +65,9 @@ Closing: **You paid together. You made the decision together. This is Duly.**
 
 ## Fallback
 
-If a device fails, use a rehearsed backup device. If using the single-user solo mode instead, identify its votes as simulated. Preserve pending or failed states. Do not replace an existing payment intent just to make the screen look complete. If bank confirmation is slow, finish on the recorded votes and shared balance. The earlier completed payment on slide 5 remains separate supporting evidence.
+If a device fails, use a rehearsed backup device. If using the single-user solo mode instead, identify its votes as simulated. Preserve pending or failed states. Do not replace an existing payment intent just to make the screen look complete. If bank confirmation is slow, finish on the recorded votes and shared balance. The recorded product demo on slide 5 is a separate solo session and can be replayed if needed. Its bank settlement and other apartment votes are simulated; waiting times were removed.
 
-The verified receipt records 100.00 simulated TRY, a 2.27 USDC ceiling and 2.0601077 test USDC spent. Its simulated bank reference is `FAST-NVXJ9O5Y48`. [Transaction](https://stellar.expert/explorer/testnet/tx/8037e829426810484107dc51389a648f030c9f67c522e443ac54995a56a54bb0).
+The video records a 100 TRY test expense with a 2.27 USDC ceiling and simulated bank reference `FAST-MTHN5NPR0A`. [Recorded demo transaction](https://stellar.expert/explorer/testnet/tx/b7cecf6c5c7d3a2e0be1bb20ce3fd9735d54482da4ef01cf4431d3cabfe3c285). The older verified payment linked from the README remains separate evidence.
 
 ## Questions to prepare for
 
@@ -67,10 +77,11 @@ The verified receipt records 100.00 simulated TRY, a 2.27 USDC ceiling and 2.060
 - **Can a manager bypass the budget?** The policy permits a new recipient or budget exception after three days without objection, or majority approval earlier. Residents must monitor notices. The budget is not an absolute loss cap.
 - **Who receives the payment?** The current MVP pays the manager’s saved IBAN. It does not prove a later payment to a service provider.
 - **Are audience votes real?** In the planned normal building, each participant signs their own testnet vote. The solo demo is a separate simulation.
+- **How will you acquire users?** Reach volunteer managers through the team’s network and local resident groups, guide the first test dues cycle, measure repeat participation, then test manager referrals. No existing pilot or customer is claimed.
 - **What comes next?** Building pilots, a regulated TRY anchor partnership, independent security review and recovery work.
 
 ## Submission details still to confirm
 
 Actual team names, roles and the selected track have not been provided. The audience accounts, chosen shared building and physical devices still need preparation and rehearsal. The handbook emphasizes real fiat rails, so confirm acceptance of the workshop’s simulated bank settlement with the organizers.
 
-The deck retains the product, solution, PMF and technical workflow sections, with a completed payment proof and an audience participation closing. The illustrations were created with Higgsfield / Recraft V4.1.
+The deck includes the problem, solution, technical workflow, recorded product demo, pilot acquisition plan and audience participation closing. The illustrations were created with Higgsfield / Recraft V4.1. The video uses actual website footage edited with Higgsedit.

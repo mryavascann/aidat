@@ -2,7 +2,7 @@
 
 **Duly helps apartment residents see where their dues go and control shared spending through a building treasury on Stellar.**
 
-**[Live demo](https://duly-sepia.vercel.app)** · **[1-minute product tour · silent](https://duly-sepia.vercel.app/walkthrough.mp4)** · [Verified payment](duly/deployments/building-demo-ux-testnet-v3.json) · [3-minute pitch](duly/docs/pitch.md)
+**[Live demo](https://duly-sepia.vercel.app)** · **[45-second product demo](output/video/Duly-Product-Demo-EN-45s.mp4)** · **[Pitch deck (PPTX)](output/presentation/Duly-Pitch-EN-Problem-Solution-Growth-v7.pptx)** · [Verified payment](duly/deployments/building-demo-ux-testnet-v3.json) · [3-minute pitch](duly/docs/pitch.md)
 
 [![Duly: shared treasury balance, apartment dues and spending controls](duly/docs/screenshots/jury-overview.png)](https://duly-sepia.vercel.app)
 
@@ -27,7 +27,7 @@ Our first intended users are volunteer managers and residents of small apartment
 3. In **Expenses**, create a **100 TRY** expense. The labelled sample IBAN is prefilled; the automatic USDC ceiling includes 10% headroom.
 4. Follow approval and settlement. The solo demo uses a **20-second** objection window. Bank confirmation can remain pending; the completed example below is available immediately.
 
-The product tour shows the actual interface and an existing completed testnet expense; it does not claim a fresh bank transfer completes in one minute.
+The recorded demo shows an actual Testnet contribution, majority approval and simulated bank settlement. Waiting times are removed. Other apartment votes use the solo demo’s simulated accounts.
 
 ## Proof it works
 
