@@ -1,3 +1,52 @@
+.v3-demo-tools,
+.v3-account-tools {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.v3-app .v3-demo-launch {
+  min-height: 46px;
+  font-size: 13px;
+  font-weight: 700;
+  box-shadow: 0 3px 10px var(--shadow-soft, #19392f12);
+}
+.v3-demo-launch svg {
+  flex-shrink: 0;
+}
+@media (max-width: 1000px) {
+  .v3-demo-entry.topbar {
+    height: auto;
+    min-height: 76px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 12px;
+    padding-block: 12px;
+  }
+  .v3-demo-entry .topbar-actions {
+    display: contents;
+  }
+  .v3-demo-entry .v3-demo-tools {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+  .v3-demo-entry .v3-demo-launch {
+    flex: 1;
+  }
+  .v3-demo-entry .v3-account-tools {
+    grid-column: 2;
+    grid-row: 1;
+  }
+  .v3-app .community-name strong {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+@media (max-width: 700px) {
+  .v3-account-tools {
+    gap: 6px;
+  }
+}
 .v3-app .page-heading h1 {
   max-width: 680px;
   letter-spacing: -0.035em;

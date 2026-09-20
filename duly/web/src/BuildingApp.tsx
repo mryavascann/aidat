@@ -18,6 +18,7 @@ import {
   LayoutDashboard,
   LoaderCircle,
   LogOut,
+  Play,
   Plus,
   QrCode,
   ReceiptText,
@@ -1075,7 +1076,7 @@ export default function BuildingApp() {
         </div>
       </aside>
       <div className="workspace">
-        <header className="topbar">
+        <header className={`topbar ${!demoActive ? "v3-demo-entry" : ""}`}>
           <button
             className="community-name v3-building-switch"
             aria-label={t("switchBuilding")}
@@ -1097,26 +1098,42 @@ export default function BuildingApp() {
             <ChevronDown size={15} aria-hidden="true" />
           </button>
           <div className="topbar-actions">
-            <ThemeToggle t={oldT} />
-            <div className="language-switch" aria-label={oldT.language}>
-              {(["tr", "en"] as const).map((l) => (
+            <div className="v3-demo-tools">
+              {!demoActive && (
                 <button
-                  key={l}
-                  aria-pressed={l === lang}
-                  onClick={() => setLang(l)}
+                  className="button v3-demo-launch"
+                  type="button"
+                  disabled={!!busy}
+                  aria-haspopup="dialog"
+                  onClick={() => open("demo")}
                 >
-                  {l.toUpperCase()}
+                  <Play size={17} fill="currentColor" aria-hidden="true" />
+                  <span>{t("demo")}</span>
                 </button>
-              ))}
+              )}
+              <ThemeToggle t={oldT} />
             </div>
-            <button
-              className={`button wallet-button ${actor ? "secondary" : ""}`}
-              aria-label={actor ? t("account") : t("connect")}
-              onClick={() => open("account")}
-            >
-              <Fingerprint size={17} />
-              <span>{actor ? t("account") : t("connect")}</span>
-            </button>
+            <div className="v3-account-tools">
+              <div className="language-switch" aria-label={oldT.language}>
+                {(["tr", "en"] as const).map((l) => (
+                  <button
+                    key={l}
+                    aria-pressed={l === lang}
+                    onClick={() => setLang(l)}
+                  >
+                    {l.toUpperCase()}
+                  </button>
+                ))}
+              </div>
+              <button
+                className="button wallet-button secondary"
+                aria-label={actor ? t("account") : t("connect")}
+                onClick={() => open("account")}
+              >
+                <Fingerprint size={17} />
+                <span>{actor ? t("account") : t("connect")}</span>
+              </button>
+            </div>
           </div>
         </header>
         <div className="sandbox-bar">
@@ -1769,12 +1786,6 @@ export default function BuildingApp() {
               <span className="network-dot" />
               {t("model")}
             </span>
-            {!demoActive && (
-              <button className="text-button" onClick={() => open("demo")}>
-                <Sparkles size={14} />
-                {t("demo")}
-              </button>
-            )}
           </footer>
         </main>
       </div>

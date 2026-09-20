@@ -1,108 +1,92 @@
 # Duly
 
-### Shared building funds, with spending rules residents can verify
+**Duly helps apartment residents see where their dues go and control shared spending through a building treasury on Stellar.**
 
-Apartment residents pay dues together, but often rely on one manager to explain where the money went. Duly gives the building a shared treasury: residents can see contributions, review expenses and enforce spending rules through Stellar smart contracts.
+**[Live demo](https://duly-sepia.vercel.app)** · **[1-minute product tour · silent](https://duly-sepia.vercel.app/walkthrough.mp4)** · [Verified payment](duly/deployments/building-demo-ux-testnet-v3.json) · [3-minute pitch](duly/docs/pitch.md)
 
-The manager enters an expense in Turkish lira. Duly calculates the USDC ceiling, applies the building's approval policy and routes the authorized payment to the manager's saved IBAN. Every apartment can follow the outcome.
+[![Duly: shared treasury balance, apartment dues and spending controls](duly/docs/screenshots/jury-overview.png)](https://duly-sepia.vercel.app)
 
-**[Open the live demo](https://duly-sepia.vercel.app)** · **[Inspect a settled payment](duly/deployments/building-demo-ux-testnet-v3.json)** · **[View deployed contracts](duly/deployments/building-testnet-v3.json)** · [Three-minute pitch](duly/docs/pitch.md)
+**Stellar Pro Hackathon 2026** · Built with **Soroban**, a **DeFindex-compatible USDC vault**, **Stellar anchor SEPs** and **passkey smart accounts**.
 
-> Working MVP on **Stellar Testnet**. Stellar transactions are real testnet transactions. TRY bank transfers and FAST references are **simulated by the workshop anchor**. No real money is used.
+> **Working Testnet MVP.** On-chain transactions use real testnet contracts. TRY bank transfers and FAST receipts are simulated by the workshop anchor. No real money moves.
 
-## What works today
+## The problem → the change
 
-- **Collect and track dues.** Contribute test USDC or use the TRY bank simulation. See each apartment's paid, partial or unpaid balance in a shared dues ledger.
-- **Control shared spending.** Each fixed apartment seat has one vote. Residents approve recipients and budgets, object to expenses and replace the manager by majority.
-- **Pay a familiar bank account.** Enter a TRY amount and description. The manager's saved IBAN and automatic USDC ceiling remove repeated payment setup.
-- **Join without crypto setup.** Preview a building through its QR code or invitation link. Use a passkey for a personal account, or explore the solo demo without a wallet extension.
+An elevator repair is paid from everyone's dues, but residents may only see a manager's spreadsheet or a message after the money is spent. They need a shared balance, clear approval rights and a payment trail.
 
-Our first intended customer is the volunteer manager of a small apartment building. Residents and tenants use the same shared record. Professional management companies are a later customer segment.
+Duly gives each apartment one vote. Residents can see dues and expenses, approve budgets and recipients, object to payments and replace the manager. The manager enters a TRY amount; Duly uses the saved manager IBAN and calculates the USDC ceiling automatically.
 
-## Early user feedback
+**The difference:** the shared record also enforces spending rules before funds leave the treasury. Stellar smart contracts, stablecoin settlement and passkeys make this workflow possible without requiring a wallet extension.
 
-In an informal survey recorded on **19 September 2026**, **all 9 respondents said they could not see their building's treasury balance**. **Seven said they would use the proposed product; two said no.** Five reported a dues or spending dispute in the past year, three did not, and one answer was missing or unclear. The notes also raised regulation and manager support as barriers.
+Our first intended users are volunteer managers and residents of small apartment buildings.
 
-This feedback supports testing shared financial visibility in a building pilot. The small sample establishes an early problem signal; actual usage and willingness to pay still need validation. [Anonymous results and survey limitations](duly/docs/user-research.md).
+## Try it in two minutes
 
-## Try the complete flow
+1. Open the demo and choose **EN → Solo demo**, beside the theme toggle. No passkey is needed; three apartment accounts are simulated.
+2. In **Pay dues**, choose **Get test USDC**, then contribute **5 test USDC**. Wallet funding alone does not pay dues.
+3. In **Expenses**, create a **100 TRY** expense. The labelled sample IBAN is prefilled; the automatic USDC ceiling includes 10% headroom.
+4. Follow approval and settlement. The solo demo uses a **20-second** objection window. Bank confirmation can remain pending; the completed example below is available immediately.
 
-1. Open the demo, switch to **EN**, and choose **Solo demo**. It creates a separate building with three simulated apartments.
-2. In **Pay dues**, choose **Get test USDC**, then contribute **5 test USDC** to an apartment. Wallet funding alone does not pay dues. Check the updated dues table.
-3. In **Expenses**, create a **100 TRY** expense. A labelled demo IBAN is prefilled. The USDC ceiling uses the current bank rate plus 10% headroom; only the actual quote is spent.
-4. Follow the approval state and final receipt. The solo demo uses a **20-second objection window** instead of the normal three days. Simulated votes are explicitly labelled.
+The product tour shows the actual interface and an existing completed testnet expense; it does not claim a fresh bank transfer completes in one minute.
 
-Bank confirmation can remain pending at the external sandbox. Duly preserves that state and the original payment reference. For a quick evaluation, inspect the completed receipt below without waiting for a new bank order.
+## Proof it works
 
-### A payment you can verify
+A completed expense delivered **100 simulated TRY**, spending **2.0601077 test USDC** under a **2.27 USDC** ceiling. Simulated bank reference: `FAST-NVXJ9O5Y48`.
 
-| Recorded result | Evidence |
-| --- | --- |
-| Recipient amount | **100.00 simulated TRY** |
-| Actual treasury spend | **2.0601077 test USDC**, below the **2.27 USDC** ceiling |
-| Final bank status | **Settled**, simulated reference `FAST-NVXJ9O5Y48` |
-| Stellar disbursement | [View transaction](https://stellar.expert/explorer/testnet/tx/8037e829426810484107dc51389a648f030c9f67c522e443ac54995a56a54bb0) |
-| Reproducible records | [Payment receipt](duly/deployments/building-demo-ux-testnet-v3.json), [TRY deposit and payout round trip](duly/deployments/building-production-testnet-v3.json) |
+- **[Successful Stellar transaction ↗](https://stellar.expert/explorer/testnet/tx/8037e829426810484107dc51389a648f030c9f67c522e443ac54995a56a54bb0)** · [Machine-readable receipt](duly/deployments/building-demo-ux-testnet-v3.json).
+- **[Building treasury ↗](https://stellar.expert/explorer/testnet/contract/CBIGWOYBTFHV32OZWTZSYKP2TLDPHJIDJJSG5XAGG22K6VRSSP2MLIMM):** `CBIGWOYBTFHV32OZWTZSYKP2TLDPHJIDJJSG5XAGG22K6VRSSP2MLIMM`.
+- [Deployed factory, vault, token and verifier](duly/docs/evaluation-guide.md#deployed-contracts) · [Deposit → dues → payout evidence](duly/deployments/building-production-testnet-v3.json).
 
-## Why Stellar is part of the product
+## How it works
 
 ```mermaid
 flowchart LR
-  R[Resident or tenant] -->|Signed USDC contribution| T[Duly Soroban treasury]
-  R <-->|Simulated TRY deposit| A[Workshop anchor]
-  O[Apartment owners] -->|Budget, recipients, votes and vetoes| T
-  T <-->|Deposit and redeem shares| V[DeFindex liquid USDC reserve]
-  T -->|Authorized expense| B[Bank adapter and escrow]
-  B -->|USDC with exact payment memo| A
-  A -->|Simulated TRY payout| I[Manager's saved IBAN]
-  T -.->|Verified contribution receipts| D[Shared TRY dues ledger]
+  R[Residents: dues and votes] --> T[Soroban building treasury]
+  T <-->|Deposit / redeem| V[DeFindex-compatible USDC vault]
+  T -->|Authorized expense| B[Bank adapter + escrow]
+  B --> A[Workshop anchor]
+  A -->|Simulated TRY| I[Manager IBAN]
 ```
 
-| Integration | Responsibility |
+| Technology | Why it is in the product |
 | --- | --- |
-| **Soroban** | Holds the treasury and enforces fixed seats, signatures, spending permissions and one-time expense execution. |
-| **DeFindex** | Receives contributions into a compatible liquid USDC vault. Approved payouts redeem the required shortfall. The integration sits in the money path. No active yield strategy or APY is claimed. |
-| **Workshop anchor** | Uses SEP-1 discovery, SEP-10 authentication, SEP-12 recipient data, SEP-38 quotes and SEP-6 deposit/withdrawal flows. |
-| **Passkey smart accounts** | Smart Account Kit and pinned OpenZeppelin contracts support WebAuthn signatures. Duly sponsors testnet fees. Stellar Wallets Kit provides optional external wallets. |
+| **Stellar / Soroban** | Enforces fixed apartment seats, signed votes, spending rules and one-time expense execution. |
+| **DeFindex-compatible vault** | Holds the liquid USDC reserve; approved expenses redeem the needed amount. No active yield strategy or APY is claimed. |
+| **Anchor SEPs 1, 10, 12, 38, 6** | Connect discovery, authentication, recipient data, FX quotes and simulated bank transfers. |
+| **Smart Account Kit + OpenZeppelin** | Passkey signatures and sponsored testnet fees reduce onboarding steps. |
 
-The bank adapter bridges Soroban payouts to the anchor's classic payment-and-memo interface. It saves signed transactions before submission and keeps an encrypted payment journal for recovery. Treasury disbursement and bank confirmation remain separate states, so a delayed bank response does not appear as a completed transfer. [Architecture and evaluation details](duly/docs/evaluation-guide.md).
+The adapter preserves payment references and separates treasury disbursement from bank confirmation. A delayed bank response remains pending. [Architecture, recovery and trust boundaries](duly/docs/evaluation-guide.md).
 
-## Rules and trust boundaries
+## Built during the hackathon / next
 
-Apartment seats are fixed at setup. An approved recipient within the remaining TRY **and** USDC budget can receive routine payments immediately. A new recipient or budget exception waits three days without objection, or receives majority approval earlier. One objection requires a majority. The budget is therefore **not an absolute loss cap** under this policy.
+**Built:** fixed-seat governance, shared dues ledger, QR building access, passkey accounts, automatic expense limits, bank simulation and recoverable payment processing. A separate solo demo accelerates the contract timers.
 
-The contract enforces treasury rules. The bank adapter remains trusted for settlement, exchange rates and TRY dues accounting. Initial owner identity and legal property title require off-chain verification. Payment to the manager's IBAN does not prove a service provider subsequently received the money.
+**Next:** observe a real building pilot, establish a regulated TRY anchor partnership, and complete wallet recovery, refunds, reconciliation and independent security review before real funds.
 
-Normal buildings use 3-day objections, 7-day ownership recovery and 30-day periods. A separate demo contract accelerates these timers. The integration has not had an independent security audit. [Full governance rules](duly/docs/stories/02-building-governance.md) · [Dues accounting](duly/docs/stories/03-monthly-dues.md).
-
-## Beyond the hackathon
-
-Next steps are to follow the survey with observed use in a building pilot, establish a regulated TRY anchor partnership, and complete security and wallet recovery work before handling real funds. A proposed subscription for management reports and multiple buildings needs pricing validation. Active use and paid adoption have not yet been established. SCF/InstAward preparation follows those milestones.
+**Limits:** the bank adapter is trusted for settlement and TRY accounting. Legal ownership requires off-chain verification. Paying the manager does not prove a supplier was paid. Normal new-recipient or budget-exception payments wait three days without objection, or receive majority approval earlier; one objection requires majority. Budgets are not absolute loss caps. No audit, mainnet readiness or paid adoption is claimed.
 
 ## Run locally
 
-Use Node **24+**. The repository includes the deployed WASM artifacts. A fresh local deployment creates its own testnet bank identity and leaves the public deployment untouched.
+Node **24+**. The deployment step creates a separate local testnet bank identity; keep its generated keys private. Compiled contract artifacts are included.
 
 ```sh
-git clone https://github.com/mryavascann/aidat.git
-cd aidat/duly
-npm ci
-npm --prefix web ci
+git clone https://github.com/mryavascann/aidat.git && cd aidat/duly
+npm ci && npm --prefix web ci
 node scripts/deploy-building.mjs
 npm run web:build
 npm --prefix web run serve
 ```
 
-Open **http://localhost:5174**. Keep the generated private key and recovery files locally. Never commit them. Contract builds require Rust, Soroban SDK 27.0.6 and `wasm32v1-none`.
+Open **http://localhost:5174**. Testnet and workshop-anchor access are required.
 
 ```sh
-cargo test --workspace
-cargo test -p duly-building --features demo
-npm test
-npm --prefix web test
-npm --prefix web run build
+npm --prefix web test                 # 37 web regression tests
+npm --prefix web run test:browser     # TR/EN, desktop/mobile, light/dark
+cargo test --workspace                # Rust contract tests
 ```
 
-[Extended verification and contract IDs](duly/docs/evaluation-guide.md) · [Deployment guide](duly/docs/deployment.md) · [Contract source](duly/contracts/duly-building/src/lib.rs) · [Frontend](duly/web/src/BuildingApp.tsx)
+[Full setup, contract verification and integration tests](duly/docs/evaluation-guide.md#verification-commands) · [Deployment guide](duly/docs/deployment.md) · [Development skill references](duly/docs/evaluation-guide.md#stellar-references).
 
-Development workflow references and Stellar skill paths are documented in the [evaluation guide](duly/docs/evaluation-guide.md#stellar-references). The product is **Duly**; `aidat` remains the historical repository name.
+## Team & contact
+
+[Project contributors](https://github.com/mryavascann/aidat/graphs/contributors) · [Contact the team](https://github.com/mryavascann/aidat/issues)
