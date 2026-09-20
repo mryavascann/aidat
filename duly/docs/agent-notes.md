@@ -1,6 +1,42 @@
 # Duly — current state
 
-Updated September 20, 2026. The active product is **V3 building governance**, published on `main`; current bank cancellation source `475d913`, demo-entry source `73d4825`, V3 base `f3a5498`. Run Git status/log for the current revision and push status. Previous V2 notes are preserved in `archive/agent-notes-v2.md`; do not treat their old scope as current.
+Updated September 20, 2026. The active product is **V3 building governance**, published on `main`; current wallet funding source `8658c34`, bank cancellation source `475d913`, V3 base `f3a5498`. Run Git status/log for the current revision and push status. Previous V2 notes are preserved in `archive/agent-notes-v2.md`; do not treat their old scope as current.
+
+## Account balances and three funded demo wallets — September 20, 2026
+
+Source `8658c34` shows the active account's USDC balance in **My account**,
+plus separate balances for the three solo-demo wallets. Values are read from
+the configured testnet token contract and refresh after payment, on opening
+the account dialog and during the existing periodic refresh. Unavailable
+reads are not shown as zero.
+
+- New demos prepare all three wallets with 20 test USDC each, using their
+  Friendbot XLM and a direct testnet path payment. Existing demos can use
+  **Get test USDC**. The quote has 5% headroom and a hard 100-test-XLM ceiling.
+  Each plan and signed envelope is retained under a fixed per-wallet intent.
+  Retry does not duplicate funding or replenish a completed grant after use.
+- Preparation does not open a bank transfer or contribute dues. The legacy
+  `/api/dues` bank-backed `demo-funds` action remains for saved recovery state;
+  the UI no longer relies on it for demo funding. Existing bank records stay
+  intact. No contracts or server secrets changed.
+- The three wallets in the user's existing demo were empty and each received
+  20 actual test USDC. Public receipts and a separate local verification are
+  in `deployments/building-demo-wallets-testnet-v3.json`. Browser keys and saved
+  signed envelopes remain ignored in test results.
+- 51 web tests, formatting and TypeScript/Vite build passed. A fresh local demo
+  prepared three 20-USDC wallets, kept the treasury empty, then contributed
+  5 USDC and displayed 15/20/20. Replay and reload passed. Eight TR/EN, theme
+  and viewport account-dialog accessibility scenarios and the existing
+  32-page browser suite passed.
+
+Source `8658c34` is on `main`; deployment
+`dpl_7uMfcBCD1YU2dpexx1y71AuJ2Qww` is promoted to
+**https://duly-sepia.vercel.app**. Canonical HTML, 17 JS/CSS assets and the
+video match the tested build. The bank identity is unchanged, source/private
+paths return 404, and unauthorized settlement returns 401. The 66-file source
+upload excludes private test state. The user's Chrome account dialog was
+checked on the live domain and left open in the original solo demo, showing
+20 USDC in each of the three wallets. Details are in `deployment.md`.
 
 ## Stop pending bank dues — September 20, 2026
 

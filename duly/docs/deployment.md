@@ -2,7 +2,7 @@
 
 Production testnet demo: **https://duly-sepia.vercel.app**. Implementation branch: [`main`](https://github.com/mryavascann/aidat/tree/main).
 
-Vercel project `duly`, scope `sametgoc81tr-4111s-projects`. Current bank-cancellation build: [`dpl_5MuM4gAiGGnsY3CrMcUNsXUuAH8C`](https://vercel.com/sametgoc81tr-4111s-projects/duly/5MuM4gAiGGnsY3CrMcUNsXUuAH8C), September 20, 2026, from source commit [`475d913`](https://github.com/mryavascann/aidat/commit/475d913). Candidate URL: `https://duly-23b09mqc2-sametgoc81tr-4111s-projects.vercel.app`. It replaces `dpl_EQy6MQgvZwC6ab7EFmYgUPcTuCRr` without changing contract addresses or server keys. Previous V2 publication details remain in `archive/deployment-v2.md`.
+Vercel project `duly`, scope `sametgoc81tr-4111s-projects`. Current wallet-balance build: [`dpl_7uMfcBCD1YU2dpexx1y71AuJ2Qww`](https://vercel.com/sametgoc81tr-4111s-projects/duly/7uMfcBCD1YU2dpexx1y71AuJ2Qww), September 20, 2026, from source commit [`8658c34`](https://github.com/mryavascann/aidat/commit/8658c34). Candidate URL: `https://duly-m326y16b3-sametgoc81tr-4111s-projects.vercel.app`. It replaces `dpl_5MuM4gAiGGnsY3CrMcUNsXUuAH8C` without changing contract addresses or server keys. Previous V2 publication details remain in `archive/deployment-v2.md`.
 
 This deployment uses Stellar testnet and the simulated workshop bank. Publishing does not make these real funds or real bank transfers. Passkeys and browser storage are origin-bound: localhost, a candidate domain and the production domain have separate credentials and saved sessions.
 
@@ -17,7 +17,7 @@ Run from the repository root. `vercel.json` sets:
 - Explicit public manifest inclusion for server tracing; runtime code imports the manifest directly.
 - Once-daily keeper: `/api/settle`, 09:00 UTC (`0 9 * * *`).
 
-The source upload allowlist includes 65 files: app, server adapters, passkey package, public manifest, shared browser-safe modules, the product-tour MP4 and build configuration. It excludes CLI keys, private state, test fixtures, Rust sources/WASM, design ZIP, raw artwork and local server. Only compiled frontend files and intended public assets are served as static resources; source and private-path probes must return 404.
+The source upload allowlist includes 66 files: app, server adapters, passkey package, public manifest, shared browser-safe modules, the product-tour MP4 and build configuration. It excludes CLI keys, private state, test fixtures, Rust sources/WASM, design ZIP, raw artwork and local server. Only compiled frontend files and intended public assets are served as static resources; source and private-path probes must return 404.
 
 V3 requires two **server-only Production secrets** in Vercel:
 
@@ -48,7 +48,30 @@ The queue stores encrypted instructions and the exact bank flow in separate Stel
 
 ## Verification
 
-### Current bank-cancellation release — September 20, 2026
+### Current account balance and demo funding release — September 20, 2026
+
+Source `8658c34` shows the active account's USDC balance and the three demo
+wallet balances in My account. New demos prepare each wallet with 20 test USDC
+using bounded testnet XLM path payments; existing demos can prepare their saved
+wallets. No bank order or dues contribution is created during preparation.
+
+51 web tests, formatting and the TypeScript/Vite build passed. A fresh local
+demo verified 20/20/20 USDC, funding replay and an empty treasury, then a
+5-USDC contribution and 15/20/20 balances. Reload and eight account-dialog
+TR/EN, theme and viewport accessibility checks passed, alongside the existing
+32-page browser suite. Public evidence is in
+`deployments/building-demo-wallets-testnet-v3.json`.
+
+The Vercel build completed and the protected candidate retained the expected
+bank identity. After promotion, canonical HTML, all 17 JS/CSS files and the
+video matched the local build. Private/source probes returned 404 and an
+unauthenticated keeper request returned 401. The 66-file upload excludes
+private test state. In the user's Chrome session on the canonical domain, the
+normal account balance card and the existing solo demo were checked directly:
+the demo account dialog shows all three funded wallets at 20 USDC each.
+No contract, server secret or hosting configuration changed.
+
+### Previous bank-cancellation release — September 20, 2026
 
 Source `475d913` adds cancellation of unsigned bank-funded dues workflows in
 this browser. The form unlocks and history retains the original bank reference,
