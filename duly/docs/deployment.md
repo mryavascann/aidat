@@ -2,7 +2,7 @@
 
 Production testnet demo: **https://duly-sepia.vercel.app**. Implementation branch: [`main`](https://github.com/mryavascann/aidat/tree/main).
 
-Vercel project `duly`, scope `sametgoc81tr-4111s-projects`. Current demo-entry build: [`dpl_EQy6MQgvZwC6ab7EFmYgUPcTuCRr`](https://vercel.com/sametgoc81tr-4111s-projects/duly/EQy6MQgvZwC6ab7EFmYgUPcTuCRr), September 20, 2026, from source commit [`73d4825`](https://github.com/mryavascann/aidat/commit/73d4825). Candidate URL: `https://duly-g98magz2m-sametgoc81tr-4111s-projects.vercel.app`. It replaces `dpl_DMhRECzPfQoZQ2MvgBXcaX5eNTox` without changing contract addresses or server keys. Previous V2 publication details remain in `archive/deployment-v2.md`.
+Vercel project `duly`, scope `sametgoc81tr-4111s-projects`. Current bank-cancellation build: [`dpl_5MuM4gAiGGnsY3CrMcUNsXUuAH8C`](https://vercel.com/sametgoc81tr-4111s-projects/duly/5MuM4gAiGGnsY3CrMcUNsXUuAH8C), September 20, 2026, from source commit [`475d913`](https://github.com/mryavascann/aidat/commit/475d913). Candidate URL: `https://duly-23b09mqc2-sametgoc81tr-4111s-projects.vercel.app`. It replaces `dpl_EQy6MQgvZwC6ab7EFmYgUPcTuCRr` without changing contract addresses or server keys. Previous V2 publication details remain in `archive/deployment-v2.md`.
 
 This deployment uses Stellar testnet and the simulated workshop bank. Publishing does not make these real funds or real bank transfers. Passkeys and browser storage are origin-bound: localhost, a candidate domain and the production domain have separate credentials and saved sessions.
 
@@ -17,7 +17,7 @@ Run from the repository root. `vercel.json` sets:
 - Explicit public manifest inclusion for server tracing; runtime code imports the manifest directly.
 - Once-daily keeper: `/api/settle`, 09:00 UTC (`0 9 * * *`).
 
-The source upload allowlist includes 64 files: app, server adapters, passkey package, public manifest, shared browser-safe modules, the product-tour MP4 and build configuration. It excludes CLI keys, private state, test fixtures, Rust sources/WASM, design ZIP, raw artwork and local server. Only compiled frontend files and intended public assets are served as static resources; source and private-path probes must return 404.
+The source upload allowlist includes 65 files: app, server adapters, passkey package, public manifest, shared browser-safe modules, the product-tour MP4 and build configuration. It excludes CLI keys, private state, test fixtures, Rust sources/WASM, design ZIP, raw artwork and local server. Only compiled frontend files and intended public assets are served as static resources; source and private-path probes must return 404.
 
 V3 requires two **server-only Production secrets** in Vercel:
 
@@ -48,7 +48,31 @@ The queue stores encrypted instructions and the exact bank flow in separate Stel
 
 ## Verification
 
-### Current demo-entry release — September 20, 2026
+### Current bank-cancellation release — September 20, 2026
+
+Source `475d913` adds cancellation of unsigned bank-funded dues workflows in
+this browser. The form unlocks and history retains the original bank reference,
+receipts, read-only status checks and explicit resume. It does not reverse a
+bank transfer. Late responses preserve the stop; signed contributions remain
+available for reconciliation. Bank processing returns control promptly instead
+of keeping the user in a long polling loop.
+
+47 web tests, formatting and the TypeScript/Vite build passed. The 32-page
+TR/EN, theme and viewport browser suite and eight cancellation accessibility
+scenarios passed locally and on the canonical HTTPS domain. The cancellation suite uses controlled bank fixtures
+to test in-flight cancellation, reload persistence and same-reference resume
+without transferring funds.
+
+The actual Vercel build passed, the protected candidate returned the expected
+bank identity, and the deployment was promoted to the canonical domain. Its
+HTML, all 17 JS/CSS assets and public video match the local build. Source/private
+probes return 404 and unauthorized `/api/settle` returns 401. The upload
+allowlist contains 65 files. An actual unfunded bank order remained
+`pending_user_transfer_start` after read-only checks against the canonical API;
+an unsupported `cancel` action returned 400 without initiating a transfer or
+contribution. No contract, server key or hosting configuration changed.
+
+### Previous demo-entry release — September 20, 2026
 
 Source `73d4825` makes Solo demo prominent beside the theme toggle and adds a
 68-second silent product tour at `/walkthrough.mp4`. The README's screenshot

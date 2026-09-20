@@ -1,6 +1,40 @@
 # Duly — current state
 
-Updated September 20, 2026. The active product is **V3 building governance**, published on `main`; current UX source `73d4825`, payment-flow source `b519217`, V3 base `f3a5498`. Run Git status/log for the current revision and push status. Previous V2 notes are preserved in `archive/agent-notes-v2.md`; do not treat their old scope as current.
+Updated September 20, 2026. The active product is **V3 building governance**, published on `main`; current bank cancellation source `475d913`, demo-entry source `73d4825`, V3 base `f3a5498`. Run Git status/log for the current revision and push status. Previous V2 notes are preserved in `archive/agent-notes-v2.md`; do not treat their old scope as current.
+
+## Stop pending bank dues — September 20, 2026
+
+Source `475d913` adds **Cancel dues** to the dues form, payment history,
+demo funding and waiting-status bar. This stops Duly's unsigned contribution
+workflow in this browser; it does not cancel or reverse an external transfer.
+The form unlocks, while the original sealed route and receipts remain available
+for a read-only status check or explicit resume of that same order.
+
+- Stop state survives reload and late bank responses. Once contribution signing
+  starts, or a saved signed intent exists, cancellation is refused and the same
+  contribution remains recoverable. Unknown bank actions are rejected instead
+  of falling through to a transfer operation.
+- Bank polling returns control as soon as the anchor reports processing.
+  Cancelled expense queues also retain their cancelled status when an older
+  prepared bank record exists. No bank cancellation endpoint is invented.
+- 47 web tests, formatting and the TypeScript/Vite build passed. The existing
+  32-page browser suite and eight additional TR/EN, theme and viewport
+  accessibility scenarios passed locally and on the canonical HTTPS domain.
+  The new controlled-fixture test also
+  checks in-flight cancellation, persistence, same-reference resume and no
+  unexpected transaction submission.
+- An actual, unfunded testnet bank order remained
+  `pending_user_transfer_start` after read-only status calls. Unsupported
+  `cancel` returned 400 without simulating a bank transfer or contributing dues.
+  Private recovery state stays in ignored `web/test-results/`; never publish it.
+
+Source `475d913` is on `main` and deployment
+`dpl_5MuM4gAiGGnsY3CrMcUNsXUuAH8C` is promoted to
+**https://duly-sepia.vercel.app**. Canonical HTML, 17 JS/CSS assets and the video
+match the tested local build. Bank identity is unchanged, private/source probes
+return 404, and unauthorized settlement returns 401. The canonical bank API
+also passed the real-order read-only status check. The 65-file source allowlist
+excludes tests and private recovery state. Details are in `deployment.md`.
 
 ## Prominent solo demo and jury README — September 20, 2026
 
