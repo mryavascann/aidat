@@ -30,14 +30,15 @@ story's key content stays clear of Instagram's top and bottom UI.
 
 > Demir aldık, rota Ankara! ⚓
 >
-> @Team1TUR × @OKXTurkiye Agentic Hackathon'una community partner olarak katılıyoruz 💜🔺
+> @Team1TUR × @OKXTurkiye Agentic Hackathon'unun community partner'ıyız 💜🔺
 >
 > Bir gün, tek hedef: çalışan bir AI agent.
 >
 > 📅 17 Ekim · THK & Orion Tekmer
-> 💰 $3,000 ödül havuzu
+> 💰 $3.000 ödül havuzu
 >
-> Detaylar ve başvuru 👉 agentichackathon.team1.network
+> 📖 Rehber: agentic-ankara.vercel.app
+> 👉 Başvuru: agentichackathon.team1.network
 
 Alternatives and the Instagram story notes are in `tweet.md`.
 
