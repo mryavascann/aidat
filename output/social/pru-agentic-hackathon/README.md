@@ -4,8 +4,8 @@ A 25-second motion-design announcement in two formats:
 
 | File | Use | Size |
 | --- | --- | --- |
-| `PRU-Agentic-Hackathon-Partner-X-16x9.mp4` | X / LinkedIn post | 1920×1080, 30 fps, H.264 + AAC |
-| `PRU-Agentic-Hackathon-Partner-Story-9x16.mp4` | Instagram story / Reels | 1080×1920, 30 fps, H.264 + AAC |
+| `PRU-Agentic-Hackathon-Partner-X-16x9.mp4` | X / LinkedIn post | 1920×1080, 30 fps, H.264 ~8 Mbps + AAC |
+| `PRU-Agentic-Hackathon-Partner-Story-9x16.mp4` | Instagram story / Reels | 1080×1920, 30 fps, H.264 ~8 Mbps + AAC |
 
 Facts on screen come from the Team1 Türkiye announcement (25 Sep 2026) and its video:
 Agentic Hackathon by OKX TR × Team1 Türkiye, 17 October, Ankara, THK & Orion Tekmer,
