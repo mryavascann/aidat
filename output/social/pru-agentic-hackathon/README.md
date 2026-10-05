@@ -21,7 +21,7 @@ $3,000 prize pool, `agentichackathon.team1.network`.
 | 11.2–14.6 | The PRU Blockchain anchor logo powers on like neon, then glitches out. |
 | 14.6–17.8 | A 24-tick clock fills: "ONE DAY. ONE WORKING AI AGENT." |
 | 17.8–20.6 | Red Avalanche delta: "OCTOBER 17", Ankara, THK & Orion Tekmer, $3,000 prize pool. |
-| 20.6–25.0 | PRU × team1 türkiye lockup, "COMMUNITY PARTNER", apply URL. |
+| 20.6–25.0 | PRU Blockchain × OKX TR \| team1 türkiye (the two hosts) lockup, "COMMUNITY PARTNER", apply URL. |
 
 The 9:16 cut has its own layout: line breaks, type sizes, and the final lockup stack. The
 story's key content stays clear of Instagram's top and bottom UI.

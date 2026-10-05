@@ -68,7 +68,10 @@
   #s7 .logo img.lines { filter: drop-shadow(0 0 .9rem rgba(170,100,255,.85)); }
   #s7 .x { width: 4.6rem; height: 4.6rem; position: relative; }
   #s7 .x i { position: absolute; left: 50%; top: 50%; width: 6.2rem; height: 3px; margin: -1.5px 0 0 -3.1rem; background: #fff; border-radius: 2px; }
-  #s7 .t1w { height: 9.4rem; }
+  #s7 .hosts { display: flex; align-items: center; gap: 3rem; }
+  #s7 .hosts img.okx { height: 6.6rem; }
+  #s7 .hosts .bar { width: 2px; height: 8.2rem; background: rgba(255,255,255,.5); }
+  #s7 .hosts img.t1 { height: 7.6rem; }
   #s7 .pill { margin-top: 6.4rem; border: 2px solid rgba(255,255,255,.38); border-radius: 999px;
               padding: 1.5rem 2.6rem 1.5rem 3.6rem; font-size: 2.3rem; letter-spacing: .46em; color: #fff;
               background: rgba(255,255,255,.035); }
@@ -98,7 +101,10 @@
   .v #s7 .top { font-size: 2.6rem; letter-spacing: .26em; padding-left: .26em; margin-bottom: 7rem; }
   .v #s7 .row { flex-direction: column; gap: 5rem; }
   .v #s7 .logo { width: 40rem; height: 40rem; }
-  .v #s7 .t1w { height: 11.5rem; }
+  .v #s7 .hosts { gap: 2.8rem; }
+  .v #s7 .hosts img.okx { height: 6rem; }
+  .v #s7 .hosts .bar { height: 7.6rem; }
+  .v #s7 .hosts img.t1 { height: 7rem; }
   .v #s7 .pill { font-size: 2.8rem; margin-top: 7.5rem; }
   .v #s7 .url { bottom: 40rem; font-size: 3.6rem; flex-direction: column; gap: 1.2rem; }
   .v #s7 .url svg { display: none; }
@@ -287,11 +293,12 @@ async function build() {
   sc.s7 = el('div', 'L', world); sc.s7.id = 's7';
   const inner = el('div', 'inner', sc.s7);
   inner.style.display = 'flex'; inner.style.flexDirection = 'column'; inner.style.alignItems = 'center';
-  sc.s7top = mono(inner, 'top', V ? 'AGENTIC HACKATHON · 17.10' : 'AGENTIC HACKATHON · 17.10.2026 · ANKARA');
+  sc.s7top = mono(inner, 'top', V ? 'AGENTIC HACKATHON · 17.10 · ANKARA' : 'AGENTIC HACKATHON · 17.10.2026 · ANKARA');
   const row = el('div', 'row', inner);
   sc.s7logo = logoEl(row, urls);
   sc.s7x = el('div', 'x', row, '<i></i><i></i>');
-  sc.s7t1 = el('img', 't1w', row); sc.s7t1.src = '../assets/team1-turkiye.svg';
+  // the hackathon's own host lockup: OKX TR | team1 türkiye
+  sc.s7t1 = el('div', 'hosts', row, '<img class="okx" src="../assets/okx-tr.svg"><span class="bar"></span><img class="t1" src="../assets/team1-turkiye.svg">');
   sc.s7pill = el('div', 'pill mono', inner); sc.s7pill.dataset.txt = 'COMMUNITY PARTNER'; sc.s7pill.textContent = 'COMMUNITY PARTNER';
   sc.s7url = el('div', 'url', sc.s7, V
     ? '<span>apply now</span><span class="u">agentichackathon.team1.network</span>'
