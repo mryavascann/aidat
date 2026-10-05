@@ -1,0 +1,707 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>PRU Blockchain × Team1 Türkiye — Agentic Hackathon</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #000; overflow: hidden; }
+  body { -webkit-font-smoothing: antialiased; font-synthesis: none; }
+  #gl { position: absolute; left: 0; top: 0; width: 100%; height: 100%; }
+  #world { position: absolute; inset: 0; transform-origin: 50% 50%; }
+  .L { position: absolute; inset: 0; opacity: 0; display: flex; flex-direction: column;
+       align-items: center; justify-content: center; text-align: center; }
+  .mono { font-family: JB; font-weight: 500; text-transform: uppercase; white-space: pre;
+          color: #d9d6e2; }
+  .big { font-family: IT; font-weight: 800; line-height: .9; letter-spacing: -.04em; white-space: nowrap; }
+  .ln { width: max-content; margin: 0 auto; }
+  .ch { display: inline-block; }
+  .gr .ch { padding: .1em 0 .2em; margin: -.1em 0 -.2em; }
+  .big .sp { width: .26em; }
+  .gr .ch {
+    background-image:
+      linear-gradient(100deg, rgba(255,255,255,0) 44%, rgba(255,255,255,.95) 50%, rgba(255,255,255,0) 56%),
+      linear-gradient(180deg, #ffffff 0%, #f3f2f7 40%, #9c9ba7 100%);
+    background-repeat: no-repeat;
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  #grain { position: absolute; inset: 0; width: 100%; height: 100%; mix-blend-mode: overlay; opacity: .13; }
+  #fade { position: absolute; inset: 0; background: #000; opacity: 0; }
+
+  /* S1 */
+  #s1 .mono { text-shadow: 0 0 .5em rgba(0,0,0,.95), 0 0 1.2em rgba(0,0,0,.8); }
+  #s1 .m1 { font-size: 3rem; letter-spacing: .42em; padding-left: .42em; margin-top: -9rem; }
+  #s1 .m2 { font-size: 3rem; letter-spacing: .42em; padding-left: .42em; margin-top: 2.4rem; color: #fff; font-weight: 700; }
+  /* S2 */
+  #s2 .blk { display: flex; flex-direction: column; align-items: flex-start; margin-top: -2rem; }
+  #s2 .lock { display: flex; align-items: center; gap: 1.8rem; margin: 0 0 2.2rem 1.2rem; }
+  #s2 .lock img.okx { height: 3.1rem; }
+  #s2 .lock .bar { width: 2px; height: 3.8rem; background: rgba(255,255,255,.5); }
+  #s2 .lock img.t1 { height: 3.6rem; }
+  #s2 .big { font-size: 20rem; font-weight: 700; letter-spacing: -.045em; }
+  #s2 .ln { margin: 0; }
+  /* S3 */
+  #s3 .m1 { font-size: 3rem; letter-spacing: .42em; padding-left: .42em; margin-bottom: 3rem; }
+  #s3 .big { font-size: 18rem; }
+  /* S4 */
+  .logo { position: relative; }
+  .logo img { position: absolute; inset: 0; width: 100%; height: 100%; }
+  #s4 .logo { width: 52rem; height: 52rem; margin-top: -5rem; }
+  #s4 .logo img.lines { filter: drop-shadow(0 0 1.1rem rgba(170,100,255,.9)) drop-shadow(0 0 3.2rem rgba(140,70,255,.55)); }
+  #s4 .refl { position: absolute; width: 52rem; height: 52rem; left: 50%; margin-left: -26rem;
+              transform: scaleY(-1); opacity: .2; filter: blur(4px);
+              -webkit-mask-image: linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 45%);
+              mask-image: linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 45%); }
+  #s4 .c1 { font-family: JB; font-weight: 700; font-size: 3.4rem; letter-spacing: .34em; padding-left: .34em; color: #fff; margin-top: 4.6rem; }
+  #s4 .c2 { font-size: 2.1rem; letter-spacing: .52em; padding-left: .52em; color: #ab9fc8; margin-top: 1.8rem; }
+  /* S5 */
+  #s5 .a { font-size: 15rem; }
+  #s5 .b { font-size: 11.5rem; margin-top: 3rem; }
+  /* S6 */
+  #s6 .m1 { font-size: 2.8rem; letter-spacing: .5em; padding-left: .5em; margin-bottom: 3rem; color: #f2b9bd; }
+  #s6 .big { font-size: 19rem; }
+  #s6 .m2 { font-size: 2.8rem; letter-spacing: .36em; padding-left: .36em; margin-top: 4rem; color: #ece9f3; }
+  #s6 .m3 { font-size: 2.4rem; letter-spacing: .42em; padding-left: .42em; margin-top: 2rem; color: #ff6a72; font-weight: 700; }
+  /* S7 */
+  #s7 .top { font-size: 2.2rem; letter-spacing: .46em; padding-left: .46em; color: #bcb7c8; margin-bottom: 6rem; }
+  #s7 .row { display: flex; align-items: center; gap: 5.5rem; }
+  #s7 .logo { width: 28rem; height: 28rem; }
+  #s7 .logo img.lines { filter: drop-shadow(0 0 .9rem rgba(170,100,255,.85)); }
+  #s7 .x { width: 4.6rem; height: 4.6rem; position: relative; }
+  #s7 .x i { position: absolute; left: 50%; top: 50%; width: 6.2rem; height: 3px; margin: -1.5px 0 0 -3.1rem; background: #fff; border-radius: 2px; }
+  #s7 .t1w { height: 9.4rem; }
+  #s7 .pill { margin-top: 6.4rem; border: 2px solid rgba(255,255,255,.38); border-radius: 999px;
+              padding: 1.5rem 2.6rem 1.5rem 3.6rem; font-size: 2.3rem; letter-spacing: .46em; color: #fff;
+              background: rgba(255,255,255,.035); }
+  #s7 .url { position: absolute; left: 0; right: 0; bottom: 8.5rem; font-family: IT; font-weight: 500; font-size: 3rem;
+             color: #fff; letter-spacing: -.01em; display: flex; justify-content: center; align-items: center; gap: .9rem; }
+  #s7 .url .u { color: #a9a8b4; }
+  #s7 .url svg { width: 2.6rem; height: 2.6rem; }
+
+  /* Vertical (Instagram Story 9:16) overrides */
+  .v #s1 .m1 { font-size: 3.1rem; letter-spacing: .3em; padding-left: .3em; margin-top: -16rem; }
+  .v #s1 .m2 { font-size: 3.4rem; letter-spacing: .36em; padding-left: .36em; }
+  .v #s2 .blk { margin-top: -6rem; }
+  .v #s2 .big { font-size: 18rem; }
+  .v #s2 .lock { margin-left: .8rem; }
+  .v #s3 .big { font-size: 14.6rem; }
+  .v #s4 .logo { width: 70rem; height: 70rem; margin-top: -12rem; }
+  .v #s4 .refl { width: 70rem; height: 70rem; margin-left: -35rem; }
+  .v #s4 .c1 { font-size: 4rem; letter-spacing: .3em; padding-left: .3em; }
+  .v #s4 .c2 { font-size: 2.5rem; letter-spacing: .44em; padding-left: .44em; }
+  .v #s5 .a { font-size: 16rem; }
+  .v #s5 .b { font-size: 12.6rem; margin-top: 4rem; }
+  .v #s6 .big { font-size: 15rem; }
+  .v #s6 .m1 { font-size: 3rem; }
+  .v #s6 .m2 { font-size: 3rem; letter-spacing: .24em; padding-left: .24em; }
+  .v #s6 .m3 { font-size: 2.8rem; }
+  .v #s7 .inner { margin-top: -9rem; }
+  .v #s7 .top { font-size: 2.6rem; letter-spacing: .26em; padding-left: .26em; margin-bottom: 7rem; }
+  .v #s7 .row { flex-direction: column; gap: 5rem; }
+  .v #s7 .logo { width: 40rem; height: 40rem; }
+  .v #s7 .t1w { height: 11.5rem; }
+  .v #s7 .pill { font-size: 2.8rem; margin-top: 7.5rem; }
+  .v #s7 .url { bottom: 40rem; font-size: 3.6rem; flex-direction: column; gap: 1.2rem; }
+  .v #s7 .url svg { display: none; }
+</style>
+</head>
+<body>
+<canvas id="gl"></canvas>
+<div id="world"></div>
+<canvas id="grain"></canvas>
+<div id="fade"></div>
+<script>
+'use strict';
+// ---------------------------------------------------------------------------
+// Timeline (seconds). Keep in sync with ../audio/soundtrack.py
+// S1 door 0–3.6 · S2 title 3.6–7.6 · S3 partner 7.6–11.2 · S4 logo 11.2–14.6
+// S5 one day 14.6–17.8 · S6 date 17.8–20.6 · S7 lockup 20.6–25.0
+// ---------------------------------------------------------------------------
+const DURATION = 25.0;
+const W = innerWidth, H = innerHeight, V = H > W, A = W / H;
+const S = V ? W / 1080 : W / 1920;
+document.documentElement.style.fontSize = (10 * S) + 'px';
+document.body.classList.add(V ? 'v' : 'h');
+
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const lin = (t, a, b) => clamp((t - a) / (b - a));
+const ss = (t, a, b) => { const x = lin(t, a, b); return x * x * (3 - 2 * x); };
+const mix = (a, b, x) => a + (b - a) * x;
+const eOutExpo = x => x >= 1 ? 1 : 1 - Math.pow(2, -10 * x);
+const eInExpo = x => x <= 0 ? 0 : Math.pow(2, 10 * x - 10);
+const eOutCubic = x => 1 - Math.pow(1 - x, 3);
+const eInCubic = x => x * x * x;
+const eInOutCubic = x => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+const rnd = i => { const x = Math.sin(i * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); };
+const pulse = (t, t0, k) => t < t0 ? 0 : Math.exp(-(t - t0) * k);
+
+// ---------------------------------------------------------------- fonts
+const LATIN = 'U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD';
+const LATIN_EXT = 'U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF';
+const F = '../assets/fonts/';
+const faces = [];
+for (const w of [500, 600, 700, 800, 900]) {
+  faces.push(new FontFace('IT', `url(${F}inter-tight-latin-${w}-normal.woff2)`, { weight: String(w), unicodeRange: LATIN }));
+  faces.push(new FontFace('IT', `url(${F}inter-tight-latin-ext-${w}-normal.woff2)`, { weight: String(w), unicodeRange: LATIN_EXT }));
+}
+for (const w of [400, 500, 700]) faces.push(new FontFace('JB', `url(${F}jetbrains-mono-latin-${w}-normal.woff2)`, { weight: String(w) }));
+
+// ---------------------------------------------------------------- DOM helpers
+const world = document.getElementById('world');
+function el(tag, cls, parent, html) {
+  const e = document.createElement(tag);
+  if (cls) e.className = cls;
+  if (html != null) e.innerHTML = html;
+  if (parent) parent.appendChild(e);
+  return e;
+}
+function bigLines(parent, lines, cls) {
+  const wrap = el('div', 'big gr ' + (cls || ''), parent);
+  const rows = lines.map(txt => {
+    const r = el('div', 'ln', wrap);
+    const spans = [];
+    for (const c of txt) {
+      // keep punctuation in its letter's span so kerning holds; give word gaps a fixed width
+      if (/[.,!]/.test(c) && spans.length) { spans[spans.length - 1].textContent += c; continue; }
+      const s = el('span', c === ' ' ? 'ch sp' : 'ch', r); s.textContent = c === ' ' ? ' ' : c; spans.push(s);
+    }
+    return { el: r, spans };
+  });
+  return { wrap, rows, all: rows.flatMap(r => r.spans) };
+}
+function mono(parent, cls, txt) { const e = el('div', 'mono ' + cls, parent); e.dataset.txt = txt; e.textContent = ''; return e; }
+const GLYPHS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#%&*+=/<>';
+function decode(e, t, t0, cps) {
+  const s = e.dataset.txt, k = (t - t0) * cps, f = Math.floor(t * 30);
+  if (k >= s.length + 1) { if (e.textContent !== s) e.textContent = s; return; }
+  let out = '';
+  for (let i = 0; i < s.length; i++) {
+    const c = s[i];
+    if (c === ' ') out += ' ';
+    else if (i < k - 1) out += c;
+    else if (i < k + 5 && k > 0) out += GLYPHS[Math.floor(rnd(f * 7.13 + i * 3.7) * GLYPHS.length)];
+    else out += ' ';
+  }
+  e.textContent = out;
+}
+// per-letter reveal: rise + unblur
+function reveal(spans, t, t0, stagger, dur, dy = .38, blur = 16) {
+  spans.forEach((s, i) => {
+    const x = eOutCubic(lin(t, t0 + i * stagger, t0 + i * stagger + dur));
+    s.style.opacity = x;
+    s.style.transform = x < 1 ? `translateY(${(1 - x) * dy}em)` : 'none';
+    s.style.filter = x < .995 ? `blur(${((1 - x) * blur * S).toFixed(2)}px)` : 'none';
+  });
+}
+// continuous shine across a row of per-letter gradient spans
+function shineSetup(big) {
+  big.rows.forEach(r => {
+    const w = r.el.offsetWidth, x0 = r.el.offsetLeft;
+    r.spans.forEach(s => { s._x = s.offsetLeft - x0; s._w = w; s.style.backgroundSize = `${3 * w}px 100%, ${w}px 100%`; });
+  });
+}
+function shine(big, p) { // p: 0..1 sweep position
+  big.rows.forEach(r => r.spans.forEach(s => {
+    const c = mix(-.35, 1.35, p) * s._w - 1.5 * s._w;
+    s.style.backgroundPosition = `${(c - s._x).toFixed(1)}px 0, ${(-s._x).toFixed(1)}px 0`;
+  }));
+}
+function setL(e, o, tr, filt) {
+  e.style.opacity = o;
+  e.style.visibility = o <= 0.001 ? 'hidden' : 'visible';
+  if (tr !== undefined) e.style.transform = tr;
+  if (filt !== undefined) e.style.filter = filt;
+}
+
+// ---------------------------------------------------------------- PRU logo (disc + glowing lines)
+async function prepLogo() {
+  const img = new Image();
+  img.src = '../assets/pru-logo.jpg';
+  await img.decode();
+  const N = 1200, c = document.createElement('canvas'); c.width = c.height = N;
+  const g = c.getContext('2d'); g.drawImage(img, 0, 0, N, N);
+  const src = g.getImageData(0, 0, N, N);
+  const disc = g.createImageData(N, N), lines = g.createImageData(N, N);
+  const R = N * .4885, cx = N / 2, cy = N / 2;
+  for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
+    const i = (y * N + x) * 4, r = Math.hypot(x + .5 - cx, y + .5 - cy);
+    const inside = clamp((R - r) / 1.5);
+    const R0 = src.data[i], G0 = src.data[i + 1], B0 = src.data[i + 2];
+    disc.data[i] = R0; disc.data[i + 1] = G0; disc.data[i + 2] = B0; disc.data[i + 3] = 255 * inside;
+    const lum = .3 * R0 + .59 * G0 + .11 * B0;
+    let a = clamp((lum - 38) / 150); a = a * a * (3 - 2 * a);
+    lines.data[i] = Math.min(255, R0 * 1.05 + 10); lines.data[i + 1] = Math.min(255, G0 * 1.0); lines.data[i + 2] = Math.min(255, B0 * 1.04 + 12);
+    lines.data[i + 3] = 255 * a * inside;
+  }
+  const out = {};
+  for (const [k, d] of [['disc', disc], ['lines', lines]]) { g.putImageData(d, 0, 0); out[k] = c.toDataURL('image/png'); }
+  return out;
+}
+function logoEl(parent, urls) {
+  const box = el('div', 'logo', parent);
+  const d = el('img', 'disc', box); d.src = urls.disc;
+  const l = el('img', 'lines', box); l.src = urls.lines;
+  return { box, d, l };
+}
+const flick = (t, t0, t1) => { // neon power-on flicker 0..1
+  if (t < t0) return 0; if (t >= t1) return 1;
+  const p = lin(t, t0, t1), f = Math.floor(t * 30);
+  return rnd(f * 3.3 + 11) < p * 1.25 ? mix(.55, 1, rnd(f * 1.7)) : rnd(f) * .12;
+};
+
+// ---------------------------------------------------------------- build scenes
+const ARROW = '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15M13 6l6 6-6 6"/></svg>';
+const sc = {};
+async function build() {
+  const urls = await prepLogo();
+  // S1
+  sc.s1 = el('div', 'L', world); sc.s1.id = 's1';
+  sc.s1a = mono(sc.s1, 'm1', 'PRU BLOCKCHAIN COMMUNITY');
+  sc.s1b = mono(sc.s1, 'm2', 'IS JOINING');
+  // S2
+  sc.s2 = el('div', 'L', world); sc.s2.id = 's2';
+  const blk = el('div', 'blk', sc.s2);
+  sc.s2lock = el('div', 'lock', blk, '<img class="okx" src="../assets/okx-tr.svg"><span class="bar"></span><img class="t1" src="../assets/team1-turkiye.svg">');
+  sc.s2t = bigLines(blk, ['Agentic', 'Hackathon']);
+  // S3
+  sc.s3 = el('div', 'L', world); sc.s3.id = 's3';
+  sc.s3a = mono(sc.s3, 'm1', 'AS A');
+  sc.s3t = bigLines(sc.s3, ['COMMUNITY', 'PARTNER']);
+  // S4
+  sc.s4 = el('div', 'L', world); sc.s4.id = 's4';
+  sc.s4refl = el('div', 'refl', sc.s4);
+  const rl = logoEl(sc.s4refl, urls); rl.box.style.width = rl.box.style.height = '100%';
+  sc.s4logo = logoEl(sc.s4, urls);
+  sc.s4a = mono(sc.s4, 'c1', 'PRU BLOCKCHAIN');
+  sc.s4b = mono(sc.s4, 'c2', 'PIRI REIS UNIVERSITY');
+  // S5
+  sc.s5 = el('div', 'L', world); sc.s5.id = 's5';
+  sc.s5a = bigLines(sc.s5, ['ONE DAY.'], 'a');
+  sc.s5b = bigLines(sc.s5, V ? ['ONE WORKING', 'AI AGENT.'] : ['ONE WORKING AI AGENT.'], 'b');
+  // S6
+  sc.s6 = el('div', 'L', world); sc.s6.id = 's6';
+  sc.s6a = mono(sc.s6, 'm1', 'SAVE THE DATE');
+  sc.s6t = bigLines(sc.s6, ['OCTOBER 17']);
+  sc.s6b = mono(sc.s6, 'm2', V ? 'ANKARA · THK & ORION TEKMER' : 'ANKARA — THK & ORION TEKMER');
+  sc.s6c = mono(sc.s6, 'm3', '$3,000 PRIZE POOL');
+  // S7
+  sc.s7 = el('div', 'L', world); sc.s7.id = 's7';
+  const inner = el('div', 'inner', sc.s7);
+  inner.style.display = 'flex'; inner.style.flexDirection = 'column'; inner.style.alignItems = 'center';
+  sc.s7top = mono(inner, 'top', V ? 'AGENTIC HACKATHON · 17.10' : 'AGENTIC HACKATHON · 17.10.2026 · ANKARA');
+  const row = el('div', 'row', inner);
+  sc.s7logo = logoEl(row, urls);
+  sc.s7x = el('div', 'x', row, '<i></i><i></i>');
+  sc.s7t1 = el('img', 't1w', row); sc.s7t1.src = '../assets/team1-turkiye.svg';
+  sc.s7pill = el('div', 'pill mono', inner); sc.s7pill.dataset.txt = 'COMMUNITY PARTNER'; sc.s7pill.textContent = 'COMMUNITY PARTNER';
+  sc.s7url = el('div', 'url', sc.s7, V
+    ? '<span>apply now</span><span class="u">agentichackathon.team1.network</span>'
+    : `<span>apply now</span>${ARROW}<span class="u">agentichackathon.team1.network</span>`);
+
+  await Promise.all([...document.images].map(i => i.decode().catch(() => {})));
+  [sc.s2t, sc.s3t, sc.s5a, sc.s5b, sc.s6t].forEach(shineSetup);
+  // reflection placement for S4: mirror the logo about the floor horizon
+  const lb = sc.s4logo.box.getBoundingClientRect();
+  sc.s4logoCY = lb.top + lb.height / 2;
+}
+
+// ---------------------------------------------------------------- WebGL background
+const FRAG = `#version 300 es
+precision highp float;
+out vec4 fragColor;
+uniform vec2 uRes; uniform float uTime;
+uniform vec4 uCam, uDoor, uFlash, uHaze, uFloor, uFig0, uFig1, uFig2, uBeams, uRing, uTri, uOrb, uDust, uGlow2;
+uniform vec3 uDoorCol, uHazeCol, uFloorCol, uOrbCol, uBeamColA, uBeamColB, uTriCol;
+
+float hash12(vec2 p){ vec3 p3=fract(vec3(p.xyx)*.1031); p3+=dot(p3,p3.yzx+33.33); return fract((p3.x+p3.y)*p3.z); }
+float vnoise(vec2 p){ vec2 i=floor(p), f=fract(p); vec2 u=f*f*(3.-2.*f);
+  return mix(mix(hash12(i),hash12(i+vec2(1,0)),u.x), mix(hash12(i+vec2(0,1)),hash12(i+vec2(1,1)),u.x), u.y); }
+float fbm(vec2 p){ float a=.5, s=0.; for(int i=0;i<5;i++){ s+=a*vnoise(p); p=p*2.03+vec2(17.1,9.2); a*=.5; } return s; }
+float sdBox(vec2 p, vec2 b){ vec2 d=abs(p)-b; return length(max(d,0.))+min(max(d.x,d.y),0.); }
+float sdSeg(vec2 p, vec2 a, vec2 b){ vec2 pa=p-a, ba=b-a; float h=clamp(dot(pa,ba)/dot(ba,ba),0.,1.); return length(pa-ba*h); }
+float sdTri(vec2 p, float r){ const float k=1.7320508; p.x=abs(p.x)-r; p.y=p.y+r/k;
+  if(p.x+k*p.y>0.) p=vec2(p.x-k*p.y,-k*p.x-p.y)/2.; p.x-=clamp(p.x,-2.*r,0.); return -length(p)*sign(p.y); }
+
+float smin(float a, float b, float k){ float h=clamp(.5+.5*(b-a)/k,0.,1.); return mix(b,a,h)-k*h*(1.-h); }
+float sdTrap(vec2 p, float r1, float r2, float he){
+  vec2 k1=vec2(r2,he), k2=vec2(r2-r1,2.*he);
+  p.x=abs(p.x);
+  vec2 ca=vec2(p.x-min(p.x,(p.y<0.)?r1:r2), abs(p.y)-he);
+  vec2 cb=p-k1+k2*clamp(dot(k1-p,k2)/dot(k2,k2),0.,1.);
+  float s=(cb.x<0. && ca.y<0.)?-1.:1.;
+  return s*sqrt(min(dot(ca,ca),dot(cb,cb)));
+}
+// standing person in a long coat; units: height 1, feet at y=0
+float figD(vec2 q){
+  float head=(length((q-vec2(0.,.918))/vec2(.054,.066))-1.)*.054;
+  float neck=sdBox(q-vec2(0.,.835),vec2(.024,.04));
+  float sh=sdSeg(q,vec2(-.09,.786),vec2(.09,.786))-.036;
+  float coat=sdTrap(q-vec2(0.,.585),.118,.104,.205)-.01;
+  float armL=sdSeg(q,vec2(-.116,.77),vec2(-.128,.43))-.027;
+  float armR=sdSeg(q,vec2(.116,.77),vec2(.128,.43))-.027;
+  float ky=clamp(q.y/.4,0.,1.);
+  float legL=sdSeg(q,vec2(-.042,.03),vec2(-.05,.4))-mix(.022,.036,ky);
+  float legR=sdSeg(q,vec2(.042,.03),vec2(.05,.4))-mix(.022,.036,ky);
+  float shoeL=(length((q-vec2(-.05,.014))/vec2(.042,.016))-1.)*.016;
+  float shoeR=(length((q-vec2(.05,.014))/vec2(.042,.016))-1.)*.016;
+  float d=smin(head,neck,.02);
+  d=smin(d,sh,.035); d=smin(d,coat,.03);
+  d=smin(d,armL,.012); d=smin(d,armR,.012);
+  d=smin(d,legL,.02); d=smin(d,legR,.02);
+  d=min(d,min(shoeL,shoeR));
+  return d;
+}
+vec2 figure(vec2 p, vec4 f){ // x: coverage, y: inner rim band
+  if(f.z<=0.) return vec2(0.);
+  vec2 q=(p-vec2(f.x,uFloor.x))/f.y;
+  float d=figD(q)*f.y*uRes.y*uCam.x;
+  float m=smoothstep(.9,-.9,d);
+  return f.z*vec2(m, smoothstep(-2.6,-.4,d)*m);
+}
+
+void lightsAt(vec2 p, float blur, inout vec3 core, inout vec3 glow){
+  if(uDoor.w>0.){
+    float top=.9, bot=uDoor.y; float cy=(top+bot)*.5, hh=max((top-bot)*.5,0.);
+    float d=max(sdBox(p-vec2(uDoor.x,cy),vec2(uDoor.z,hh)),0.);
+    core+=uDoorCol*uDoor.w*exp(-d/(.0013+blur))*1.7;
+    glow+=uDoorCol*uDoor.w*(exp(-d/(.07+blur*2.))*.42+.06/(1.+d*30.));
+  }
+  if(uOrb.w>0.){
+    float r=length(p-uOrb.xy);
+    glow+=uOrbCol*uOrb.w*(exp(-r*r/(uOrb.z*uOrb.z+blur))*.9+.1/(1.+r*r*25.));
+  }
+  if(uRing.z>0.){
+    vec2 q=p-vec2(0.,uRing.w); float r=length(q);
+    float a=atan(q.x,q.y); if(a<0.) a+=6.2831853;
+    float N=24., idx=mod(floor(a/6.2831853*N+.5),N), ac=idx/N*6.2831853;
+    float cs=cos(ac), sn=sin(ac);
+    vec2 qr=vec2(q.x*cs-q.y*sn, q.x*sn+q.y*cs);
+    float d=max(sdBox(qr-vec2(0.,uRing.x),vec2(.0032,.026)),0.);
+    float prog=uRing.y*N;
+    float lit=step(idx+.5,prog+.001);
+    float head=lit*exp(-max(prog-1.-idx,0.)*.9);
+    vec3 tc=mix(vec3(.95,.95,1.),vec3(1.,.22,.26),head);
+    core+=tc*exp(-d/(.0014+blur))*(.1+lit*.75+head*1.1)*uRing.z;
+    glow+=tc*exp(-d/(.035+blur))*(lit*.1+head*.45)*uRing.z;
+    core+=vec3(.8,.8,.9)*exp(-abs(r-uRing.x*1.14)/(.0011+blur))*.12*uRing.z;
+  }
+  if(uTri.z>0.){
+    float d=max(abs(sdTri(p-vec2(0.,uTri.w),uTri.x))-.0018,0.);
+    core+=uTriCol*uTri.z*exp(-d/(.0016+blur))*1.5;
+    glow+=uTriCol*uTri.z*(exp(-d/(.06+blur*2.))*.55+.05/(1.+d*20.));
+  }
+}
+
+vec3 beam(vec2 p, vec2 src, vec2 dst, float width){
+  vec2 d=normalize(dst-src); vec2 v=p-src; float along=dot(v,d);
+  if(along<0.) return vec3(0.);
+  float perp=abs(v.x*d.y-v.y*d.x);
+  float L=length(dst-src);
+  float w=width*(.25+along);
+  float fall=smoothstep(0.,.25,along)*smoothstep(L+.25,L-.05,along);
+  return vec3(exp(-perp*perp/(w*w))*fall);
+}
+
+float dust(vec2 p, float t){
+  float s=0.;
+  for(int l=0;l<2;l++){
+    float fl=float(l), sc=mix(16.,30.,fl);
+    vec2 q=p*sc+vec2(t*(.18+fl*.12),-t*(.32+fl*.2));
+    vec2 id=floor(q), f=fract(q)-.5;
+    float h=hash12(id+fl*13.7);
+    if(h>.8){ vec2 o=vec2(hash12(id+3.1),hash12(id+7.7))-.5; float r=length(f-o*.6);
+      s+=smoothstep(.1,0.,r)*(.55+.45*sin(t*1.7+h*40.))*mix(1.,.55,fl); }
+  }
+  return s;
+}
+
+void main(){
+  vec2 frag=gl_FragCoord.xy;
+  vec2 p=(frag-.5*uRes)/uRes.y;
+  p=p/uCam.x+uCam.yz;
+  float t=uTime, h=uFloor.x;
+  vec3 core=vec3(0.), glow=vec3(0.);
+  lightsAt(p,0.,core,glow);
+  float fog=fbm(p*vec2(1.8,3.)+vec2(t*.035,-t*.012));
+  float fog2=fbm(p*vec2(4.2,6.5)+vec2(-t*.06,t*.018)+fog*1.3);
+  float dens=exp(-max(p.y-h,0.)*1.8)*uHaze.y+ (1.-uHaze.y);
+  vec3 col=core+glow*(.45+1.1*fog2*dens);
+  col+=uHazeCol*uHaze.x*fog2*fog2*dens*1.3;
+  col+=vec3(.006,.005,.01)*(1.-p.y);
+  // converging partner beams (PRU violet from the left, Team1 red from the right)
+  if(uBeams.x+uBeams.y>0.){
+    float hw=uRes.x/uRes.y*.5;
+    vec2 tgt=vec2(0.,.0);
+    vec2 sA=vec2(-hw-.25,.62), sB=vec2(hw+.25,.62);
+    vec2 dA=mix(vec2(-hw*.5,-.6),tgt,uBeams.z), dB=mix(vec2(hw*.5,-.6),tgt,uBeams.z);
+    float wd=mix(.07,.035,uBeams.z)*uBeams.w;
+    vec3 b=uBeamColA*beam(p,sA,dA,wd).x*uBeams.x+uBeamColB*beam(p,sB,dB,wd).x*uBeams.y;
+    col+=b*(.25+1.3*fog2);
+    float r=length(p-tgt);
+    col+=(uBeamColA+uBeamColB)*.5*uBeams.z*uBeams.z*(uBeams.x+uBeams.y)*.5*(exp(-r*r/.004)*.9+.05/(1.+r*r*60.));
+  }
+  // floor
+  vec2 fm=max(figure(p,uFig0),max(figure(p,uFig1),figure(p,uFig2)));
+  if(p.y<h){
+    float dd=h-p.y; vec2 pr=vec2(p.x,h+dd);
+    vec3 rc=vec3(0.), rg=vec3(0.);
+    lightsAt(pr,.003+dd*.06,rc,rg);
+    float rip=.75+.25*vnoise(vec2(p.x*30.,dd*260.+t*.4));
+    vec3 refl=(rc*.55+rg*.7)*uFloor.z*exp(-dd*2.6)*rip;
+    vec2 mr=max(figure(pr,uFig0),max(figure(pr,uFig1),figure(pr,uFig2)));
+    refl*=1.-mr.x*.9;
+    col=mix(col,col*.3+refl+uHazeCol*uHaze.x*fog*.08,smoothstep(0.,.012,dd));
+    fm*=1.-smoothstep(0.,.004,dd);
+  }
+  vec3 stage=uFloorCol*uFloor.y*(exp(-abs(p.y-h)/.005)*.5+exp(-abs(p.y-h)/.05)*.28+exp(-abs(p.y-h)/.25)*.08)*exp(-p.x*p.x*.9);
+  col+=stage;
+  if(uGlow2.x+uGlow2.y>0.){
+    vec2 a=(p-vec2(-.55,h))*vec2(1.,2.6), b=(p-vec2(.55,h))*vec2(1.,2.6);
+    col+=uBeamColA*uGlow2.x*(exp(-dot(a,a)*3.)*.55)*(.5+fog2);
+    col+=uBeamColB*uGlow2.y*(exp(-dot(b,b)*3.)*.55)*(.5+fog2);
+  }
+  // silhouettes: near-black, a thin rim of whatever light sits behind them, a veil of haze in front
+  vec3 rimL=glow*1.1+uFloorCol*uFloor.y*.35;
+  col=col*(1.-fm.x*.97)+fm.y*rimL*.9+fm.x*(glow*.1+uHazeCol*uHaze.x*.12)*fog2;
+  col+=dust(p,t)*(dot(glow,vec3(.33))*1.4+.03)*uDust.x*vec3(.9,.88,1.);
+  col=mix(col,uFlash.rgb,clamp(uFlash.w,0.,1.))+uFlash.rgb*uFlash.w*.4;
+  col=1.-exp(-col*1.3);
+  vec2 vq=frag/uRes-.5; col*=1.-dot(vq*vec2(1.,.9),vq)*1.05;
+  col+=(hash12(frag+fract(t*7.)*91.)-.5)/255.*2.5;
+  fragColor=vec4(max(col,0.),1.);
+}`;
+const canvas = document.getElementById('gl');
+canvas.width = W; canvas.height = H;
+const gl = canvas.getContext('webgl2', { preserveDrawingBuffer: true, antialias: false });
+function sh(type, src) { const s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s)); return s; }
+const prog = gl.createProgram();
+gl.attachShader(prog, sh(gl.VERTEX_SHADER, '#version 300 es\nin vec2 a;void main(){gl_Position=vec4(a,0.,1.);}'));
+gl.attachShader(prog, sh(gl.FRAGMENT_SHADER, FRAG));
+gl.linkProgram(prog);
+if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(prog));
+gl.useProgram(prog);
+const buf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+const loc = gl.getAttribLocation(prog, 'a'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+const U = n => gl.getUniformLocation(prog, n);
+const VIOLET = [.62, .38, 1.0], RED = [1.0, .17, .21];
+
+// ---------------------------------------------------------------- per-frame scene parameters
+function params(t) {
+  const hw = A / 2;
+  const u = {
+    uCam: [1, 0, 0, 0], uDoor: [0, .9, .0022, 0], uFlash: [1, 1, 1, 0], uHaze: [0, .7, 0, 0],
+    uFloor: [-.22, 0, 0, 0], uFig0: [0, 0, 0, 0], uFig1: [0, 0, 0, 0], uFig2: [0, 0, 0, 0],
+    uBeams: [0, 0, 0, 1], uRing: [V ? .25 : .38, 0, 0, .0], uTri: [V ? .3 : .5, 0, 0, .02],
+    uOrb: [0, 0, .3, 0], uDust: [1, 0, 0, 0], uGlow2: [0, 0, 0, 0],
+    uDoorCol: [.72, .55, 1.0], uHazeCol: [.32, .24, .5], uFloorCol: [1, .2, .24], uOrbCol: VIOLET,
+    uBeamColA: VIOLET, uBeamColB: RED, uTriCol: RED,
+  };
+  // camera impulses on the big hits
+  let shake = 0; for (const h of [3.6, 7.6, 11.2, 17.8, 20.6]) shake += pulse(t, h, 7);
+  const sx = Math.sin(t * 61) * .004 * shake, sy = Math.cos(t * 47) * .004 * shake;
+
+  if (t < 3.6) {                                   // S1 — door of light
+    u.uCam = [mix(1.0, 1.14, eInOutCubic(lin(t, 0, 3.6))), sx, .03 + sy, 0];
+    u.uDoor = [0, mix(.9, u.uFloor[0], eOutCubic(lin(t, .25, 1.5))),
+      .0022 + 1.1 * eInExpo(lin(t, 2.95, 3.6)), ss(t, .15, .5) * (1 + 1.4 * eInExpo(lin(t, 2.85, 3.6)))];
+    u.uHaze = [ss(t, 0, 1.4) * .55, .75, 0, 0];
+    u.uFig0 = [0, V ? .2 : .22, ss(t, .4, 1.3), 0];
+    u.uFloor = [-.22, 0, .9, 0];
+    u.uFlash = [.82, .7, 1, Math.pow(lin(t, 3.25, 3.6), 2)];
+  } else if (t < 7.6) {                            // S2 — Agentic Hackathon hall
+    const k = lin(t, 3.6, 7.6);
+    u.uCam = [mix(1.0, 1.07, eInOutCubic(k)), sx, sy, 0];
+    u.uFloor = [V ? -.3 : -.27, ss(t, 3.7, 4.6) * .85, .85, 0];
+    u.uFloorCol = [1, .19, .23];
+    u.uOrb = [0, .62, .55, ss(t, 3.6, 4.4) * .28]; u.uOrbCol = [.85, .85, 1];
+    const fx = V ? hw * .76 : hw * .66, fs = V ? .24 : .3;
+    u.uFig1 = [-fx, fs, ss(t, 3.75, 4.3), 0]; u.uFig2 = [fx, fs * .98, ss(t, 3.75, 4.3), 0];
+    u.uHaze = [.42, .8, 0, 0]; u.uHazeCol = [.3, .27, .36];
+    u.uFlash = [.82, .7, 1, 1 - eOutCubic(lin(t, 3.6, 4.3))];
+    u.uFlash[3] = Math.max(u.uFlash[3], Math.pow(lin(t, 7.4, 7.6), 2) * .55);
+  } else if (t < 11.2) {                           // S3 — two beams converge
+    const c = eInOutCubic(lin(t, 7.6, 11.05));
+    u.uCam = [mix(1.0, 1.09, lin(t, 7.6, 11.2)), sx, sy, 0];
+    u.uBeams = [ss(t, 7.6, 8.1) * 1.15, ss(t, 7.75, 8.25) * 1.15, c, 1 - .5 * eInExpo(lin(t, 10.6, 11.2))];
+    u.uHaze = [.36, .6, 0, 0]; u.uHazeCol = [.36, .2, .36];
+    u.uFloor = [-.36, 0, .55, 0];
+    u.uFlash = [.82, .7, 1, Math.max(.55 * (1 - eOutCubic(lin(t, 7.6, 8.0))), Math.pow(lin(t, 10.95, 11.2), 2))];
+  } else if (t < 14.6) {                           // S4 — PRU logo hero
+    const on = flick(t, 11.3, 12.0);
+    u.uCam = [mix(1.0, 1.06, eInOutCubic(lin(t, 11.2, 14.6))), sx, sy, 0];
+    const ly = (H / 2 - sc.s4logoCY) / H;
+    u.uOrb = [0, ly, V ? .32 : .36, (.55 * on + .35 * ss(t, 11.9, 12.6)) * (1 - ss(t, 14.25, 14.6))];
+    u.uOrbCol = [.55, .3, 1.0];
+    u.uHaze = [.5, .6, 0, 0]; u.uHazeCol = [.34, .2, .62];
+    u.uFloor = [V ? -.26 : -.36, 0, .75, 0];
+    u.uFlash = [.82, .7, 1, 1 - eOutCubic(lin(t, 11.2, 11.7))];
+    u.uFlash = t > 14.3 ? [1, .3, .35, Math.pow(lin(t, 14.3, 14.6), 2) * .6] : u.uFlash;
+  } else if (t < 17.8) {                           // S5 — one day / 24 ticks
+    u.uCam = [mix(1.0, 1.08, eInOutCubic(lin(t, 14.6, 17.8))), sx, sy, 0];
+    const out = eInCubic(lin(t, 17.45, 17.8));
+    u.uRing = [(V ? .25 : .38) * (1 + .5 * out), lin(t, 14.85, 17.35), ss(t, 14.6, 15.0) * (1 - out), 0];
+    u.uHaze = [.3, .5, 0, 0]; u.uHazeCol = [.26, .24, .32];
+    u.uFloor = [-.47, 0, .45, 0];
+    u.uFlash = [1, .3, .35, .6 * (1 - eOutCubic(lin(t, 14.6, 15.0)))];
+  } else if (t < 20.6) {                           // S6 — date, Avalanche-red delta
+    u.uCam = [mix(1.0, 1.07, eInOutCubic(lin(t, 17.8, 20.6))), sx, sy, 0];
+    const on = flick(t, 17.85, 18.35);
+    u.uTri = [(V ? .3 : .5) * mix(.96, 1.0, eOutCubic(lin(t, 17.8, 19))), 0, on * 1.1, V ? .02 : .04];
+    u.uHaze = [.34, .7, 0, 0]; u.uHazeCol = [.5, .12, .16];
+    u.uFloor = [V ? -.24 : -.31, .25 * on, .8, 0]; u.uFloorCol = [1, .2, .24];
+    u.uFlash = [1, .82, .85, Math.max(.7 * (1 - eOutCubic(lin(t, 17.8, 18.15))), Math.pow(lin(t, 20.3, 20.6), 2))];
+  } else {                                         // S7 — lockup
+    u.uCam = [mix(1.0, 1.04, eInOutCubic(lin(t, 20.6, 25))), sx, sy, 0];
+    u.uGlow2 = [ss(t, 20.7, 21.6) * 1.0, ss(t, 20.9, 21.8) * 1.0, 0, 0];
+    u.uHaze = [.28, .7, 0, 0]; u.uHazeCol = [.3, .22, .36];
+    u.uFloor = [V ? -.33 : -.34, 0, .5, 0];
+    u.uOrb = [0, V ? .2 : .1, .6, ss(t, 20.8, 21.6) * .18]; u.uOrbCol = [.55, .4, .9];
+    u.uFlash = [1, .92, 1, 1 - eOutCubic(lin(t, 20.6, 21.2))];
+  }
+  return u;
+}
+
+// ---------------------------------------------------------------- per-frame DOM
+function dom(t) {
+  const f = Math.floor(t * 30);
+  // S1
+  {
+    const o = ss(t, .55, .8) * (1 - ss(t, 2.9, 3.35));
+    const ex = eInCubic(lin(t, 2.9, 3.35));
+    setL(sc.s1, o, `scale(${1 + ex * .06})`, ex > 0 ? `blur(${ex * 8 * S}px)` : 'none');
+    decode(sc.s1a, t, .7, 30);
+    decode(sc.s1b, t, 1.75, 22);
+    sc.s1b.style.opacity = ss(t, 1.7, 1.85);
+  }
+  // S2
+  {
+    const o = t > 3.7 && t < 7.65 ? 1 - ss(t, 7.15, 7.55) : 0;
+    const ex = eInCubic(lin(t, 7.15, 7.55));
+    setL(sc.s2, o, `scale(${mix(1, 1.035, lin(t, 3.9, 7.5)) + ex * .05}) translateY(${-ex * 3}rem)`, ex > 0 ? `blur(${ex * 18 * S}px)` : 'none');
+    const lo = eOutCubic(lin(t, 3.95, 4.45));
+    sc.s2lock.style.opacity = lo; sc.s2lock.style.transform = `translateY(${(1 - lo) * 1.5}rem)`;
+    sc.s2lock.style.filter = lo < 1 ? `blur(${(1 - lo) * 8 * S}px)` : 'none';
+    reveal(sc.s2t.rows[0].spans, t, 4.05, .04, .6);
+    reveal(sc.s2t.rows[1].spans, t, 4.3, .04, .6);
+    shine(sc.s2t, lin(t, 4.9, 6.4));
+  }
+  // S3
+  {
+    const o = t > 7.6 && t < 11.25 ? 1 : 0;
+    const ex = eInExpo(lin(t, 10.7, 11.2));
+    setL(sc.s3, o * (1 - ss(t, 11.05, 11.2)), `scale(${mix(1, 1.05, lin(t, 7.7, 10.7))})`);
+    sc.s3t.wrap.style.transform = `scaleX(${1 - .96 * ex}) scaleY(${1 - .7 * ex})`;
+    sc.s3t.wrap.style.filter = `brightness(${1 + ex * 3}) drop-shadow(0 0 ${2.2 * S}rem rgba(190,120,255,${.25 + ex * .5}))`;
+    decode(sc.s3a, t, 7.75, 20);
+    sc.s3a.style.opacity = 1 - ex;
+    reveal(sc.s3t.rows[0].spans, t, 7.95, .032, .55);
+    reveal(sc.s3t.rows[1].spans, t, 8.2, .036, .55);
+    shine(sc.s3t, lin(t, 8.9, 10.3));
+  }
+  // S4
+  {
+    const vis = t > 11.2 && t < 14.6;
+    const g = lin(t, 14.15, 14.6);
+    let tr = `scale(${mix(1, 1.035, lin(t, 11.2, 14.2))})`, filt = 'none';
+    if (g > 0) {
+      const j = (rnd(f * 9.1) - .5) * 4 * g;
+      tr += ` translateX(${j}rem) scale(${1 + g * .12})`;
+      filt = `drop-shadow(${.8 * g}rem 0 0 rgba(255,40,70,.8)) drop-shadow(${-.8 * g}rem 0 0 rgba(60,200,255,.8))`;
+      sc.s4.style.clipPath = rnd(f * 4.7) < .5 ? `inset(${rnd(f) * 60}% 0 ${rnd(f + 3) * 30}% 0)` : 'none';
+    } else sc.s4.style.clipPath = 'none';
+    setL(sc.s4, vis ? 1 - ss(t, 14.4, 14.6) : 0, tr, filt);
+    const on = flick(t, 11.3, 12.0);
+    const sIn = eOutCubic(lin(t, 11.2, 12.6));
+    sc.s4logo.box.style.transform = `scale(${mix(.93, 1, sIn)})`;
+    sc.s4logo.l.style.opacity = on;
+    sc.s4logo.d.style.opacity = ss(t, 11.85, 12.5) * .97;
+    sc.s4refl.style.opacity = .2 * Math.max(on * .6, ss(t, 11.85, 12.5));
+    const ry = 2 * (H / 2 - (V ? -.26 : -.36) * H) - sc.s4logoCY;
+    sc.s4refl.style.top = `${ry - sc.s4refl.offsetHeight / 2}px`;
+    decode(sc.s4a, t, 12.4, 22);
+    decode(sc.s4b, t, 12.75, 30);
+    sc.s4a.style.opacity = ss(t, 12.35, 12.5); sc.s4b.style.opacity = ss(t, 12.7, 12.85) * .95;
+  }
+  // S5
+  {
+    const ex = eInCubic(lin(t, 17.45, 17.8));
+    setL(sc.s5, t > 14.6 && t < 17.85 ? 1 - ex : 0, `scale(${mix(1, 1.04, lin(t, 14.7, 17.4)) + ex * .08})`, ex > 0 ? `blur(${ex * 16 * S}px)` : 'none');
+    reveal(sc.s5a.all, t, 14.8, .05, .55);
+    reveal(sc.s5b.all, t, 15.75, .03, .5);
+    shine(sc.s5a, lin(t, 15.2, 16.4)); shine(sc.s5b, lin(t, 16.3, 17.4));
+  }
+  // S6
+  {
+    const ex = eInCubic(lin(t, 20.3, 20.6));
+    setL(sc.s6, t > 17.8 && t < 20.65 ? 1 - ex : 0, `scale(${mix(1, 1.035, lin(t, 17.9, 20.3)) + ex * .05})`, ex > 0 ? `blur(${ex * 14 * S}px)` : 'none');
+    decode(sc.s6a, t, 17.95, 24); sc.s6a.style.opacity = ss(t, 17.9, 18.0);
+    reveal(sc.s6t.all, t, 18.12, .035, .55);
+    decode(sc.s6b, t, 18.7, 36); sc.s6b.style.opacity = ss(t, 18.65, 18.75);
+    decode(sc.s6c, t, 19.15, 30); sc.s6c.style.opacity = ss(t, 19.1, 19.2);
+    shine(sc.s6t, lin(t, 18.9, 20.1));
+  }
+  // S7
+  {
+    setL(sc.s7, t > 20.6 ? 1 : 0, `scale(${mix(1, 1.025, lin(t, 20.6, 25))})`);
+    const li = eOutCubic(lin(t, 20.7, 21.4));
+    sc.s7logo.box.style.opacity = li; sc.s7logo.box.style.transform = `scale(${mix(.82, 1, li)})`;
+    sc.s7logo.box.style.filter = li < 1 ? `blur(${(1 - li) * 10 * S}px)` : 'none';
+    sc.s7logo.l.style.opacity = flick(t, 20.75, 21.3);
+    const xi = eOutExpo(lin(t, 21.0, 21.45));
+    const xs = sc.s7x.children;
+    xs[0].style.transform = `rotate(45deg) scaleX(${xi})`; xs[1].style.transform = `rotate(-45deg) scaleX(${xi})`;
+    const wi = eOutExpo(lin(t, 21.15, 21.9));
+    sc.s7t1.style.clipPath = `inset(-10% ${(1 - wi) * 100}% -10% 0)`;
+    sc.s7t1.style.filter = wi < 1 ? `blur(${(1 - wi) * 6 * S}px)` : 'none';
+    sc.s7t1.style.transform = `translateX(${(1 - wi) * -2}rem)`;
+    decode(sc.s7top, t, 21.55, 34); sc.s7top.style.opacity = ss(t, 21.5, 21.6);
+    const pi = eOutCubic(lin(t, 21.85, 22.3));
+    sc.s7pill.style.opacity = pi; sc.s7pill.style.transform = `translateY(${(1 - pi) * 1.5}rem) scale(${mix(.94, 1, pi)})`;
+    decode(sc.s7pill, t, 21.9, 30);
+    const ui = eOutCubic(lin(t, 22.3, 22.8));
+    sc.s7url.style.opacity = ui; sc.s7url.style.transform = `translateY(${(1 - ui) * 1.5}rem)`;
+  }
+  document.getElementById('fade').style.opacity = ss(t, 24.35, 25.0);
+}
+
+// ---------------------------------------------------------------- film grain
+const grain = document.getElementById('grain');
+const GW = Math.round(W / 3), GH = Math.round(H / 3);
+grain.width = GW; grain.height = GH;
+const gctx = grain.getContext('2d');
+const tiles = [];
+for (let k = 0; k < 8; k++) {
+  const d = gctx.createImageData(GW, GH);
+  let s = 1234567 + k * 7919;
+  for (let i = 0; i < d.data.length; i += 4) {
+    s = (s * 1103515245 + 12345) & 0x7fffffff;
+    const v = (s >> 8) & 255;
+    d.data[i] = d.data[i + 1] = d.data[i + 2] = v; d.data[i + 3] = 255;
+  }
+  tiles.push(d);
+}
+
+// ---------------------------------------------------------------- render entry
+function renderAt(t) {
+  const u = params(t);
+  gl.viewport(0, 0, W, H);
+  gl.uniform2f(U('uRes'), W, H); gl.uniform1f(U('uTime'), t);
+  for (const [k, v] of Object.entries(u)) { const l = U(k); if (!l) continue; v.length === 4 ? gl.uniform4fv(l, v) : gl.uniform3fv(l, v); }
+  gl.drawArrays(gl.TRIANGLES, 0, 3);
+  gl.finish();
+  const z = u.uCam[0];
+  world.style.transform = `scale(${z}) translate(${-u.uCam[1] * H}px, ${u.uCam[2] * H}px)`;
+  dom(t);
+  gctx.putImageData(tiles[Math.floor(t * 30) % tiles.length], 0, 0);
+}
+window.DURATION = DURATION;
+window.renderAt = renderAt;
+window.ready = (async () => {
+  await Promise.all(faces.map(f => f.load().then(ff => document.fonts.add(ff))));
+  await build();
+  renderAt(0);
+  return true;
+})();
+</script>
+</body>
+</html>
